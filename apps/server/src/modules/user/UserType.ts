@@ -5,16 +5,23 @@ import type { ConnectionArguments } from 'graphql-relay';
 import { IUser } from './UserModel';
 import { nodeInterface } from '../node/typeRegister';
 import { registerTypeLoader } from '../node/typeRegister';
-import { UserLoader } from './UserLoader';
+// import { UserLoader } from './UserLoader';
+import { fieldMongoId } from '../graphql/fieldMongoId';
+
 
 const UserType = new GraphQLObjectType<IUser>({
 	name: 'User',
 	description: 'Represents a user',
 	fields: () => ({
 		id: globalIdField('User'),
+    ...fieldMongoId(),
 		email: {
 			type: GraphQLString,
 			resolve: (user) => user.email,
+		},
+		password: {
+			type: GraphQLString,
+			resolve: (user) => user.password,
 		},
 		createdAt: {
 			type: GraphQLString,
@@ -29,6 +36,6 @@ const UserConnection = connectionDefinitions({
 	nodeType: UserType,
 });
 
-registerTypeLoader(UserType, UserLoader.load);
+// registerTypeLoader(UserType, UserLoader.load);
 
 export { UserType, UserConnection };

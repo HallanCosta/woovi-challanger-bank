@@ -2,18 +2,17 @@ import { createLoader } from '@entria/graphql-mongo-helpers';
 
 import { registerLoader } from '../loader/loaderRegister';
 
-import { Account } from './AccountModel';
-import { connectionFromArray } from 'graphql-relay';
+import { LedgerEntry } from './LedgerEntryModel';
 
 const { Wrapper, getLoader, clearCache, load, loadAll } = createLoader({
-	model: Account,
-	loaderName: 'AccountLoader',
+	model: LedgerEntry,
+	loaderName: 'LedgerEntryLoader',
 });
 
-registerLoader('AccountLoader', getLoader);
+registerLoader('LedgerEntryLoader', getLoader);
 
-export const AccountLoader = {
-	Account: Wrapper,
+export const LedgerEntryLoader = {
+	LedgerEntry: Wrapper,
 	getLoader,
 	clearCache,
 	load,

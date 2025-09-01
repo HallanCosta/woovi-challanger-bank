@@ -8,4 +8,7 @@ export const PUB_SUB_EVENTS = {
   USER: {
 		ADDED: 'USER:ADDED',
 	},
+  LEDGER: {
+		ADDED: 'LEDGER:ADDED',
+	},
 } as const;

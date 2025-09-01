@@ -1,13 +1,24 @@
 import { UserType, UserConnection } from './UserType';
-import { UserLoader } from './UserLoader';
-import { connectionArgs } from 'graphql-relay';
+// import { UserLoader } from './UserLoader';
+import { connectionArgs, connectionFromArray } from 'graphql-relay';
+import { GraphQLInputObjectType, GraphQLString } from 'graphql';
+import { users } from './users';
 
 export const userField = (key: string) => ({
 	[key]: {
 		type: UserType,
-		resolve: async (obj: Record<string, unknown>, _, context) =>
-			UserLoader.load(context, obj.account as string),
+		resolve: async (obj: Record<string, unknown>, _, context) => {
+      return users.find(user => user.email === obj.email) || null;
+    },
 	},
+});
+
+const UserFilters = new GraphQLInputObjectType({
+  name: 'UserFilters',
+  description: 'Filters for the users',
+  fields: () => ({
+    email: { type: GraphQLString }
+  })
 });
 
 export const userConnectionField = (key: string) => ({
@@ -15,9 +26,16 @@ export const userConnectionField = (key: string) => ({
 		type: UserConnection.connectionType,
 		args: {
 			...connectionArgs,
+      filters: {
+        type: UserFilters
+      } 
 		},
 		resolve: async (_, args, context) => {
-			return await UserLoader.loadAll(context, args);
+      const filteredUsers = users.filter(user => user.email === args.filters.email) || []
+      console.dir(connectionFromArray(filteredUsers, args), { depth: null })
+      return connectionFromArray(filteredUsers, args);
+
+			// return await UserLoader.loadAll(context, args);
 		},
 	},
 });
