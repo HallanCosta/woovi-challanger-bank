@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 export type IAccount = {
 	pixKey: string;
 	user: string;
+	balance: number;
 	createdAt: Date;
 	updatedAt: Date;
 } & Document;
@@ -17,6 +18,10 @@ const Schema = new mongoose.Schema<IAccount>(
     user: {
       type: String,
       description: 'The user id',
+    },
+    balance: {
+      type: Number,
+      description: 'The account balance',
     },
 	},
 	{

@@ -53,6 +53,20 @@ type Query {
     """Returns the last n items from the list."""
     last: Int
   ): LedgerEntryConnection
+  pixTransactions(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    filters: PixTransactionFilters
+  ): PixTransactionConnection
 }
 
 """A connection to a list of items."""
@@ -126,6 +140,7 @@ type Account implements Node {
   id: ID!
   pixKey: String
   user: String
+  balance: String
   createdAt: String
 }
 
@@ -156,6 +171,7 @@ type UserEdge {
 type User implements Node {
   """The ID of an object"""
   id: ID!
+  _id: String
   email: String
   password: String
   createdAt: String
@@ -188,17 +204,64 @@ type LedgerEntryEdge {
 type LedgerEntry implements Node {
   """The ID of an object"""
   id: ID!
-  account: String
   value: Float
   type: String
+  status: String
+  ledgerAccount: Party
   description: String
   pixTransaction: String
   createdAt: String
 }
 
+type Party {
+  ps: String!
+  account: String
+  name: String!
+  document: String!
+  type: String!
+  pixKey: String
+}
+
+"""A connection to a list of items."""
+type PixTransactionConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [PixTransactionEdge]
+}
+
+"""An edge in a connection."""
+type PixTransactionEdge {
+  """The item at the end of the edge"""
+  node: PixTransaction
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""Represents a pix transaction"""
+type PixTransaction implements Node {
+  """The ID of an object"""
+  id: ID!
+  value: Float
+  status: String
+  partyDebit: Party
+  partyCredit: Party
+  description: String
+  createdAt: String
+  updatedAt: String
+}
+
+"""Filters for the pix transactions"""
+input PixTransactionFilters {
+  user: String
+}
+
 type Mutation {
   MessageAdd(input: MessageAddInput!): MessageAddPayload
   AccountAdd(input: AccountAddInput!): AccountAddPayload
+  CreatePixTransaction(input: CreatePixTransactionInput!): CreatePixTransactionPayload
 }
 
 type MessageAddPayload {
@@ -219,6 +282,29 @@ type AccountAddPayload {
 input AccountAddInput {
   content: String!
   clientMutationId: String
+}
+
+type CreatePixTransactionPayload {
+  pixTransaction: PixTransaction
+  clientMutationId: String
+}
+
+input CreatePixTransactionInput {
+  value: Float!
+  status: String!
+  partyDebit: PartyInput!
+  partyCredit: PartyInput!
+  description: String
+  clientMutationId: String
+}
+
+input PartyInput {
+  ps: String!
+  account: String
+  name: String!
+  document: String!
+  type: String!
+  pixKey: String
 }
 
 type Subscription {

@@ -2,23 +2,62 @@ import type { Document, Model } from 'mongoose';
 import mongoose from 'mongoose';
 
 import { ledgerEntryEnum } from './ledgerEntryEnum';
+import { partyEnum } from './partyEnum';
+import { pixTransactionEnum } from '../pix/pixTransactionEnum';
+import { IPixTransactionStatus } from '../pix/PixTransactionModal';
+
+export type IParty = {
+  psp: string;
+  account: string;
+  name: string;
+  document: string;
+  type: partyEnum.PHYSICAL | partyEnum.LEGAL;
+  pixKey: string;
+};
 
 export type ILedgerEntry = {
-	account: string;
 	value: number;
   type: ledgerEntryEnum.DEBIT | ledgerEntryEnum.CREDIT;
+  status: IPixTransactionStatus;
+	ledgerAccount: IParty;
 	description: string;
 	pixTransaction: string;
 	createdAt: Date;
 	updatedAt: Date;
 } & Document;
 
-const Schema = new mongoose.Schema<ILedgerEntry>(
+const PartySchema = new mongoose.Schema<IParty>(
 	{
+    psp: { 
+      type: String, 
+      description: 'The psp'
+    },
     account: { 
       type: String, 
       description: 'The account id'
     },
+		name: { 
+			type: String, 
+      description: 'The party name'
+		},
+    type: {
+      type: String,
+      enum: Object.values(partyEnum),
+    },
+		document: { 
+			type: String, 
+      description: 'The party document'
+		},
+		pixKey: { 
+			type: String,
+      description: 'The pix key'
+		},
+	},
+	{ _id: false }
+);
+
+const Schema = new mongoose.Schema<ILedgerEntry>(
+	{
     value: { 
       type: Number, 
       description: 'The value'
@@ -28,6 +67,16 @@ const Schema = new mongoose.Schema<ILedgerEntry>(
       enum: [ledgerEntryEnum.DEBIT, ledgerEntryEnum.CREDIT],
       description: 'The type'
     },
+    status: {
+			type: String,
+			enum: Object.values(pixTransactionEnum),
+			default: pixTransactionEnum.CREATED,
+			index: true,
+		},
+		ledgerAccount: { 
+			type: PartySchema, 
+      description: 'The ledger account'
+		},
     description: { 
       type: String, 
       description: 'The description'

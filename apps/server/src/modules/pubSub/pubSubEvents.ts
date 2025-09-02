@@ -11,4 +11,7 @@ export const PUB_SUB_EVENTS = {
   LEDGER: {
 		ADDED: 'LEDGER:ADDED',
 	},
+  PIX_TRANSACTION: {
+		ADDED: 'PIX_TRANSACTION:ADDED',
+	},
 } as const;

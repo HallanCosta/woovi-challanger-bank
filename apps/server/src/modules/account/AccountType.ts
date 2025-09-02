@@ -20,6 +20,10 @@ const AccountType = new GraphQLObjectType<IAccount>({
 			type: GraphQLString,
 			resolve: (account) => account.user,
 		},
+    balance: {
+      type: GraphQLString,
+      resolve: (account) => account.balance,
+    },
 		createdAt: {
 			type: GraphQLString,
 			resolve: (account) => account.createdAt.toISOString(),

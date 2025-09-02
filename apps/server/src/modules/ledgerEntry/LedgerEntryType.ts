@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLFloat } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLNonNull } from 'graphql';
 import { globalIdField, connectionDefinitions } from 'graphql-relay';
 import type { ConnectionArguments } from 'graphql-relay';
 
@@ -7,15 +7,13 @@ import { nodeInterface } from '../node/typeRegister';
 import { registerTypeLoader } from '../node/typeRegister';
 import { LedgerEntryLoader } from './LedgerEntryLoader';
 
+import { PartyType } from '../graphql/PartyType';
+
 const LedgerEntryType = new GraphQLObjectType<ILedgerEntry>({
 	name: 'LedgerEntry',
 	description: 'Represents a ledger entry',
 	fields: () => ({
 		id: globalIdField('LedgerEntry'),
-    account: {
-			type: GraphQLString,
-			resolve: (ledgerEntry) => ledgerEntry.account,
-		},
     value: {
 			type: GraphQLFloat,
 			resolve: (ledgerEntry) => ledgerEntry.value,
@@ -23,6 +21,14 @@ const LedgerEntryType = new GraphQLObjectType<ILedgerEntry>({
     type: {
 			type: GraphQLString,
 			resolve: (ledgerEntry) => ledgerEntry.type,
+		},
+    status: {
+			type: GraphQLString,
+			resolve: (ledgerEntry) => ledgerEntry.status,
+		},
+    ledgerAccount: {
+			type: PartyType,
+			resolve: (ledgerEntry) => ledgerEntry.ledgerAccount,
 		},
     description: {
 			type: GraphQLString,

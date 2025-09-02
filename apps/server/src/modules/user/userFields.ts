@@ -32,10 +32,7 @@ export const userConnectionField = (key: string) => ({
 		},
 		resolve: async (_, args, context) => {
       const filteredUsers = users.filter(user => user.email === args.filters.email) || []
-      console.dir(connectionFromArray(filteredUsers, args), { depth: null })
       return connectionFromArray(filteredUsers, args);
-
-			// return await UserLoader.loadAll(context, args);
 		},
 	},
 });

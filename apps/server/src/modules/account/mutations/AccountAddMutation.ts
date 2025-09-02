@@ -10,6 +10,7 @@ import { accountField } from '../accountFields';
 export type AccountAddInput = {
 	pixKey: string;
 	user: string;
+	balance: number;
 };
 
 const mutation = mutationWithClientMutationId({
@@ -23,6 +24,7 @@ const mutation = mutationWithClientMutationId({
 		const account = await new Account({
 			pixKey: args.pixKey,
       user: args.user,
+      balance: args.balance,
 		}).save();
 
 		redisPubSub.publish(PUB_SUB_EVENTS.ACCOUNT.ADDED, {
