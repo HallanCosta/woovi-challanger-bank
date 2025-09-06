@@ -8,7 +8,6 @@ import { registerTypeLoader } from '../node/typeRegister';
 // import { UserLoader } from './UserLoader';
 import { fieldMongoId } from '../graphql/fieldMongoId';
 
-
 const UserType = new GraphQLObjectType<IUser>({
 	name: 'User',
 	description: 'Represents a user',

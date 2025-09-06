@@ -92,13 +92,13 @@ const Schema = new mongoose.Schema<ILedgerEntry>(
 	}
 );
 
-Schema.index({ account: 1, pixTransaction: 1 }, { unique: true });
+Schema.index({ ledgerAccount: 1, pixTransaction: 1 }, { unique: true });
 
-// Schema.pre("save", function (next) {
-//   if (!this.isNew) {
-//     return next(new Error("LedgerEntry transactions cannot be changed"));
-//   }
-//   next();
-// });
+Schema.pre("save", function (next) {
+  if (!this.isNew) {
+    return next(new Error("LedgerEntry transactions cannot be changed"));
+  }
+  next();
+});
 
 export const LedgerEntry: Model<ILedgerEntry> = mongoose.model('LedgerEntry', Schema);

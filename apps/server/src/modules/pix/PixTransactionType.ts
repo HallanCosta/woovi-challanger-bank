@@ -23,11 +23,11 @@ const PixTransactionType = new GraphQLObjectType<ILedgerEntry>({
 			type: GraphQLString,
 			resolve: (pixTransaction) => pixTransaction.status,
 		},
-		partyDebit: {
+		debitParty: {
 			type: PartyType,
 			resolve: (pixTransaction) => pixTransaction.ledgerAccount,
 		},
-		partyCredit: {
+		creditParty: {
 			type: PartyType,
 			resolve: (pixTransaction) => pixTransaction.ledgerAccount,
 		},
@@ -42,7 +42,11 @@ const PixTransactionType = new GraphQLObjectType<ILedgerEntry>({
 		updatedAt: {
 			type: GraphQLString, 
 			resolve: (pixTransaction) => pixTransaction.updatedAt.toISOString(),
-		}
+		},
+    message: {
+      type: GraphQLString,
+      description: 'Mensagem de sucesso ou erro da criação da transação',
+    },
 	}),
 	interfaces: () => [nodeInterface],
 });

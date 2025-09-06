@@ -15,14 +15,14 @@ async function run() {
 
   await new Account({
     pixKey: '95b7f30c-2fad-43cd-85d1-f5615cf28a39',
-    password: '123',
-    user: users[0].id,
+    balance: 500000,
+    user: users[0]._id,
   }).save();
 
   await new Account({
     pixKey: '08771dd3-32c0-4fe7-8725-6175ab14c7ee',
-    password: '123',
-    user: users[1].id,
+    balance: 100000,
+    user: users[1]._id,
   }).save();
 
   console.log('Accounts seeded successfully');

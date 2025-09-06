@@ -6,9 +6,7 @@ import { GraphQLInputObjectType, GraphQLString } from 'graphql';
 export const pixTransactionField = (key: string) => ({
 	[key]: {
 		type: PixTransactionType,
-		resolve: async (obj: Record<string, unknown>, _, context) => {
-      return null;
-    }
+		resolve: async (obj: Record<string, unknown>, _, context) => obj
     // PixTransactionLoader.load(context, obj.pixTransaction as string),
 	},
 });
@@ -31,7 +29,7 @@ export const pixTransactionConnectionField = (key: string) => ({
       }
 		},
 		resolve: async (_, args, context) => {
-      console.dir(args, { depth: null })
+      // console.dir(args, { depth: null })
       return [];
 			// return await PixTransactionLoader.loadAll(context, args);
 		},

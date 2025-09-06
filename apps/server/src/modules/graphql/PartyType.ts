@@ -1,11 +1,11 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLInputObjectType } from 'graphql';
 
 const fields = {
-  ps: { type: new GraphQLNonNull(GraphQLString) },
+  psp: { type: GraphQLString },
   account: { type: GraphQLString },
-  name: { type: new GraphQLNonNull(GraphQLString) },
-  document: { type: new GraphQLNonNull(GraphQLString) },
-  type: { type: new GraphQLNonNull(GraphQLString) },
+  name: { type: GraphQLString },
+  document: { type: GraphQLString },
+  type: { type: GraphQLString },
   pixKey: { type: GraphQLString }
 }
 

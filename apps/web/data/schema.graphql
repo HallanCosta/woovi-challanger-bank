@@ -214,11 +214,11 @@ type LedgerEntry implements Node {
 }
 
 type Party {
-  ps: String!
+  psp: String
   account: String
-  name: String!
-  document: String!
-  type: String!
+  name: String
+  document: String
+  type: String
   pixKey: String
 }
 
@@ -246,11 +246,14 @@ type PixTransaction implements Node {
   id: ID!
   value: Float
   status: String
-  partyDebit: Party
-  partyCredit: Party
+  debitParty: Party
+  creditParty: Party
   description: String
   createdAt: String
   updatedAt: String
+
+  """Mensagem de sucesso ou erro da criação da transação"""
+  message: String
 }
 
 """Filters for the pix transactions"""
@@ -292,18 +295,18 @@ type CreatePixTransactionPayload {
 input CreatePixTransactionInput {
   value: Float!
   status: String!
-  partyDebit: PartyInput!
-  partyCredit: PartyInput!
+  debitParty: PartyInput!
+  creditParty: PartyInput!
   description: String
   clientMutationId: String
 }
 
 input PartyInput {
-  ps: String!
+  psp: String
   account: String
-  name: String!
-  document: String!
-  type: String!
+  name: String
+  document: String
+  type: String
   pixKey: String
 }
 

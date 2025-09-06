@@ -31,7 +31,13 @@ export const userConnectionField = (key: string) => ({
       } 
 		},
 		resolve: async (_, args, context) => {
-      const filteredUsers = users.filter(user => user.email === args.filters.email) || []
+      const getFilteredUsers = (filters: any = {}) => {
+        if (!filters.email) return users;
+
+        return users.filter(user => user.email.includes(filters.email)); 
+      }
+
+      const filteredUsers = getFilteredUsers(args.filters);
       return connectionFromArray(filteredUsers, args);
 		},
 	},
