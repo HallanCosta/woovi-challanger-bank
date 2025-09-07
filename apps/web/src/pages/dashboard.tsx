@@ -5,13 +5,13 @@ import { TransactionList } from '../components/Auth/TransactionList';
 import { TransferModal, TransferData } from '../components/Auth/TransferModal';
 import { DashboardHeader, QuickActions, LoadingScreen } from '../components/Dashboard';
 import { useToast } from '../hooks/useToast';
-import { useAuthData } from '../hooks/useAuthData';
+import { useAuth } from '../hooks/useAuth';
 import { useTransactions } from '../hooks/useTransactions';
 import { useDashboardState } from '../hooks/useDashboardState';
 
 const Dashboard = () => {
   const { showSuccess } = useToast();
-  const { user, account, isLoading, logout } = useAuthData();
+  const { user, account, isDataLoading, logout, isLoggingOut } = useAuth();
   const { balance, transactions, addTransaction } = useTransactions(account?.balance || 2500.75);
   const {
     isTransferModalOpen,
@@ -34,7 +34,7 @@ const Dashboard = () => {
     logout();
   };
 
-  if (isLoading) {
+  if (isDataLoading) {
     return <LoadingScreen />;
   }
 
@@ -46,6 +46,7 @@ const Dashboard = () => {
         onToggleAccountType={toggleAccountType}
         onLogout={handleLogout}
         getAccountTypeText={getAccountTypeText}
+        isLoggingOut={isLoggingOut}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

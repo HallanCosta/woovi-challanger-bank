@@ -4,6 +4,7 @@ import { Input } from '../ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { useToast } from '../../hooks/useToast';
 import { X, Send, CreditCard } from 'lucide-react';
+import { PixIcon } from '../icons';
 
 interface TransferModalProps {
   isOpen: boolean;
@@ -66,7 +67,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Send className="w-5 h-5" />
+              <PixIcon />
               Nova Transferência
             </CardTitle>
             <CardDescription>

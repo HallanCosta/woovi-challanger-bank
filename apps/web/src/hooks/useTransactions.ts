@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Transaction } from '../components/Auth/TransactionList';
 import { TransferData } from '../components/Auth/TransferModal';
+import { useLedgerEntryQuery } from '../components/queries/useLedgerEntryQuery';
 
 // Dados mockados das transações
 const MOCK_TRANSACTIONS: Transaction[] = [
@@ -59,6 +60,9 @@ const MOCK_TRANSACTIONS: Transaction[] = [
 export const useTransactions = (initialBalance: number = 2500.75) => {
   const [balance, setBalance] = useState(initialBalance);
   const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
+  
+  // Query para buscar ledger entries (transações) reais
+  const ledgerEntriesData = useLedgerEntryQuery();
 
   const addTransaction = (transferData: TransferData) => {
     const newTransaction: Transaction = {

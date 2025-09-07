@@ -8,6 +8,7 @@ interface DashboardHeaderProps {
   onToggleAccountType: () => void;
   onLogout: () => void;
   getAccountTypeText: (type: 'PHYSICAL' | 'COMPANY') => string;
+  isLoggingOut: boolean;
 }
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -15,7 +16,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   accountType,
   onToggleAccountType,
   onLogout,
-  getAccountTypeText
+  getAccountTypeText,
+  isLoggingOut
 }) => {
   return (
     <div className="bg-white border-b border-gray-200">
@@ -36,9 +38,18 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </div>
           </div>
           
-          <Button variant="outline" size="sm" onClick={onLogout}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onLogout}
+            disabled={isLoggingOut}
+          >
+            {isLoggingOut ? (
+              <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" />
+            ) : (
+              <LogOut className="w-4 h-4 mr-2" />
+            )}
+            {isLoggingOut ? 'Deslogando...' : 'Sair'}
           </Button>
         </div>
       </div>

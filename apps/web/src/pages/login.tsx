@@ -1,9 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
+import { useAuth } from '../hooks/useAuth';
 import { useRouter } from 'next/router';
-import { graphql, useLazyLoadQuery } from 'react-relay';
-import { LoginQuery } from '../__generated__/LoginQuery.graphql';
-import { useToast } from '../hooks/useToast';
 import { TABLES } from '../config/database';
 
 import {
@@ -21,129 +19,52 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { showError, showSuccess } = useToast();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const { login, isLoading } = useAuth(false); // Não redirecionar na página de login
 
-  // Função segura para atualizar email
-  const handleEmailChange = useCallback((value: string) => {
-    try {
-      setEmail(value);
-    } catch (error) {
-      console.error('Erro ao atualizar email:', error);
-    }
-  }, []);
-
-  // Função segura para atualizar password
-  const handlePasswordChange = useCallback((value: string) => {
-    try {
-      setPassword(value);
-    } catch (error) {
-      console.error('Erro ao atualizar password:', error);
-    }
-  }, []);
-
-  const usersData = useLazyLoadQuery<LoginQuery>(
-    graphql`
-      query loginQuery($filters: UserFilters) {
-        users(filters: $filters) {
-          edges {
-            node {
-              id
-              email
-              password
-            }
-          }
-        }
-      }
-    `,
-    { filters: {} },
-    { fetchPolicy: 'store-or-network' }
-  );
-
-  const accountsData = useLazyLoadQuery(
-    graphql`
-      query loginAccountQuery($filters: AccountFilters) {
-        accounts(filters: $filters) {
-          edges {
-            node {
-              id
-              balance
-              pixKey
-              user
-              type
-            }
-          }
-        }
-      }
-    `,
-    { filters: {} },
-    { fetchPolicy: 'store-or-network' }
-  );
-
-  console.log('Login data:', usersData);
-  console.log('Accounts data:', accountsData);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // Simular delay de autenticação
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const user = usersData.users?.edges?.find(edge => edge?.node?.email === email);
-      if (user && user.node?.password === password) {
-        // Decodificar o ID do usuário
-        const decodedUserId = decodeUserId(user.node.id);
+  // Verificar se já está logado e redirecionar ANTES de renderizar
+  useEffect(() => {
+    const checkAuthAndRedirect = () => {
+      try {
+        const savedUser = localStorage.getItem(TABLES.USER);
+        const savedAccount = localStorage.getItem(TABLES.ACCOUNT);
         
-        // Buscar a conta do usuário
-        const account = (accountsData as any).accounts?.edges?.find((edge: any) => 
-          edge?.node?.user === decodedUserId
-        );
-
-        if (account) {
-          // Salvar dados no localStorage
-          saveToStorage(user.node, account.node);
-          showSuccess('Login realizado com sucesso!');
-          router.push('/dashboard');
-        } else {
-          showError('Conta não encontrada para este usuário');
+        if (savedUser && savedAccount) {
+          // Usuário já está logado, redirecionar imediatamente
+          router.replace('/dashboard');
+          return;
         }
-      } else {
-        showError('Usuário não encontrado ou senha incorreta');
+      } catch (error) {
+        console.error('Erro ao verificar autenticação:', error);
       }
-    } catch (error) {
-      showError('Erro ao fazer login');
-    } finally {
-      setIsLoading(false);
-    }
+      
+      // Se não está logado, mostrar a tela de login
+      setIsCheckingAuth(false);
+    };
+
+    checkAuthAndRedirect();
+  }, [router]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    login(email, password);
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  // Função para decodificar ID base64 do usuário
-  const decodeUserId = (base64Id: string): string => {
-    try {
-      const decoded = atob(base64Id);
-      // Remove o prefixo "User:" e retorna apenas o ID
-      return decoded.replace('User:', '');
-    } catch (error) {
-      console.error('Erro ao decodificar ID:', error);
-      return base64Id;
-    }
-  };
-
-  // Função para salvar dados no localStorage
-  const saveToStorage = (user: any, account: any) => {
-    try {
-      localStorage.setItem(TABLES.USER, JSON.stringify(user));
-      localStorage.setItem(TABLES.ACCOUNT, JSON.stringify(account));
-    } catch (error) {
-      console.error('Erro ao salvar no localStorage:', error);
-    }
-  };
+  // Mostrar loading enquanto verifica autenticação
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -170,7 +91,7 @@ const Login = () => {
                   type="text"
                   placeholder="Digite o e-mail"
                   value={email}
-                  onChange={(e) => handleEmailChange(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
                   required
                 />
@@ -188,7 +109,7 @@ const Login = () => {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Digite sua senha"
                   value={password}
-                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="pl-10 pr-10"
                   required
                 />
