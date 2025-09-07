@@ -1,3 +1,3 @@
 export { AuthApp } from './AuthApp';
-export { LoginScreen } from './LoginScreen';
+export { Login } from './Login';
 export { TransferScreen } from './TransferScreen';

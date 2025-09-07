@@ -1,4 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
+
+import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
+import { Message_message$key } from '../../__generated__/Message_message.graphql';
+import { LoginQuery } from '../../__generated__/LoginQuery.graphql';
+import { useToast } from '../../hooks/useToast';
+
 import {
   Box,
   Container,
@@ -20,27 +26,73 @@ import {
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Filter } from 'lucide-react';
 
-interface LoginScreenProps {
-  onLogin: (accountNumber: string, password: string) => void;
+interface LoginProps {
+  onLogin: (email: string, password: string) => void;
   isLoading?: boolean;
   error?: string;
 }
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({
+export const Login: React.FC<LoginProps> = ({
   onLogin,
   isLoading = false,
   error,
 }) => {
-  const [accountNumber, setAccountNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showShadcn, setShowShadcn] = useState(false);
+  const { showError, showSuccess } = useToast();
+
+  // Função segura para atualizar email
+  const handleEmailChange = useCallback((value: string) => {
+    try {
+      setEmail(value);
+    } catch (error) {
+      console.error('Erro ao atualizar email:', error);
+    }
+  }, []);
+
+  // Função segura para atualizar password
+  const handlePasswordChange = useCallback((value: string) => {
+    try {
+      setPassword(value);
+    } catch (error) {
+      console.error('Erro ao atualizar password:', error);
+    }
+  }, []);
+
+  const usersData = useLazyLoadQuery<LoginQuery>(
+    graphql`
+      query LoginQuery($filters: UserFilters) {
+        users(filters: $filters) {
+          edges {
+            node {
+              id
+              email
+              password
+            }
+          }
+        }
+      }
+    `,
+    { filters: {} },
+    { fetchPolicy: 'store-or-network' }
+  );
+
+
+  console.log('Login data:', usersData);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (accountNumber && password) {
-      onLogin(accountNumber, password);
+
+    const user = usersData.users?.edges?.find(edge => edge?.node?.email === email);
+    if (user && user.node?.password === password) {
+      showSuccess('Login realizado com sucesso!');
+      onLogin(email, password);
+    } else {
+      showError('Usuário não encontrado ou senha incorreta');
     }
   };
 
@@ -56,7 +108,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           <div className="mx-auto w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-4">
             <AccountCircleIcon className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">Woovi Bank</CardTitle>
+          <CardTitle className="text-2xl font-bold">Challanger Bank</CardTitle>
           <CardDescription>
             Faça login na sua conta bancária
           </CardDescription>
@@ -70,17 +122,17 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="accountNumber" className="text-sm font-medium">
-                Número da Conta
+              <label htmlFor="email" className="text-sm font-medium">
+                E-mail
               </label>
               <div className="relative">
                 <AccountCircleIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <Input
-                  id="accountNumber"
+                  id="email"
                   type="text"
-                  placeholder="Digite o número da conta"
-                  value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
+                  placeholder="Digite o e-mail"
+                  value={email}
+                  onChange={(e) => handleEmailChange(e.target.value)}
                   className="pl-10"
                   required
                 />
@@ -98,7 +150,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Digite sua senha"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
                   className="pl-10 pr-10"
                   required
                 />
@@ -119,7 +171,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading || !accountNumber || !password}
+              disabled={isLoading || !email || !password}
             >
               {isLoading ? (
                 <div className="flex items-center space-x-2">
@@ -133,7 +185,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           </form>
 
           <p className="text-xs text-gray-500 text-center mt-4">
-            Use qualquer número de conta para testar (ex: 123456)
+            Use qualquer email de teste para testar (ex: hallan1@test.com)
           </p>
         </CardContent>
       </Card>

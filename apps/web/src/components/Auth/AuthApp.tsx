@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LoginScreen } from './LoginScreen';
+import { Login } from './Login';
 import { TransferScreen } from './TransferScreen';
 
 type AuthState = 'login' | 'transfer';
@@ -51,7 +51,7 @@ export const AuthApp: React.FC = () => {
   }
 
   return (
-    <LoginScreen
+    <Login
       onLogin={handleLogin}
       isLoading={isLoading}
       error={error}
