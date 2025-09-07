@@ -6,6 +6,7 @@ import { IAccount } from './AccountModel';
 import { nodeInterface } from '../node/typeRegister';
 import { registerTypeLoader } from '../node/typeRegister';
 import { AccountLoader } from './AccountLoader';
+import { partyEnum } from '../ledgerEntry/partyEnum';
 
 const AccountType = new GraphQLObjectType<IAccount>({
 	name: 'Account',
@@ -23,6 +24,10 @@ const AccountType = new GraphQLObjectType<IAccount>({
     balance: {
       type: GraphQLString,
       resolve: (account) => account.balance,
+    },
+    type: {
+      type: GraphQLString,
+      resolve: (account) => account.type,
     },
 		createdAt: {
 			type: GraphQLString,

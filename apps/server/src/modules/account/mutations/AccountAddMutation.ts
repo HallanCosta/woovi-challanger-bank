@@ -6,11 +6,13 @@ import { PUB_SUB_EVENTS } from '../../pubSub/pubSubEvents';
 
 import { Account } from '../AccountModel';
 import { accountField } from '../accountFields';
+import { partyEnum } from '../../ledgerEntry/partyEnum';
 
 export type AccountAddInput = {
 	pixKey: string;
 	user: string;
 	balance: number;
+	type?: partyEnum.LEGAL | partyEnum.PHYSICAL;
 };
 
 const mutation = mutationWithClientMutationId({
@@ -25,6 +27,7 @@ const mutation = mutationWithClientMutationId({
 			pixKey: args.pixKey,
       user: args.user,
       balance: args.balance,
+      type: args.type || partyEnum.PHYSICAL,
 		}).save();
 
 		redisPubSub.publish(PUB_SUB_EVENTS.ACCOUNT.ADDED, {

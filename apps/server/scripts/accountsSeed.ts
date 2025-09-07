@@ -1,5 +1,6 @@
 import { Account } from '../src/modules/account/AccountModel';
 import { users } from '../src/modules/user/users';
+import { partyEnum } from '../src/modules/ledgerEntry/partyEnum';
 
 import { connectDatabase } from '../src/database';
 
@@ -17,12 +18,14 @@ async function run() {
     pixKey: '95b7f30c-2fad-43cd-85d1-f5615cf28a39',
     balance: 500000,
     user: users[0]._id,
+    type: partyEnum.PHYSICAL,
   }).save();
 
   await new Account({
     pixKey: '08771dd3-32c0-4fe7-8725-6175ab14c7ee',
     balance: 100000,
     user: users[1]._id,
+    type: partyEnum.LEGAL,
   }).save();
 
   console.log('Accounts seeded successfully');

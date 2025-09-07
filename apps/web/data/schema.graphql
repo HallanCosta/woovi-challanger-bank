@@ -141,6 +141,7 @@ type Account implements Node {
   pixKey: String
   user: String
   balance: String
+  type: String
   createdAt: String
 }
 

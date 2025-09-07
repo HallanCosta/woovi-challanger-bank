@@ -1,48 +1,27 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
+import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
+import { graphql, useLazyLoadQuery } from 'react-relay';
+import { LoginQuery } from '../__generated__/LoginQuery.graphql';
+import { useToast } from '../hooks/useToast';
+import { TABLES } from '../config/database';
 
-import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
-import { Message_message$key } from '../../__generated__/Message_message.graphql';
-import { LoginQuery } from '../../__generated__/LoginQuery.graphql';
-import { useToast } from '../../hooks/useToast';
-
-import {
-  Box,
-  Container,
-  Typography,
-  Paper,
-  TextField,
-  Button as MuiButton,
-  Alert,
-  CircularProgress,
-  InputAdornment,
-  IconButton,
-} from '@mui/material';
 import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   AccountCircle as AccountCircleIcon,
   Lock as LockIcon,
 } from '@mui/icons-material';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Filter } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 
-interface LoginProps {
-  onLogin: (email: string, password: string) => void;
-  isLoading?: boolean;
-  error?: string;
-}
-
-export const Login: React.FC<LoginProps> = ({
-  onLogin,
-  isLoading = false,
-  error,
-}) => {
+const Login = () => {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showShadcn, setShowShadcn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { showError, showSuccess } = useToast();
 
   // Função segura para atualizar email
@@ -65,7 +44,7 @@ export const Login: React.FC<LoginProps> = ({
 
   const usersData = useLazyLoadQuery<LoginQuery>(
     graphql`
-      query LoginQuery($filters: UserFilters) {
+      query loginQuery($filters: UserFilters) {
         users(filters: $filters) {
           edges {
             node {
@@ -81,18 +60,62 @@ export const Login: React.FC<LoginProps> = ({
     { fetchPolicy: 'store-or-network' }
   );
 
+  const accountsData = useLazyLoadQuery(
+    graphql`
+      query loginAccountQuery($filters: AccountFilters) {
+        accounts(filters: $filters) {
+          edges {
+            node {
+              id
+              balance
+              pixKey
+              user
+              type
+            }
+          }
+        }
+      }
+    `,
+    { filters: {} },
+    { fetchPolicy: 'store-or-network' }
+  );
 
   console.log('Login data:', usersData);
+  console.log('Accounts data:', accountsData);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    const user = usersData.users?.edges?.find(edge => edge?.node?.email === email);
-    if (user && user.node?.password === password) {
-      showSuccess('Login realizado com sucesso!');
-      onLogin(email, password);
-    } else {
-      showError('Usuário não encontrado ou senha incorreta');
+    try {
+      // Simular delay de autenticação
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const user = usersData.users?.edges?.find(edge => edge?.node?.email === email);
+      if (user && user.node?.password === password) {
+        // Decodificar o ID do usuário
+        const decodedUserId = decodeUserId(user.node.id);
+        
+        // Buscar a conta do usuário
+        const account = (accountsData as any).accounts?.edges?.find((edge: any) => 
+          edge?.node?.user === decodedUserId
+        );
+
+        if (account) {
+          // Salvar dados no localStorage
+          saveToStorage(user.node, account.node);
+          showSuccess('Login realizado com sucesso!');
+          router.push('/dashboard');
+        } else {
+          showError('Conta não encontrada para este usuário');
+        }
+      } else {
+        showError('Usuário não encontrado ou senha incorreta');
+      }
+    } catch (error) {
+      showError('Erro ao fazer login');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,7 +123,28 @@ export const Login: React.FC<LoginProps> = ({
     setShowPassword(!showPassword);
   };
 
-  // Shadcn Design
+  // Função para decodificar ID base64 do usuário
+  const decodeUserId = (base64Id: string): string => {
+    try {
+      const decoded = atob(base64Id);
+      // Remove o prefixo "User:" e retorna apenas o ID
+      return decoded.replace('User:', '');
+    } catch (error) {
+      console.error('Erro ao decodificar ID:', error);
+      return base64Id;
+    }
+  };
+
+  // Função para salvar dados no localStorage
+  const saveToStorage = (user: any, account: any) => {
+    try {
+      localStorage.setItem(TABLES.USER, JSON.stringify(user));
+      localStorage.setItem(TABLES.ACCOUNT, JSON.stringify(account));
+    } catch (error) {
+      console.error('Erro ao salvar no localStorage:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md">
@@ -114,12 +158,6 @@ export const Login: React.FC<LoginProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
@@ -192,3 +230,11 @@ export const Login: React.FC<LoginProps> = ({
     </div>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  return {
+    props: {},
+  };
+};
+
+export default Login;
