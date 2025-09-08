@@ -58,6 +58,7 @@ const MOCK_TRANSACTIONS: Transaction[] = [
 ];
 
 export const useTransactions = (initialBalance: number = 2500.75) => {
+  console.log('💳 useTransactions - Saldo inicial recebido:', initialBalance);
   const [balance, setBalance] = useState(initialBalance);
   const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
   

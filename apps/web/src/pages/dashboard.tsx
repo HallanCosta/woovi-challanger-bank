@@ -11,8 +11,19 @@ import { useDashboardState } from '../hooks/useDashboardState';
 
 const Dashboard = () => {
   const { showSuccess } = useToast();
-  const { user, account, isDataLoading, logout, isLoggingOut } = useAuth();
-  const { balance, transactions, addTransaction } = useTransactions(account?.balance || 2500.75);
+  const { 
+    user, 
+    account, 
+    isDataLoading, 
+    logout, 
+    isLoggingOut, 
+    userName, 
+    userEmail, 
+    accountBalance, 
+    accountType: userAccountType 
+  } = useAuth();
+  const { balance, transactions, addTransaction } = useTransactions(accountBalance);
+
   const {
     isTransferModalOpen,
     isBalanceVisible,
@@ -41,8 +52,9 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader
-        userEmail={user?.email || ''}
-        accountType={accountType}
+        userName={userName}
+        userEmail={userEmail}
+        accountType={userAccountType}
         onToggleAccountType={toggleAccountType}
         onLogout={handleLogout}
         getAccountTypeText={getAccountTypeText}
@@ -57,7 +69,7 @@ const Dashboard = () => {
           </div>
 
           <BalanceCard
-            balance={balance}
+            balance={accountBalance}
             isVisible={isBalanceVisible}
             onToggleVisibility={toggleBalanceVisibility}
           />

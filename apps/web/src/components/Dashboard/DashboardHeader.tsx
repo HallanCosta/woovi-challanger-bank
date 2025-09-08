@@ -3,6 +3,7 @@ import { Button } from '../ui/button';
 import { LogOut, User } from 'lucide-react';
 
 interface DashboardHeaderProps {
+  userName: string;
   userEmail: string;
   accountType: 'PHYSICAL' | 'COMPANY';
   onToggleAccountType: () => void;
@@ -12,6 +13,7 @@ interface DashboardHeaderProps {
 }
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
+  userName,
   userEmail,
   accountType,
   onToggleAccountType,
@@ -28,10 +30,11 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               <User className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900">{userEmail || 'Carregando...'}</p>
+              <p className="text-sm font-medium text-gray-900">{userName || 'Usuário'}</p>
+              <p className="text-xs text-gray-500">{userEmail || 'Carregando...'}</p>
               <button 
                 onClick={onToggleAccountType}
-                className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-xs text-blue-600 hover:text-blue-700 transition-colors"
               >
                 {getAccountTypeText(accountType)}
               </button>

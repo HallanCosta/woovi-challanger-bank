@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useToast } from './useToast';
 import { TABLES } from '../config/database';
+import { useUser } from './useUser';
 import { useLoginQuery } from '../components/queries/useLoginQuery';
 import { useAccountQuery } from '../components/queries/useAccountQuery';
 
@@ -20,54 +21,31 @@ export const useAuth = (shouldRedirect: boolean = true) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [account, setAccount] = useState<Account | null>(null);
-  const [isDataLoading, setIsDataLoading] = useState(true);
   const { showError, showSuccess } = useToast();
+  
+  // Usar o hook useUser para gerenciar dados do usuário
+  const {
+    user,
+    account,
+    isLoading: isDataLoading,
+    userName,
+    userEmail,
+    accountBalance,
+    accountType,
+    decodeUserId
+  } = useUser();
 
-  // Carregar dados do localStorage
-  useEffect(() => {
-    const loadAuthData = () => {
-      try {
-        const savedUser = localStorage.getItem(TABLES.USER);
-        const savedAccount = localStorage.getItem(TABLES.ACCOUNT);
-        
-        if (savedUser && savedAccount) {
-          const userData = JSON.parse(savedUser);
-          const accountData = JSON.parse(savedAccount);
-          
-          setUser(userData);
-          setAccount(accountData);
-        } else {
-          if (shouldRedirect) {
-            router.push('/login');
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao carregar dados do localStorage:', error);
-        if (shouldRedirect) {
-          router.push('/login');
-        }
-      } finally {
-        setIsDataLoading(false);
-      }
-    };
-
-    loadAuthData();
-  }, [router]);
-
+  // Buscar dados do GraphQL apenas para o processo de login
   const usersData = useLoginQuery();
   const accountsData = useAccountQuery();
 
-  const decodeUserId = (base64Id: string): string => {
-    try {
-      const decoded = atob(base64Id);
-      return decoded.replace('User:', '');
-    } catch (error) {
-      console.error('Erro ao decodificar ID:', error);
-      return base64Id;
+  // Verificar se usuário está logado
+  useEffect(() => {
+    if (!isDataLoading && !user && shouldRedirect) {
+      router.push('/login');
     }
-  };
+  }, [isDataLoading, user, shouldRedirect, router]);
+
 
   const saveToStorage = (user: any, account: any) => {
     try {
@@ -107,16 +85,16 @@ export const useAuth = (shouldRedirect: boolean = true) => {
       }
 
       const decodedUserId = decodeUserId(user.node.id);
-      const account = (accountsData as any).accounts?.edges?.find((edge: any) => 
+      const foundAccount = (accountsData as any).accounts?.edges?.find((edge: any) => 
         edge?.node?.user === decodedUserId
       );
 
-      if (!account) {
+      if (!foundAccount) {
         showError('Conta não encontrada para este usuário');
         return;
       }
 
-      saveToStorage(user.node, account.node);
+      saveToStorage(user.node, foundAccount.node);
       showSuccess('Login realizado com sucesso!');
       router.push('/dashboard');
     } catch (error) {
@@ -135,6 +113,10 @@ export const useAuth = (shouldRedirect: boolean = true) => {
     user,
     account,
     isDataLoading,
+    userName,
+    userEmail,
+    accountBalance,
+    accountType,
     
     // Logout
     logout,

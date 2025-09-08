@@ -14,6 +14,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   isVisible,
   onToggleVisibility,
 }) => {
+  console.log('💰 Balance:', balance);
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -53,7 +54,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           <div>
             <p className="text-3xl font-bold">{getBalanceDisplay()}</p>
             <p className="text-blue-100 text-sm mt-1">
-              {isVisible ? 'Disponível para saque' : 'Clique no olho para visualizar'}
+              {isVisible ? 'Disponível para uso' : 'Clique no olho para visualizar'}
             </p>
           </div>
           
