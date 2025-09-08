@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
 	reactStrictMode: true,
-	transpilePackages: ['@woovi-playground/ui'],
+	transpilePackages: ['@challanger-bank/ui'],
 	compiler: {
 		relay: require('./relay.config'),
 	},

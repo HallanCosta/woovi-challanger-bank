@@ -7,6 +7,7 @@ export type IAccount = {
 	user: string;
 	balance: number;
 	type: partyEnum.LEGAL | partyEnum.PHYSICAL;
+	psp: string;
 	createdAt: Date;
 	updatedAt: Date;
 } & Document;
@@ -30,6 +31,11 @@ const Schema = new mongoose.Schema<IAccount>(
       enum: Object.values(partyEnum),
       default: partyEnum.PHYSICAL,
       description: 'The account type (PHYSICAL or COMPANY)',
+    },
+    psp: {
+      type: String,
+      default: 'Bank Challanger LTDA',
+      description: 'The PSP (Payment Service Provider)',
     },
 	},
 	{

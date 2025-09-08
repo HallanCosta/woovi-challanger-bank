@@ -1,5 +1,5 @@
 {
-	"extends": "@woovi-playground/tsconfig/nextjs.json",
+	"extends": "@challanger-bank/tsconfig/nextjs.json",
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {

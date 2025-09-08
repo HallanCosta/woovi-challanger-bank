@@ -112,9 +112,8 @@ export const useAuth = (shouldRedirect: boolean = true) => {
         return;
       }
 
-      const decodedUserId = decodeUserId(user.node.id);
       const foundAccount = (accountsData as any).accounts?.edges?.find((edge: any) => 
-        edge?.node?.user === decodedUserId
+        edge?.node?.user?.id === user.node.id
       );
 
       if (!foundAccount) {

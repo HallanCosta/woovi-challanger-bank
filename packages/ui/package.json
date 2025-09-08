@@ -10,8 +10,8 @@
 	"devDependencies": {
 		"@types/react": "^17.0.37",
 		"@types/react-dom": "^17.0.11",
-		"@woovi-playground/eslint-config-custom": "*",
-		"@woovi-playground/tsconfig": "*",
+		"@challanger-bank/eslint-config-custom": "*",
+		"@challanger-bank/tsconfig": "*",
 		"eslint": "^7.32.0",
 		"react": "^17.0.2",
 		"typescript": "^4.5.2"

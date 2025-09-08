@@ -39,14 +39,14 @@ export async function updateAccountBalance({
  * @returns Promise com as contas atualizadas
  */
 export async function updateMultipleAccountBalances(updates: UpdateBalanceParams[]) {
-  const results = [];
+  const results: any[] = [];
 
   for (const update of updates) {
     try {
       const result = await updateAccountBalance(update);
       results.push(result);
     } catch (error) {
-      throw new Error(`Erro ao atualizar conta ${update.accountId}: ${error.message}`);
+      throw new Error(`Erro ao atualizar conta ${update.accountId}: ${(error as Error).message}`);
     }
   }
 

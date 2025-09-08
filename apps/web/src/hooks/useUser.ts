@@ -13,7 +13,12 @@ interface Account {
   id: string;
   balance: string;
   pixKey?: string;
-  user: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    createdAt: string;
+  };
   type: string;
 }
 
@@ -59,10 +64,10 @@ export const useUser = () => {
   const getCurrentAccount = (): Account | null => {
     if (!user?.id || !accountsData?.accounts?.edges) return null;
     
-    const decodedUserId = decodeUserId(user.id);
+    // const decodedUserId = decodeUserId(user.id);
     const userAccount = accountsData.accounts.edges.find(edge => {
       const account = edge.node;
-      return account.user === decodedUserId;
+      return account.user.id === user.id;
     });
     
     return userAccount?.node || null;

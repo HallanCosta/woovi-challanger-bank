@@ -7,6 +7,8 @@ import { nodeInterface } from '../node/typeRegister';
 import { registerTypeLoader } from '../node/typeRegister';
 import { AccountLoader } from './AccountLoader';
 import { partyEnum } from '../ledgerEntry/partyEnum';
+import { UserType } from '../user/UserType';
+import { users } from '../user/users';
 
 const AccountType = new GraphQLObjectType<IAccount>({
 	name: 'Account',
@@ -18,8 +20,8 @@ const AccountType = new GraphQLObjectType<IAccount>({
 			resolve: (account) => account.pixKey,
 		},
     user: {
-			type: GraphQLString,
-			resolve: (account) => account.user,
+			type: UserType,
+			resolve: (account) => users.find(user => user.id === account.user),
 		},
     balance: {
       type: GraphQLString,
@@ -28,6 +30,10 @@ const AccountType = new GraphQLObjectType<IAccount>({
     type: {
       type: GraphQLString,
       resolve: (account) => account.type,
+    },
+    psp: {
+      type: GraphQLString,
+      resolve: (account) => account.psp,
     },
 		createdAt: {
 			type: GraphQLString,

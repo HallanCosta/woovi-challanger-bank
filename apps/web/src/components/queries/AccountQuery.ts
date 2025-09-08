@@ -8,7 +8,12 @@ const AccountQuery = graphql`
           id
           balance
           pixKey
-          user
+          user {
+            id
+            email
+            name
+            createdAt
+          }
           type
         }
       }

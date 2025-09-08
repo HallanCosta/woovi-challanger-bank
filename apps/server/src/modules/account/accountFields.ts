@@ -15,7 +15,8 @@ const AccountFilters = new GraphQLInputObjectType({
   name: 'AccountFilters',
   description: 'Filters for the accounts',
   fields: () => ({
-    user: { type: GraphQLString }
+    user: { type: GraphQLString },
+    pixKey: { type: GraphQLString }
   })
 });
 

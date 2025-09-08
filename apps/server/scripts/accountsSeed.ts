@@ -19,6 +19,7 @@ async function run() {
     balance: 500000,
     user: users[0]._id,
     type: partyEnum.PHYSICAL,
+    psp: 'Bank Challanger LTDA',
   }).save();
 
   await new Account({
@@ -26,6 +27,7 @@ async function run() {
     balance: 100000,
     user: users[1]._id,
     type: partyEnum.LEGAL,
+    psp: 'Bank Challanger LTDA',
   }).save();
 
   console.log('Accounts seeded successfully');

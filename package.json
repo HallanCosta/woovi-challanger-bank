@@ -15,7 +15,7 @@
 	"devDependencies": {
 		"@babel/preset-env": "^7.23.8",
 		"@babel/preset-typescript": "^7.23.3",
-		"@woovi-playground/eslint-config-custom": "*",
+		"@challanger-bank/eslint-config-custom": "*",
 		"autoprefixer": "^10.4.16",
 		"babel-plugin-transform-barrels": "^1.0.10",
 		"eslint": "^8.53.0",
