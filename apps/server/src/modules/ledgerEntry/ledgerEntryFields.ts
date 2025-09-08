@@ -1,6 +1,7 @@
 import { LedgerEntryType, LedgerEntryConnection } from './LedgerEntryType';
 import { LedgerEntryLoader } from './LedgerEntryLoader';
 import { connectionArgs } from 'graphql-relay';
+import { GraphQLInputObjectType, GraphQLString } from 'graphql';
 
 export const ledgerEntryField = (key: string) => ({
 	[key]: {
@@ -10,11 +11,22 @@ export const ledgerEntryField = (key: string) => ({
 	},
 });
 
+const LedgerEntryFilters = new GraphQLInputObjectType({
+  name: 'LedgerEntryFilters',
+  description: 'Filters for the ledger entries',
+  fields: () => ({
+    account: { type: GraphQLString }
+  })
+});
+
 export const ledgerEntryConnectionField = (key: string) => ({
 	[key]: {
 		type: LedgerEntryConnection.connectionType,
 		args: {
 			...connectionArgs,
+      filters: {
+        type: LedgerEntryFilters,
+      }
 		},
 		resolve: async (_, args, context) => {
 			return await LedgerEntryLoader.loadAll(context, args);

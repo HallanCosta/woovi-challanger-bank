@@ -1,18 +1,22 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Wallet, TrendingUp, Eye, EyeOff } from 'lucide-react';
+import { Wallet, TrendingUp, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface BalanceCardProps {
   balance: number;
   isVisible: boolean;
   onToggleVisibility: () => void;
+  onRefreshBalance?: () => void;
+  isRefreshingBalance?: boolean;
 }
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
   balance,
   isVisible,
   onToggleVisibility,
+  onRefreshBalance,
+  isRefreshingBalance = false,
 }) => {
   console.log('💰 Balance:', balance);
   const formatCurrency = (value: number) => {
@@ -37,14 +41,28 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             <Wallet className="w-5 h-5" />
             <CardTitle className="text-lg">Saldo Disponível</CardTitle>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleVisibility}
-            className="text-white hover:bg-white/20"
-          >
-            {isVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </Button>
+          <div className="flex items-center gap-2">
+            {onRefreshBalance && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onRefreshBalance}
+                disabled={isRefreshingBalance}
+                className="text-white hover:bg-white/20"
+                title="Atualizar saldo"
+              >
+                <RefreshCw className={`w-4 h-4 ${isRefreshingBalance ? 'animate-spin' : ''}`} />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggleVisibility}
+              className="text-white hover:bg-white/20"
+            >
+              {isVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </Button>
+          </div>
         </div>
        
       </CardHeader>

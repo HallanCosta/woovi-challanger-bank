@@ -1,8 +1,8 @@
 import { graphql } from 'react-relay';
 
 const LedgerEntryQuery = graphql`
-  query LedgerEntryQuery {
-    ledgerEntries {
+  query LedgerEntryQuery($filters: LedgerEntryFilters) {
+    ledgerEntries(filters: $filters) {
       edges {
         node {
           id
@@ -10,8 +10,6 @@ const LedgerEntryQuery = graphql`
           ledgerAccount {
             psp
             account
-            name
-            document
             type
             pixKey
           }

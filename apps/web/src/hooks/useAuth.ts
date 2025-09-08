@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useToast } from './useToast';
 import { TABLES } from '../config/database';
 import { useUser } from './useUser';
 import { useLoginQuery } from '../components/queries/useLoginQuery';
 import { useAccountQuery } from '../components/queries/useAccountQuery';
+import { useRelayEnvironment } from 'react-relay';
+import { fetchQuery } from 'react-relay';
+import { AccountQuery } from '../components/queries/AccountQuery';
 
 interface User {
   email: string;
@@ -21,7 +24,9 @@ export const useAuth = (shouldRedirect: boolean = true) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   const { showError, showSuccess } = useToast();
+  const environment = useRelayEnvironment();
   
   // Usar o hook useUser para gerenciar dados do usuário
   const {
@@ -35,9 +40,32 @@ export const useAuth = (shouldRedirect: boolean = true) => {
     decodeUserId
   } = useUser();
 
-  // Buscar dados do GraphQL apenas para o processo de login
+  // Buscar dados do GraphQL sempre
   const usersData = useLoginQuery();
   const accountsData = useAccountQuery();
+
+  // O saldo agora é sempre buscado do GraphQL através do useUser
+  // Não precisamos mais desta função duplicada
+
+  // Função para atualizar saldo de forma suave
+  const refreshBalance = useCallback(async () => {
+    setIsRefreshingBalance(true);
+    try {
+      // Forçar refetch dos dados do GraphQL usando fetchQuery
+      await fetchQuery(environment, AccountQuery, { filters: {} }, {
+        fetchPolicy: 'network-only'
+      }).toPromise();
+      
+      // Pequeno delay para mostrar o loading
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+    } catch (error) {
+      console.error('Erro ao atualizar saldo:', error);
+      showError('Erro ao atualizar saldo');
+    } finally {
+      setIsRefreshingBalance(false);
+    }
+  }, [showError]);
 
   // Verificar se usuário está logado
   useEffect(() => {
@@ -47,10 +75,10 @@ export const useAuth = (shouldRedirect: boolean = true) => {
   }, [isDataLoading, user, shouldRedirect, router]);
 
 
-  const saveToStorage = (user: any, account: any) => {
+  const saveToStorage = (user: any) => {
     try {
       localStorage.setItem(TABLES.USER, JSON.stringify(user));
-      localStorage.setItem(TABLES.ACCOUNT, JSON.stringify(account));
+      // Não salvar mais a conta no localStorage - sempre buscar do GraphQL
     } catch (error) {
       console.error('Erro ao salvar no localStorage:', error);
     }
@@ -64,7 +92,7 @@ export const useAuth = (shouldRedirect: boolean = true) => {
       await new Promise(resolve => setTimeout(resolve, 800));
       
       localStorage.removeItem(TABLES.USER);
-      localStorage.removeItem(TABLES.ACCOUNT);
+      // Não precisamos mais remover TABLES.ACCOUNT pois não salvamos mais
       router.push('/login');
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
@@ -94,7 +122,8 @@ export const useAuth = (shouldRedirect: boolean = true) => {
         return;
       }
 
-      saveToStorage(user.node, foundAccount.node);
+      // Salvar apenas o usuário no localStorage - conta será sempre buscada do GraphQL
+      saveToStorage(user.node);
       showSuccess('Login realizado com sucesso!');
       router.push('/dashboard');
     } catch (error) {
@@ -115,8 +144,12 @@ export const useAuth = (shouldRedirect: boolean = true) => {
     isDataLoading,
     userName,
     userEmail,
-    accountBalance,
+    accountBalance, // Sempre usar saldo do GraphQL através do useUser
     accountType,
+    
+    // Funções de atualização
+    refreshBalance,
+    isRefreshingBalance,
     
     // Logout
     logout,

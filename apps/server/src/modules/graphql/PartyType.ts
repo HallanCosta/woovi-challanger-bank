@@ -3,8 +3,6 @@ import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLInputObjectTyp
 const fields = {
   psp: { type: GraphQLString },
   account: { type: GraphQLString },
-  name: { type: GraphQLString },
-  document: { type: GraphQLString },
   type: { type: GraphQLString },
   pixKey: { type: GraphQLString }
 }

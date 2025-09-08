@@ -20,7 +20,9 @@ const Dashboard = () => {
     userName, 
     userEmail, 
     accountBalance, 
-    accountType: userAccountType 
+    accountType: userAccountType,
+    refreshBalance,
+    isRefreshingBalance
   } = useAuth();
   const { balance, transactions, addTransaction } = useTransactions(accountBalance);
 
@@ -72,6 +74,8 @@ const Dashboard = () => {
             balance={accountBalance}
             isVisible={isBalanceVisible}
             onToggleVisibility={toggleBalanceVisibility}
+            onRefreshBalance={refreshBalance}
+            isRefreshingBalance={isRefreshingBalance}
           />
 
           <QuickActions

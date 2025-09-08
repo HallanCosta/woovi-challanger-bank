@@ -9,6 +9,7 @@ const LoginQuery = graphql`
           id
           email
           password
+          name
         }
       }
     }

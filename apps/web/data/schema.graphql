@@ -39,6 +39,7 @@ type Query {
 
     """Returns the last n items from the list."""
     last: Int
+    filters: LedgerEntryFilters
   ): LedgerEntryConnection
   pixTransactions(
     """Returns the items in the list that come after the specified cursor."""
@@ -136,6 +137,7 @@ type User implements Node {
   _id: String
   email: String
   password: String
+  name: String
   createdAt: String
 }
 
@@ -178,10 +180,13 @@ type LedgerEntry implements Node {
 type Party {
   psp: String
   account: String
-  name: String
-  document: String
   type: String
   pixKey: String
+}
+
+"""Filters for the ledger entries"""
+input LedgerEntryFilters {
+  account: String
 }
 
 """A connection to a list of items."""
@@ -255,8 +260,6 @@ input CreatePixTransactionInput {
 input PartyInput {
   psp: String
   account: String
-  name: String
-  document: String
   type: String
   pixKey: String
 }

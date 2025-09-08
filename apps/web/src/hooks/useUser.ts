@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { TABLES } from '../config/database';
+import { useAccountQuery } from '../components/queries/useAccountQuery';
 
 interface User {
   id: string;
   email: string;
   password?: string;
+  name?: string;
 }
 
 interface Account {
@@ -17,24 +19,21 @@ interface Account {
 
 export const useUser = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [account, setAccount] = useState<Account | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Buscar dados da conta sempre do GraphQL
+  const accountsData = useAccountQuery();
 
-  // Carregar dados do localStorage
+  // Carregar dados do usuário do localStorage
   useEffect(() => {
     const loadUserData = () => {
       try {
         const savedUser = localStorage.getItem(TABLES.USER);
-        const savedAccount = localStorage.getItem(TABLES.ACCOUNT);
         console.log('savedUser', savedUser);
-        console.log('savedAccount', savedAccount);
         
-        if (savedUser && savedAccount) {
+        if (savedUser) {
           const userData = JSON.parse(savedUser);
-          const accountData = JSON.parse(savedAccount);
-          
           setUser(userData);
-          setAccount(accountData);
         }
       } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
@@ -56,33 +55,53 @@ export const useUser = () => {
     }
   };
 
+  // Buscar conta do usuário logado do GraphQL
+  const getCurrentAccount = (): Account | null => {
+    if (!user?.id || !accountsData?.accounts?.edges) return null;
+    
+    const decodedUserId = decodeUserId(user.id);
+    const userAccount = accountsData.accounts.edges.find(edge => {
+      const account = edge.node;
+      return account.user === decodedUserId;
+    });
+    
+    return userAccount?.node || null;
+  };
+
   const getUserName = (): string => {
     if (!user?.email) return 'Usuário';
     
-    // Extrair nome do email (parte antes do @)
+    // Usar o nome que vem do GraphQL
+    if (user.name) {
+      return user.name;
+    }
+    
+    // Fallback: extrair nome do email (parte antes do @)
     const emailName = user.email.split('@')[0];
     return emailName.charAt(0).toUpperCase() + emailName.slice(1);
   };
 
   const getAccountBalance = (): number => {
-    console.log('account', account);
+    const account = getCurrentAccount();
     if (!account?.balance) return 0;
     return parseFloat(account.balance) || 0;
   };
 
   const getAccountType = (): 'PHYSICAL' | 'COMPANY' => {
+    const account = getCurrentAccount();
     if (!account?.type) return 'PHYSICAL';
     return account.type === 'COMPANY' ? 'COMPANY' : 'PHYSICAL';
   };
 
   const getPixKey = (): string => {
+    const account = getCurrentAccount();
     if (!account?.pixKey) return '';
     return account.pixKey;
   };
 
   return {
     user,
-    account,
+    account: getCurrentAccount(), // Sempre buscar do GraphQL
     isLoading,
     userName: getUserName(),
     userEmail: user?.email || '',

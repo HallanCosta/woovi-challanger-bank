@@ -22,6 +22,10 @@ const UserType = new GraphQLObjectType<IUser>({
 			type: GraphQLString,
 			resolve: (user) => user.password,
 		},
+		name: {
+			type: GraphQLString,
+			resolve: (user) => user.name,
+		},
 		createdAt: {
 			type: GraphQLString,
 			resolve: (user) => user.createdAt.toISOString(),

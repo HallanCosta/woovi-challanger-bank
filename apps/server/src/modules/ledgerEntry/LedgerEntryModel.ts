@@ -9,8 +9,6 @@ import { IPixTransactionStatus } from '../pix/PixTransactionModal';
 export type IParty = {
   psp: string;
   account: string;
-  name: string;
-  document: string;
   type: partyEnum.PHYSICAL | partyEnum.LEGAL;
   pixKey: string;
 };
@@ -36,18 +34,10 @@ const PartySchema = new mongoose.Schema<IParty>(
       type: String, 
       description: 'The account id'
     },
-		name: { 
-			type: String, 
-      description: 'The party name'
-		},
     type: {
       type: String,
       enum: Object.values(partyEnum),
     },
-		document: { 
-			type: String, 
-      description: 'The party document'
-		},
 		pixKey: { 
 			type: String,
       description: 'The pix key'
@@ -89,8 +79,15 @@ const Schema = new mongoose.Schema<ILedgerEntry>(
 	{
 		collection: 'LedgerEntry',
 		timestamps: true,
+		toJSON: { virtuals: true },
+		toObject: { virtuals: true }
 	}
 );
+
+// Adicionar virtual para id
+Schema.virtual('id').get(function() {
+	return this._id.toHexString();
+});
 
 Schema.index({ ledgerAccount: 1, pixTransaction: 1 }, { unique: true });
 

@@ -14,16 +14,12 @@ const CreatePixTransaction = graphql`
         debitParty {
           psp
           account
-          name
-          document
           type
           pixKey
         }
         creditParty {
           psp
           account
-          name
-          document
           type
           pixKey
         }
