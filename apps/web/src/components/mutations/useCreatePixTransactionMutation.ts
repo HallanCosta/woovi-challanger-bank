@@ -5,7 +5,8 @@ import { CreatePixTransaction } from './CreatePixTransactionMutation';
 const useCreatePixTransactionMutation = () => {
   const [commit, isInFlight] = useMutation<CreatePixTransactionMutation>(CreatePixTransaction);
 
-  const createPixTransaction = (input: {
+  const createPixTransaction = (
+    input: {
     value: number;
     status: string;
     debitParty: {
@@ -15,14 +16,21 @@ const useCreatePixTransactionMutation = () => {
       account: string;
     };
     description?: string;
-  }) => {
+  },
+    handlers?: {
+      onCompleted?: (response: any) => void;
+      onError?: (error: Error) => void;
+    }
+  ) => {
     return commit({
       variables: { input },
       onCompleted: (response) => {
         console.log('PIX Transaction created:', response);
+        handlers?.onCompleted?.(response);
       },
       onError: (error) => {
         console.error('Error creating PIX transaction:', error);
+        handlers?.onError?.(error as any);
       },
     });
   };

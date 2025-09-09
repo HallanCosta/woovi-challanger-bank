@@ -223,7 +223,7 @@ const mutation = mutationWithClientMutationId({
     // });
 
     return {
-      pixTransaction: transactionId.toString(),
+      id: transactionId.toString(),
       message: 'Transação PIX efetuada com sucesso!',
       value: realValue,
       status: args.status,

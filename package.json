@@ -12,6 +12,10 @@
 		"compose:up": "docker compose -f docker-compose.yml up -d",
 		"compose-down": "docker compose -f docker-compose down"
 	},
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
 	"devDependencies": {
 		"@babel/preset-env": "^7.23.8",
 		"@babel/preset-typescript": "^7.23.3",

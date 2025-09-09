@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { ledgerEntryEnum } from '../constants/ledgerEntryEnum';
 import { Transaction } from '../components/Auth/TransactionList';
 import { TransferData } from '../components/Auth/TransferModal';
 import { useLedgerEntryQuery } from '../components/queries/useLedgerEntryQuery';
@@ -33,9 +34,8 @@ const transformLedgerEntriesToTransactions = (ledgerEntriesData: any, usersData:
     const node = edge.node;
     const ledgerAccount = node.ledgerAccount;
     
-    // Determinar o tipo da transação baseado no valor e tipo do ledger
-    const isCredit = node.value > 0;
-    const transactionType: 'CREDIT' | 'DEBIT' = isCredit ? 'CREDIT' : 'DEBIT';
+    // Determinar o tipo da transação baseado no tipo do ledger (CREDIT/DEBIT)
+    const transactionType: 'CREDIT' | 'DEBIT' = (node.type === ledgerEntryEnum.CREDIT) ? ledgerEntryEnum.CREDIT : ledgerEntryEnum.DEBIT;
     
     // Criar descrição baseada no tipo e dados disponíveis
     let description = node.description || 'Transação PIX';
@@ -46,7 +46,7 @@ const transformLedgerEntriesToTransactions = (ledgerEntriesData: any, usersData:
     const accountId = ledgerAccount?.account;
     const userName = accountId ? getUserNameById(accountId, usersData) : 'Usuário Desconhecido';
     
-    if (isCredit) {
+    if (transactionType === 'CREDIT') {
       sender = userName || ledgerAccount?.pixKey || 'Transferência PIX';
     } else {
       recipient = userName || ledgerAccount?.pixKey || 'Transferência PIX';
@@ -74,8 +74,8 @@ const transformLedgerEntriesToTransactions = (ledgerEntriesData: any, usersData:
       type: transactionType,
       value: Math.abs(node.value),
       description,
-      sender: isCredit ? sender : undefined,
-      recipient: !isCredit ? recipient : undefined,
+      sender: transactionType === 'CREDIT' ? sender : undefined,
+      recipient: transactionType === 'DEBIT' ? recipient : undefined,
       date: node.createdAt || new Date().toISOString(),
       status: mapStatus(node.status),
       psp: ledgerAccount?.psp || 'Challanger Bank',
@@ -109,12 +109,13 @@ export const useTransactions = (initialBalance: number = 2500.75) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const addTransaction = (transferData: TransferData) => {
+    const displayName = transferData.recipientName || transferData.pixKey;
     const newTransaction: Transaction = {
       id: Date.now().toString(),
-      type: 'DEBIT',
+      type: ledgerEntryEnum.DEBIT,
       value: transferData.value,
-      description: `Transferência PIX para ${transferData.pixKey}`,
-      recipient: transferData.pixKey,
+      description: `Transferência PIX para ${displayName}`,
+      recipient: displayName,
       date: new Date().toISOString(),
       status: 'COMPLETED',
       psp: 'Challanger Bank',
@@ -126,7 +127,8 @@ export const useTransactions = (initialBalance: number = 2500.75) => {
 
   // Combinar transações reais com transações adicionadas localmente
   const allTransactions = useMemo(() => {
-    return [...realTransactions, ...transactions];
+    // Exibir as transações adicionadas localmente primeiro (mais recentes no topo)
+    return [...transactions, ...realTransactions];
   }, [realTransactions, transactions]);
 
   return {

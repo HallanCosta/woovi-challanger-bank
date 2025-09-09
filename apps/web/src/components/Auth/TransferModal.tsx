@@ -8,6 +8,7 @@ import { useRelayEnvironment } from 'react-relay';
 import { fetchQuery } from 'relay-runtime';
 import { AccountQuery } from '../queries/AccountQuery';
 import { useUser } from '../../hooks/useUser';
+import { useCreatePixTransactionMutation } from '../mutations';
 
 interface TransferModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface TransferModalProps {
 export interface TransferData {
   value: number;
   pixKey: string;
+  recipientName?: string;
 }
 
 export const TransferModal: React.FC<TransferModalProps> = ({
@@ -41,7 +43,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const [shake, setShake] = useState<{ value: boolean; pixKey: boolean }>({ value: false, pixKey: false });
 
   const relayEnvironment = useRelayEnvironment();
-  const { pixKey: myPixKey } = useUser();
+  const { pixKey: myPixKey, account, accountType } = useUser();
+  const { createPixTransaction, isInFlight } = useCreatePixTransactionMutation();
 
   const pixKeyErrorMessage = useMemo(() => {
     if (!formErrors.pixKey) return '';
@@ -277,14 +280,46 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 </Button>
                 <Button
                   type="button"
+                  disabled={isInFlight}
                   onClick={() => {
-                    onTransfer(formData);
-                    onClose();
-                    resetForm();
+                    const cents = Math.round(formData.value * 100);
+                    createPixTransaction(
+                      {
+                        value: cents,
+                        status: 'CREATED',
+                        description: `Transferência PIX para ${recipientData?.user?.name || recipientData?.pixKey || ''}`,
+                        debitParty: {
+                          account: account?.id || '',
+                          psp: 'Bank Challanger LTDA',
+                          type: account?.type || 'PHYSICAL',
+                          pixKey: myPixKey || '',
+                        } as any,
+                        creditParty: {
+                          account: recipientData?.id || '',
+                          psp: 'Bank Challanger LTDA',
+                          type: recipientData?.type || 'PHYSICAL',
+                          pixKey: recipientData?.pixKey || '',
+                        } as any,
+                      },
+                      {
+                        onCompleted: () => {
+                          onTransfer({
+                            ...formData,
+                            recipientName: recipientData?.user?.name || recipientData?.pixKey || '',
+                          });
+                          onClose();
+                          resetForm();
+                        },
+                        onError: () => {
+                          // Sinalizar erro inline no campo chave PIX
+                          setFormErrors({ value: false, pixKey: true });
+                        },
+                      }
+                    );
                   }}
                   className="flex-1"
                 >
-                  Confirmar
+                  {isInFlight ? 'Enviando...' : 'Confirmar'}
                 </Button>
               </div>
           </div>

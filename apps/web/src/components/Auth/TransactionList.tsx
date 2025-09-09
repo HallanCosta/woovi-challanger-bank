@@ -1,10 +1,11 @@
 import React from 'react';
+import { ledgerEntryEnum } from '../../constants/ledgerEntryEnum';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 export interface Transaction {
   id: string;
-  type: 'CREDIT' | 'DEBIT';
+  type: ledgerEntryEnum;
   value: number;
   description: string;
   recipient?: string;
@@ -59,7 +60,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions }
   };
 
   const getTypeIcon = (type: Transaction['type']) => {
-    return type === 'CREDIT' ? (
+    return type === ledgerEntryEnum.CREDIT ? (
       <ArrowDownLeft className="w-4 h-4 text-green-500" />
     ) : (
       <ArrowUpRight className="w-4 h-4 text-red-500" />
@@ -67,7 +68,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions }
   };
 
   const getTypeColor = (type: Transaction['type']) => {
-    return type === 'CREDIT' ? 'text-green-600' : 'text-red-600';
+    return type === ledgerEntryEnum.CREDIT ? 'text-green-600' : 'text-red-600';
   };
 
   if (transactions.length === 0) {
@@ -108,7 +109,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions }
                 <div>
                   <p className="font-medium text-sm">{transaction.description}</p>
                   <p className="text-xs text-gray-500">
-                    {transaction.type === 'CREDIT' 
+                    {transaction.type === ledgerEntryEnum.CREDIT 
                       ? `De: ${transaction.sender || 'Transferência PIX'}`
                       : `Para: ${transaction.recipient || 'Transferência PIX'}`
                     }
@@ -124,7 +125,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions }
               
               <div className="text-right">
                 <p className={`font-semibold ${getTypeColor(transaction.type)}`}>
-                  {transaction.type === 'CREDIT' ? '+' : '-'}{formatCurrency(transaction.value)}
+                  {transaction.type === ledgerEntryEnum.CREDIT ? '+' : '-'}{formatCurrency(transaction.value)}
                 </p>
                 <div className="flex items-center gap-1 justify-end">
                   {getStatusIcon(transaction.status)}
