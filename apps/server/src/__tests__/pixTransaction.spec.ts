@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Account } from '../modules/account/AccountModel';
 import { updateAccountBalance, hasSufficientBalance } from '../modules/account/accountService';
+import { ledgerEntryEnum } from '../modules/ledgerEntry/ledgerEntryEnum';
 
 describe('PIX Transaction and Balance Update', () => {
   let testAccount1: any;
@@ -41,7 +42,7 @@ describe('PIX Transaction and Balance Update', () => {
       const updatedAccount = await updateAccountBalance({
         accountId: testAccount1.id.toString(),
         amount: debitAmount,
-        operation: 'debit'
+        operation: ledgerEntryEnum.DEBIT
       });
 
       expect(updatedAccount.balance).toBe(initialBalance - debitAmount);
@@ -54,7 +55,7 @@ describe('PIX Transaction and Balance Update', () => {
       const updatedAccount = await updateAccountBalance({
         accountId: testAccount2._id.toString(),
         amount: creditAmount,
-        operation: 'credit'
+        operation: ledgerEntryEnum.CREDIT
       });
 
       expect(updatedAccount.balance).toBe(initialBalance + creditAmount);
@@ -75,7 +76,7 @@ describe('PIX Transaction and Balance Update', () => {
         updateAccountBalance({
           accountId: nonExistentId,
           amount: 100,
-          operation: 'debit'
+          operation: ledgerEntryEnum.DEBIT
         })
       ).rejects.toThrow('Conta não encontrada');
     });
@@ -90,12 +91,12 @@ describe('PIX Transaction and Balance Update', () => {
         {
           accountId: testAccount1.id.toString(),
           amount: transactionAmount,
-          operation: 'debit' as const
+          operation: ledgerEntryEnum.DEBIT
         },
         {
           accountId: testAccount2._id.toString(),
           amount: transactionAmount,
-          operation: 'credit' as const
+          operation: ledgerEntryEnum.CREDIT
         }
       ];
 

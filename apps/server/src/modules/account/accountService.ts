@@ -1,9 +1,10 @@
 import { Account } from './AccountModel';
+import { ledgerEntryEnum } from '../ledgerEntry/ledgerEntryEnum';
 
 export type UpdateBalanceParams = {
   accountId: string;
   amount: number;
-  operation: 'debit' | 'credit';
+  operation: ledgerEntryEnum;
 }
 
 /**
@@ -18,7 +19,7 @@ export async function updateAccountBalance({
   amount,
   operation
 }: UpdateBalanceParams) {
-  const multiplier = operation === 'debit' ? -1 : 1;
+  const multiplier = operation === ledgerEntryEnum.DEBIT ? -1 : 1;
   
   const updatedAccount = await Account.findByIdAndUpdate(
     accountId,

@@ -37,7 +37,7 @@ const ERROR_MESSAGES = {
   [PixTransactionError.CREDIT_ACCOUNT_NOT_FOUND]: 'Conta de crédito não encontrada no sistema',
   [PixTransactionError.LEDGER_ENTRY_CREATION_FAILED]: 'Falha ao criar entradas contábeis da transação',
   [PixTransactionError.BALANCE_UPDATE_FAILED]: 'Falha ao atualizar saldo das contas',
-  [PixTransactionError.INVALID_TRANSACTION_VALUE]: 'Valor da transação deve ser maior que zero',
+  [PixTransactionError.INVALID_TRANSACTION_VALUE]: 'O valor do PIX não pode ser menor que R$ 0,01',
   [PixTransactionError.MISSING_REQUIRED_FIELDS]: 'Campos obrigatórios não fornecidos'
 };
 
@@ -80,13 +80,22 @@ const mutation = mutationWithClientMutationId({
   mutateAndGetPayload: async (args: CreatePixTransactionInput) => {
     const transactionId = new mongoose.Types.ObjectId().toString();
 
-    // Validações iniciais
-    if (!args.value || args.value <= 0) {
+    // Converter valor recebido (em centavos) para reais
+    const centsValue = Math.round(args.value as unknown as number);
+    const realValue = centsValue / 100;
+
+    // Validações iniciais (mínimo de 1 centavo)
+    if (!centsValue || centsValue < 1) {
       throw createPixError(PixTransactionError.INVALID_TRANSACTION_VALUE);
     }
 
     if (!args.debitParty || !args.creditParty) {
       throw createPixError(PixTransactionError.MISSING_REQUIRED_FIELDS, 'debitParty e creditParty são obrigatórios');
+    }
+
+    // Validar existência de chave PIX do destinatário
+    if (!args.creditParty.pixKey || !args.creditParty.pixKey.trim()) {
+      throw createPixError(PixTransactionError.MISSING_REQUIRED_FIELDS, 'chave PIX do destinatário é obrigatória');
     }
 
     // Validar se a conta de débito tem saldo suficiente
@@ -99,9 +108,9 @@ const mutation = mutationWithClientMutationId({
           throw createPixError(PixTransactionError.INVALID_DEBIT_ACCOUNT_ID);
         }
         
-        const hasBalance = await hasSufficientBalance(accountId, args.value);
+        const hasBalance = await hasSufficientBalance(accountId, realValue);
         if (!hasBalance) {
-          throw createPixError(PixTransactionError.INSUFFICIENT_BALANCE, `Valor solicitado: R$ ${args.value.toFixed(2)}`);
+          throw createPixError(PixTransactionError.INSUFFICIENT_BALANCE, `Valor solicitado: R$ ${realValue.toFixed(2)}`);
         }
       } catch (error: any) {
         if (error.name === PixTransactionError.INVALID_DEBIT_ACCOUNT_ID || 
@@ -118,7 +127,7 @@ const mutation = mutationWithClientMutationId({
     // Criar entrada de débito se houver conta de débito
     if (args.debitParty.account) {
       ledgerEntries.push({
-        value: args.value,
+        value: realValue,
         type: ledgerEntryEnum.DEBIT,
         status: pixTransactionEnum.CREATED,
         ledgerAccount: args.debitParty,
@@ -130,7 +139,7 @@ const mutation = mutationWithClientMutationId({
     // Criar entrada de crédito se houver conta de crédito
     if (args.creditParty.account) {
       ledgerEntries.push({
-        value: args.value,
+        value: realValue,
         type: ledgerEntryEnum.CREDIT,
         status: pixTransactionEnum.CREATED,
         ledgerAccount: args.creditParty,
@@ -140,7 +149,7 @@ const mutation = mutationWithClientMutationId({
     }
 
     // Só criar entradas se houver contas válidas
-    let ledgerEntryResults: ILedgerEntry[] = [];
+    let ledgerEntryResults: any[] = [];
     if (ledgerEntries.length > 0) {
       try {
         ledgerEntryResults = await LedgerEntry.insertMany(ledgerEntries);
@@ -161,8 +170,8 @@ const mutation = mutationWithClientMutationId({
           if (debitAccountId) {
             balanceUpdates.push({
               accountId: debitAccountId,
-              amount: args.value,
-              operation: 'debit' as const
+              amount: realValue,
+              operation: ledgerEntryEnum.DEBIT
             });
           }
         } catch (error: any) {
@@ -178,8 +187,8 @@ const mutation = mutationWithClientMutationId({
           if (creditAccountId) {
             balanceUpdates.push({
               accountId: creditAccountId,
-              amount: args.value,
-              operation: 'credit' as const
+              amount: realValue,
+              operation: ledgerEntryEnum.CREDIT
             });
           }
         } catch (error: any) {
@@ -216,8 +225,12 @@ const mutation = mutationWithClientMutationId({
     return {
       pixTransaction: transactionId.toString(),
       message: 'Transação PIX efetuada com sucesso!',
-      ...args
-    };
+      value: realValue,
+      status: args.status,
+      debitParty: args.debitParty,
+      creditParty: args.creditParty,
+      description: args.description,
+    } as any;
   },
   outputFields: {
     ...pixTransactionField('pixTransaction'),
