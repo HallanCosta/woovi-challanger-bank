@@ -47,90 +47,17 @@
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Backend Implementation Status
+## Documentação por App
 
-### ✅ Implementado
+### Frontend (Next.js)
+- Local: `apps/web/`
+- README: [`apps/web/README.md`](apps/web/README.md)
+- Descrição: Lista funcionalidades do Dashboard recentes, como atualização do extrato em background e atualização automática do saldo após transferências, além de detalhes de implementação e uso.
 
-#### **Arquitetura e Infraestrutura**
-- **Framework**: Koa.js com TypeScript
-- **Banco de Dados**: MongoDB com Mongoose
-- **GraphQL**: Schema completo com Relay
-- **WebSocket**: Suporte a subscriptions em tempo real
-- **Pub/Sub**: Redis para eventos em tempo real
-- **CORS**: Configurado para desenvolvimento
-
-#### **Módulos Implementados**
-
-##### **1. User (Usuário)**
-- Modelo de dados com email e senha
-- Type GraphQL com Relay
-- Campos: id, email, password, createdAt
-
-##### **2. Account (Conta)**
-- Modelo de dados para contas bancárias
-- Campos: pixKey, user, balance, createdAt, updatedAt
-- Mutation para criar contas
-- Eventos Pub/Sub para notificações
-
-##### **3. LedgerEntry (Lançamento Contábil)**
-- Sistema de lançamentos contábeis
-- Suporte a débito e crédito
-- Campos: value, type, status, ledgerAccount, description, pixTransaction, createdAt
-- Loader para otimização de queries
-
-##### **4. PixTransaction (Transação PIX)**
-- Sistema de transações PIX
-- Criação de transações com lançamentos contábeis
-- Campos: value, status, partyDebit, partyCredit, description, createdAt, updatedAt
-- Mutation para criar transações PIX
-
-##### **5. Message (Mensagem)**
-- Sistema de mensagens com WebSocket
-- Campos: content, createdAt
-- Mutation para adicionar mensagens
-- Subscription em tempo real para novas mensagens
-- Loader para otimização
-
-#### **Funcionalidades GraphQL**
-- **Queries**: Listagem de todos os tipos (users, accounts, ledgerEntries, pixTransactions, messages)
-- **Mutations**: Criação de contas, transações PIX e mensagens
-- **Subscriptions**: Notificações em tempo real para mensagens
-- **Relay**: Suporte completo ao padrão Relay
-
-#### **Sistema de Eventos**
-- Redis Pub/Sub para comunicação entre serviços
-- Eventos para: conta criada, transação PIX criada, mensagem adicionada
-- WebSocket para subscriptions GraphQL
-
-#### **Scripts e Utilitários**
-- Seed de contas para desenvolvimento
-- Atualização automática de schema GraphQL
-- Configuração de ambiente local
-- **Testes automatizados** com Jest e TypeScript
-
-### 🧪 **Testes**
-- **Configuração**: Jest com Babel para TypeScript
-- **Cobertura**: Testes unitários para serviços de conta
-- **Funcionalidades testadas**:
-  - Operações de débito e crédito em contas
-  - Validação de saldo suficiente
-  - Consistência de dados em transações PIX
-  - Tratamento de erros e rollback
-- **Executar testes**: `npm test` (no diretório do servidor)
-
-### 🚧 Em Desenvolvimento
-- Validações de entrada
-- Autenticação e autorização
-- Testes automatizados
-- Documentação da API
-
-### 📋 Próximos Passos
-- Implementar autenticação JWT
-- Adicionar validações de negócio
-- Implementar testes unitários e de integração
-- Adicionar logging estruturado
-- Implementar rate limiting
-- Adicionar monitoramento e métricas
+### Backend (Koa, GraphQL, MongoDB)
+- Local: `apps/server/`
+- README: [`apps/server/README.md`](apps/server/README.md)
+- Descrição: Arquitetura, módulos (User, Account, LedgerEntry, PixTransaction, Message), GraphQL/Relay, Pub/Sub com Redis, WebSocket, scripts, e status de testes.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
