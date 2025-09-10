@@ -34,7 +34,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   };
 
   return (
-    <Card className="bg-gradient-to-br from-blue-600 to-blue-700 text-white">
+    <Card className="bg-gradient-to-b from-[#0043ff] to-blue-700 text-white dark:from-[#0043ff] dark:to-indigo-800">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

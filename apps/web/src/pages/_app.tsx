@@ -4,12 +4,15 @@ import '../styles/index.css';
 
 import { ReactRelayContainer } from '../relay/ReactRelayContainer';
 import { Toaster } from '../components/ui/Toaster';
+import { ThemeProvider } from '../theme/ThemeProvider';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <Suspense fallback="loading">
-      <ReactRelayContainer Component={Component} props={pageProps} />
-      <Toaster />
+      <ThemeProvider>
+        <ReactRelayContainer Component={Component} props={pageProps} />
+        <Toaster />
+      </ThemeProvider>
     </Suspense>
   );
 }

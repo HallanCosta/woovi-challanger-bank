@@ -3,6 +3,7 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Send, History } from 'lucide-react';
 import { PixIcon } from '../icons/PixIcon';
+import { cn } from '@/lib/utils';
 
 interface QuickActionsProps {
   isTransferModalOpen: boolean;
@@ -33,7 +34,11 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
           <Button
             variant={isTransferModalOpen ? "default" : "outline"}
             onClick={onOpenTransferModal}
-            className="h-20 flex flex-col items-center justify-center gap-2"
+            className={cn(
+              "h-20 flex flex-col items-center justify-center gap-2",
+              isTransferModalOpen &&
+                "bg-gradient-to-b from-[#0043ff] to-blue-700 dark:from-[#0043ff] dark:to-indigo-800 text-white hover:opacity-95"
+            )}
           >
             <PixIcon className="w-6 h-6" />
             <span>Transferir PIX</span>
@@ -42,7 +47,11 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
           <Button
             variant={isTransactionListVisible ? "default" : "outline"}
             onClick={onToggleTransactionList}
-            className="h-20 flex flex-col items-center justify-center gap-2"
+            className={cn(
+              "h-20 flex flex-col items-center justify-center gap-2",
+              isTransactionListVisible &&
+                "bg-gradient-to-b from-[#0043ff] to-blue-700 dark:from-[#0043ff] dark:to-indigo-800 text-white hover:opacity-95"
+            )}
           >
             <History className="w-6 h-6" />
             <span>{isTransactionListVisible ? "Ocultar Histórico" : "Ver Histórico"}</span>

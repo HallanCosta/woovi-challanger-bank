@@ -100,26 +100,26 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions }
           {transactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-accent transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gray-100 rounded-full">
+                <div className="p-2 bg-muted rounded-full">
                   {getTypeIcon(transaction.type)}
                 </div>
                 <div>
                   <p className="font-medium text-sm">{transaction.description}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {transaction.type === ledgerEntryEnum.CREDIT 
                       ? `De: ${transaction.sender || 'Transferência PIX'}`
                       : `Para: ${transaction.recipient || 'Transferência PIX'}`
                     }
                   </p>
                   {transaction.psp && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       Banco: {transaction.psp}
                     </p>
                   )}
-                  <p className="text-xs text-gray-400">{formatDate(transaction.date)}</p>
+                  <p className="text-xs text-muted-foreground">{formatDate(transaction.date)}</p>
                 </div>
               </div>
               
@@ -129,7 +129,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions }
                 </p>
                 <div className="flex items-center gap-1 justify-end">
                   {getStatusIcon(transaction.status)}
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted-foreground">
                     {getStatusText(transaction.status)}
                   </span>
                 </div>

@@ -55,32 +55,32 @@ export const ConfirmPixRecipientModal: React.FC<ConfirmPixRecipientModalProps> =
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Valor</span>
+              <span className="text-sm text-muted-foreground">Valor</span>
               <span className="text-base font-semibold">R$ {valueDisplay}</span>
             </div>
 
-            <div className="h-px bg-gray-200" />
+            <div className="h-px bg-border" />
 
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Nome</span>
-                <span className="text-sm font-medium text-gray-900 truncate max-w-[60%] text-right">
+                <span className="text-sm text-muted-foreground">Nome</span>
+                <span className="text-sm font-medium text-foreground truncate max-w-[60%] text-right">
                   {recipient.user?.name || '---'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">E-mail</span>
-                <span className="text-sm font-medium text-gray-900 truncate max-w-[60%] text-right">
+                <span className="text-sm text-muted-foreground">E-mail</span>
+                <span className="text-sm font-medium text-foreground truncate max-w-[60%] text-right">
                   {maskEmail(recipient.user?.email || '')}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Tipo de conta</span>
-                <span className="text-sm font-medium text-gray-900">{recipient.type}</span>
+                <span className="text-sm text-muted-foreground">Tipo de conta</span>
+                <span className="text-sm font-medium text-foreground">{recipient.type}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Chave PIX</span>
-                <span className="text-sm font-medium text-gray-900">{maskPixKey(recipient.pixKey)}</span>
+                <span className="text-sm text-muted-foreground">Chave PIX</span>
+                <span className="text-sm font-medium text-foreground">{maskPixKey(recipient.pixKey)}</span>
               </div>
             </div>
 

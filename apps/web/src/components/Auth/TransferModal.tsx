@@ -213,7 +213,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
               <div>
                 <label className="text-sm font-medium mb-2 block">Chave PIX</label>
                 <div className="relative">
-                  <CreditCard className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                  <CreditCard className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                   <Input
                     placeholder="CPF, email, telefone ou chave aleatória"
                     value={formData.pixKey}
@@ -248,30 +248,30 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             }`}
           >
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Valor</span>
+                <span className="text-sm text-muted-foreground">Valor</span>
                 <span className="text-base font-semibold">R$ {valueDisplay}</span>
               </div>
-              <div className="h-px bg-gray-200" />
+              <div className="h-px bg-border" />
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Nome</span>
-                  <span className="text-sm font-medium text-gray-900 truncate max-w-[60%] text-right">
+                  <span className="text-sm text-muted-foreground">Nome</span>
+                  <span className="text-sm font-medium text-foreground truncate max-w-[60%] text-right">
                     {recipientData?.user?.name || '---'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">E-mail</span>
-                  <span className="text-sm font-medium text-gray-900 truncate max-w-[60%] text-right">
+                  <span className="text-sm text-muted-foreground">E-mail</span>
+                  <span className="text-sm font-medium text-foreground truncate max-w-[60%] text-right">
                     {(recipientData?.user?.email || '').replace(/(^..).*(@.*$)/, '$1****$2')}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Tipo de conta</span>
-                  <span className="text-sm font-medium text-gray-900">{recipientData?.type}</span>
+                  <span className="text-sm text-muted-foreground">Tipo de conta</span>
+                  <span className="text-sm font-medium text-foreground">{recipientData?.type}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Chave PIX</span>
-                  <span className="text-sm font-medium text-gray-900">{'****' + (recipientData?.pixKey || '').slice(-4)}</span>
+                  <span className="text-sm text-muted-foreground">Chave PIX</span>
+                  <span className="text-sm font-medium text-foreground">{'****' + (recipientData?.pixKey || '').slice(-4)}</span>
                 </div>
               </div>
               <div className="flex gap-2 pt-4">
