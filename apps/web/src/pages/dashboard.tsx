@@ -27,7 +27,7 @@ const Dashboard = () => {
     refreshBalance,
     isRefreshingBalance
   } = useAuth();
-  const { balance, transactions, addTransaction } = useTransactions(accountBalance);
+  const { balance, transactions, addTransaction, refreshTransactions, isRefreshingTransactions } = useTransactions(accountBalance);
   const { favorites, addFavorite, removeFavorite } = useFavorites();
   const [isAddFavoriteOpen, setIsAddFavoriteOpen] = useState(false);
 
@@ -50,6 +50,12 @@ const Dashboard = () => {
   const handleTransfer = (transferData: TransferData) => {
     addTransaction(transferData);
     showSuccess(`Transferência de R$ ${transferData.value.toFixed(2)} realizada com sucesso!`);
+    // Atualizar saldo da conta após confirmar a transação
+    try {
+      refreshBalance();
+    } catch {
+      // noop
+    }
   };
 
   const handleLogout = () => {
@@ -125,7 +131,11 @@ const Dashboard = () => {
           )}
 
           {isTransactionListVisible && (
-            <TransactionList transactions={transactions} />
+            <TransactionList 
+              transactions={transactions}
+              onRefresh={refreshTransactions}
+              isRefreshing={isRefreshingTransactions}
+            />
           )}
         </div>
       </div>

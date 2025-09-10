@@ -94,7 +94,11 @@ export const useTransactions = (initialBalance: number = 2500.75) => {
   const usersData = useLoginQuery();
   
   // Query para buscar ledger entries (transações) reais com filtro por conta
-  const ledgerEntriesData = useLedgerEntryQuery({
+  const {
+    data: ledgerEntriesData,
+    refresh: refreshTransactions,
+    isRefreshing: isRefreshingTransactions,
+  } = useLedgerEntryQuery({
     filters: account?.id ? { account: account.id } : undefined
   });
   
@@ -135,6 +139,8 @@ export const useTransactions = (initialBalance: number = 2500.75) => {
     balance,
     transactions: allTransactions,
     addTransaction,
-    setBalance
+    setBalance,
+    refreshTransactions,
+    isRefreshingTransactions,
   };
 };

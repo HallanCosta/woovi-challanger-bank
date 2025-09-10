@@ -1,7 +1,8 @@
 import React from 'react';
 import { ledgerEntryEnum } from '../../constants/ledgerEntryEnum';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, ReceiptText } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, ReceiptText, RefreshCw } from 'lucide-react';
+import { Button } from '../ui/button';
 
 export interface Transaction {
   id: string;
@@ -17,9 +18,11 @@ export interface Transaction {
 
 interface TransactionListProps {
   transactions: Transaction[];
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
-export const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
+export const TransactionList: React.FC<TransactionListProps> = ({ transactions, onRefresh, isRefreshing }) => {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -75,7 +78,22 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions }
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Transações</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CardTitle>Transações</CardTitle>
+            </div>
+            {onRefresh && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onRefresh}
+                disabled={isRefreshing}
+                title="Atualizar extrato"
+              >
+                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </Button>
+            )}
+          </div>
           <CardDescription>Histórico de suas transações</CardDescription>
         </CardHeader>
         <CardContent>
@@ -92,10 +110,25 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions }
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <ReceiptText className="w-5 h-5 text-white" />
-          Transações
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ReceiptText className="w-5 h-5 text-white" />
+            <CardTitle className="flex items-center gap-2">
+              Transações
+            </CardTitle>
+          </div>
+          {onRefresh && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onRefresh}
+              disabled={isRefreshing}
+              title="Atualizar extrato"
+            >
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          )}
+        </div>
         <CardDescription>Histórico de suas transações</CardDescription>
       </CardHeader>
       <CardContent>
