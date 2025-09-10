@@ -4,4 +4,5 @@ export const TABLES = {
   USER: `${DATABASE}:user`,
   ACCOUNT: `${DATABASE}:account`,
   THEME: `${DATABASE}:theme`,
+  FAVORITES: `${DATABASE}:favorites`,
 } as const;

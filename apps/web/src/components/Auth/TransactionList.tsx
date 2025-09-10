@@ -1,7 +1,7 @@
 import React from 'react';
 import { ledgerEntryEnum } from '../../constants/ledgerEntryEnum';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, ReceiptText } from 'lucide-react';
 
 export interface Transaction {
   id: string;
@@ -92,7 +92,10 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions }
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Transações</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <ReceiptText className="w-5 h-5 text-white" />
+          Transações
+        </CardTitle>
         <CardDescription>Histórico de suas transações</CardDescription>
       </CardHeader>
       <CardContent>

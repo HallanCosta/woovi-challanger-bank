@@ -14,6 +14,7 @@ interface TransferModalProps {
   isOpen: boolean;
   onClose: () => void;
   onTransfer: (transferData: TransferData) => void;
+  initialPixKey?: string;
 }
 
 export interface TransferData {
@@ -26,6 +27,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   isOpen,
   onClose,
   onTransfer,
+  initialPixKey,
 }) => {
   const [formData, setFormData] = useState<TransferData>({
     value: 0,
@@ -73,6 +75,16 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       resetForm();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (initialPixKey && initialPixKey.trim()) {
+      setFormData(prev => ({ ...prev, pixKey: initialPixKey.trim() }));
+      setFormErrors(prev => ({ ...prev, pixKey: false }));
+      setPixKeyNotFound(false);
+      setIsSelfPixKey(false);
+    }
+  }, [initialPixKey, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -213,13 +225,13 @@ export const TransferModal: React.FC<TransferModalProps> = ({
               <div>
                 <label className="text-sm font-medium mb-2 block">Chave PIX</label>
                 <div className="relative">
-                  <CreditCard className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  {/* <CreditCard className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" /> */}
                   <Input
                     placeholder="CPF, email, telefone ou chave aleatória"
                     value={formData.pixKey}
                     onChange={(e) => handleInputChange('pixKey', e.target.value)}
                     aria-invalid={formErrors.pixKey}
-                    className={`pl-10 ${formErrors.pixKey ? 'border-red-500 focus-visible:ring-red-500' : ''} ${shake.pixKey ? 'animate-shake' : ''}`}
+                    className={`${formErrors.pixKey ? 'border-red-500 focus-visible:ring-red-500' : ''} ${shake.pixKey ? 'animate-shake' : ''}`}
                     required
                   />
                   {formErrors.pixKey && (
@@ -271,7 +283,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Chave PIX</span>
-                  <span className="text-sm font-medium text-foreground">{'****' + (recipientData?.pixKey || '').slice(-4)}</span>
+                  <span className="text-sm font-medium text-foreground">{recipientData?.pixKey}</span>
                 </div>
               </div>
               <div className="flex gap-2 pt-4">

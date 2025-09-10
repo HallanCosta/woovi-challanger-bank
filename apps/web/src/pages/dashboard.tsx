@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { BalanceCard } from '../components/Auth/BalanceCard';
 import { TransactionList } from '../components/Auth/TransactionList';
+import { FavoritesList } from '../components/Auth/FavoritesList';
+import { AddFavoriteModal } from '../components/Auth/AddFavoriteModal';
 import { TransferModal, TransferData } from '../components/Auth/TransferModal';
 import { DashboardHeader, QuickActions, LoadingScreen } from '../components/Dashboard';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
 import { useTransactions } from '../hooks/useTransactions';
 import { useDashboardState } from '../hooks/useDashboardState';
+import { useFavorites } from '../hooks/useFavorites';
 
 const Dashboard = () => {
   const { showSuccess } = useToast();
@@ -25,17 +28,23 @@ const Dashboard = () => {
     isRefreshingBalance
   } = useAuth();
   const { balance, transactions, addTransaction } = useTransactions(accountBalance);
+  const { favorites, addFavorite, removeFavorite } = useFavorites();
+  const [isAddFavoriteOpen, setIsAddFavoriteOpen] = useState(false);
 
   const {
     isTransferModalOpen,
     isBalanceVisible,
     isTransactionListVisible,
+    isFavoritesVisible,
     accountType,
     setIsTransferModalOpen,
     toggleBalanceVisibility,
     toggleTransactionList,
+    toggleFavoritesVisibility,
     toggleAccountType,
-    getAccountTypeText
+    getAccountTypeText,
+    prefillPixKey,
+    setPrefillPixKey,
   } = useDashboardState();
 
   const handleTransfer = (transferData: TransferData) => {
@@ -81,9 +90,39 @@ const Dashboard = () => {
           <QuickActions
             isTransferModalOpen={isTransferModalOpen}
             isTransactionListVisible={isTransactionListVisible}
+            isFavoritesVisible={isFavoritesVisible}
             onOpenTransferModal={() => setIsTransferModalOpen(true)}
             onToggleTransactionList={toggleTransactionList}
+            onToggleFavorites={toggleFavoritesVisibility}
           />
+
+          {isFavoritesVisible && (
+            <>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsTransferModalOpen(false)}
+                  className="hidden"
+                  aria-hidden
+                />
+              </div>
+              <FavoritesList
+                favorites={favorites}
+                onRemove={removeFavorite}
+                onTransfer={(pixKey) => {
+                  setPrefillPixKey(pixKey);
+                  setIsTransferModalOpen(true);
+                }}
+              />
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsAddFavoriteOpen(true)}
+                  className="mt-3 inline-flex items-center justify-center h-9 rounded-md bg-rose-500 px-4 py-2 text-sm font-medium text-white shadow hover:opacity-95"
+                >
+                  Adicionar favorito
+                </button>
+              </div>
+            </>
+          )}
 
           {isTransactionListVisible && (
             <TransactionList transactions={transactions} />
@@ -93,8 +132,15 @@ const Dashboard = () => {
 
       <TransferModal
         isOpen={isTransferModalOpen}
-        onClose={() => setIsTransferModalOpen(false)}
+        onClose={() => { setIsTransferModalOpen(false); setPrefillPixKey(null); }}
         onTransfer={handleTransfer}
+        initialPixKey={prefillPixKey || undefined}
+      />
+
+      <AddFavoriteModal
+        isOpen={isAddFavoriteOpen}
+        onClose={() => setIsAddFavoriteOpen(false)}
+        onAdd={(fav) => addFavorite(fav)}
       />
     </div>
   );
