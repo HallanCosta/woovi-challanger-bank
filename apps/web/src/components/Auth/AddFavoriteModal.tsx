@@ -173,7 +173,7 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({ isOpen, onCl
           <div>
             <label className="text-sm font-medium mb-2 block">Chave PIX</label>
             <Input
-              placeholder="CPF, email, telefone ou chave aleatória"
+              placeholder="Chave aleatória"
               value={pixKey}
               onChange={(e) => {
                 setPixKey(e.target.value);

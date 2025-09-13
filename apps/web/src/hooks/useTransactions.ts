@@ -5,10 +5,11 @@ import { TransferData } from '../components/Auth/TransferModal';
 import { useLedgerEntryQuery } from '../components/queries/useLedgerEntryQuery';
 import { useLoginQuery } from '../components/queries/useLoginQuery';
 import { useUser } from './useUser';
+import { DEFAULT_PIX_LABEL, DEFAULT_PIX_TRANSFER_DESCRIPTION, LEDGER_STATUS_TO_TRANSACTION_STATUS, PSP_DISPLAY_NAME, UNKNOWN_USER_LABEL } from '../constants/transaction';
 
 // Função para obter nome do usuário (agora vem do GraphQL)
 const getUserNameById = (userId: string, usersData: any): string => {
-  if (!usersData?.users?.edges) return 'Usuário Desconhecido';
+  if (!usersData?.users?.edges) return UNKNOWN_USER_LABEL;
   
   const user = usersData.users.edges.find((edge: any) => {
     // Decodificar o ID do usuário para comparar
@@ -21,7 +22,7 @@ const getUserNameById = (userId: string, usersData: any): string => {
     }
   });
   
-  return user?.node?.name || 'Usuário Desconhecido';
+  return user?.node?.name || UNKNOWN_USER_LABEL;
 };
 
 // Função para transformar ledgerEntries em transações
@@ -38,35 +39,24 @@ const transformLedgerEntriesToTransactions = (ledgerEntriesData: any, usersData:
     const transactionType: 'CREDIT' | 'DEBIT' = (node.type === ledgerEntryEnum.CREDIT) ? ledgerEntryEnum.CREDIT : ledgerEntryEnum.DEBIT;
     
     // Criar descrição baseada no tipo e dados disponíveis
-    let description = node.description || 'Transação PIX';
+    let description = node.description || DEFAULT_PIX_TRANSFER_DESCRIPTION;
     let sender = '';
     let recipient = '';
     
     // Buscar nome do usuário baseado no account ID
     const accountId = ledgerAccount?.account;
-    const userName = accountId ? getUserNameById(accountId, usersData) : 'Usuário Desconhecido';
+    const userName = accountId ? getUserNameById(accountId, usersData) : UNKNOWN_USER_LABEL;
     
     if (transactionType === 'CREDIT') {
-      sender = userName || ledgerAccount?.pixKey || 'Transferência PIX';
+      sender = userName || ledgerAccount?.pixKey || DEFAULT_PIX_LABEL;
     } else {
-      recipient = userName || ledgerAccount?.pixKey || 'Transferência PIX';
+      recipient = userName || ledgerAccount?.pixKey || DEFAULT_PIX_LABEL;
     }
     
     // Mapear status do ledger para status da transação
     const mapStatus = (ledgerStatus: string): 'COMPLETED' | 'PENDING' | 'FAILED' => {
-      switch (ledgerStatus?.toUpperCase()) {
-        case 'COMPLETED':
-        case 'SUCCESS':
-          return 'COMPLETED';
-        case 'PENDING':
-        case 'PROCESSING':
-          return 'PENDING';
-        case 'FAILED':
-        case 'ERROR':
-          return 'FAILED';
-        default:
-          return 'COMPLETED'; // Default para transações antigas
-      }
+      const key = (ledgerStatus || '').toUpperCase();
+      return LEDGER_STATUS_TO_TRANSACTION_STATUS[key] || 'COMPLETED';
     };
     
     return {
@@ -78,7 +68,7 @@ const transformLedgerEntriesToTransactions = (ledgerEntriesData: any, usersData:
       recipient: transactionType === 'DEBIT' ? recipient : undefined,
       date: node.createdAt || new Date().toISOString(),
       status: mapStatus(node.status),
-      psp: ledgerAccount?.psp || 'Challanger Bank',
+      psp: ledgerAccount?.psp || PSP_DISPLAY_NAME,
     };
   });
 };
@@ -122,7 +112,7 @@ export const useTransactions = (initialBalance: number = 2500.75) => {
       recipient: displayName,
       date: new Date().toISOString(),
       status: 'COMPLETED',
-      psp: 'Challanger Bank',
+      psp: PSP_DISPLAY_NAME,
     };
 
     setBalance(prev => prev - transferData.value);

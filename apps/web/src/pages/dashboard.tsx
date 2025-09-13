@@ -122,7 +122,7 @@ const Dashboard = () => {
               <div className="flex justify-end">
                 <button
                   onClick={() => setIsAddFavoriteOpen(true)}
-                  className="mt-3 inline-flex items-center justify-center h-9 rounded-md bg-rose-500 px-4 py-2 text-sm font-medium text-white shadow hover:opacity-95"
+                  className="mb-3 inline-flex items-center justify-center h-9 rounded-md bg-rose-500 px-4 py-2 text-sm font-medium text-white shadow hover:opacity-95"
                 >
                   Adicionar favorito
                 </button>

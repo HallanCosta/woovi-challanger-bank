@@ -227,7 +227,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 <div className="relative">
                   {/* <CreditCard className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" /> */}
                   <Input
-                    placeholder="CPF, email, telefone ou chave aleatória"
+                    placeholder="Chave aleatória"
                     value={formData.pixKey}
                     onChange={(e) => handleInputChange('pixKey', e.target.value)}
                     aria-invalid={formErrors.pixKey}

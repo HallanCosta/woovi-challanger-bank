@@ -3,6 +3,7 @@ import { ledgerEntryEnum } from '../../constants/ledgerEntryEnum';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, ReceiptText, RefreshCw } from 'lucide-react';
 import { Button } from '../ui/button';
+import { TRANSACTION_STATUS_LABELS } from '../../constants/transaction';
 
 export interface Transaction {
   id: string;
@@ -51,16 +52,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
     }
   };
 
-  const getStatusText = (status: Transaction['status']) => {
-    switch (status) {
-      case 'COMPLETED':
-        return 'Concluída';
-      case 'PENDING':
-        return 'Pendente';
-      case 'FAILED':
-        return 'Falhou';
-    }
-  };
+  const getStatusText = (status: Transaction['status']) => TRANSACTION_STATUS_LABELS[status];
 
   const getTypeIcon = (type: Transaction['type']) => {
     return type === ledgerEntryEnum.CREDIT ? (
