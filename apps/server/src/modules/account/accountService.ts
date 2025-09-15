@@ -1,10 +1,12 @@
 import { Account } from './AccountModel';
 import { ledgerEntryEnum } from '../ledgerEntry/ledgerEntryEnum';
 
+export const ACCOUNT_NOT_FOUND_MESSAGE = 'Conta não encontrada';
+
 export type UpdateBalanceParams = {
   accountId: string;
   amount: number;
-  operation: ledgerEntryEnum;
+  operation: ledgerEntryEnum.DEBIT | ledgerEntryEnum.CREDIT;
 }
 
 /**
@@ -28,7 +30,7 @@ export async function updateAccountBalance({
   );
 
   if (!updatedAccount) {
-    throw new Error(`Conta não encontrada: ${accountId}`);
+    throw new Error(`${ACCOUNT_NOT_FOUND_MESSAGE}: ${accountId}`);
   }
 
   return updatedAccount;
@@ -64,7 +66,7 @@ export async function hasSufficientBalance(accountId: string, amount: number): P
   const account = await Account.findById(accountId);
   
   if (!account) {
-    throw new Error(`Conta não encontrada: ${accountId}`);
+    throw new Error(`${ACCOUNT_NOT_FOUND_MESSAGE}: ${accountId}`);
   }
 
   return account.balance >= amount;
