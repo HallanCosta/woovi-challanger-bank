@@ -5,14 +5,10 @@ import { ledgerEntryEnum } from '../modules/ledgerEntry/ledgerEntryEnum';
 import { createAccount } from './setup/fixtures/createAccount';
 import { setupDatabase } from './setup';
 
-const email1 = 'account1@test.com';
-const email2 = 'account2@test.com';
-
-// Setup do banco de dados para todos os testes deste arquivo
 setupDatabase();
 
 it('should debit amount from account correctly', async () => {
-  const account1 = await createAccount({ pixKey: email1 });
+  const account1 = await createAccount({ });
   const initialBalance = account1.balance;
   const debitAmount = 200;
 
@@ -26,7 +22,7 @@ it('should debit amount from account correctly', async () => {
 });
 
 it('should credit amount to account correctly', async () => {
-  const account1 = await createAccount({ pixKey: email1 });
+  const account1 = await createAccount({ });
   const initialBalance = account1.balance;
   const creditAmount = 300;
 
@@ -40,25 +36,25 @@ it('should credit amount to account correctly', async () => {
 });
 
 it('should check sufficient balance correctly', async () => {
-  const account1 = await createAccount({ pixKey: email1 });
+  const account1 = await createAccount({ });
   const hasBalance = await hasSufficientBalance(account1._id.toString(), 500);
   expect(hasBalance).toBe(true);
 });
 
 it('should check insufficient balance correctly', async () => {
-  const account1 = await createAccount({ pixKey: email1 });
+  const account1 = await createAccount({ });
   const hasInsufficientBalance = await hasSufficientBalance(account1._id.toString(), 5000);
   expect(hasInsufficientBalance).toBe(false);
 });
 
-// it('should throw error for non-existent account', async () => {
-//   const nonExistentId = new mongoose.Types.ObjectId().toString();
+it('should throw error for non-existent account', async () => {
+  const nonExistentId = new mongoose.Types.ObjectId().toString();
 
-//   await expect(
-//     updateAccountBalance({
-//       accountId: nonExistentId,
-//       amount: 100,
-//       operation: ledgerEntryEnum.DEBIT
-//     })
-//   ).rejects.toThrow(ACCOUNT_NOT_FOUND_MESSAGE);
-// });
+  await expect(
+    updateAccountBalance({
+      accountId: nonExistentId,
+      amount: 100,
+      operation: ledgerEntryEnum.DEBIT
+    })
+  ).rejects.toThrow(ACCOUNT_NOT_FOUND_MESSAGE);
+});

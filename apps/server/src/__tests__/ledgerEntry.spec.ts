@@ -14,7 +14,6 @@ import { toGlobalId } from 'graphql-relay';
 import { setupDatabase } from './setup';
 import { createAccount } from './setup/fixtures/createAccount';
 
-// Setup do banco de dados para todos os testes deste arquivo
 setupDatabase();
 
 const countLedgerEntryOperation = 2;

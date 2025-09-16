@@ -23,8 +23,8 @@ export async function updateAccountBalance({
 }: UpdateBalanceParams) {
   const multiplier = operation === ledgerEntryEnum.DEBIT ? -1 : 1;
   
-  const updatedAccount = await Account.findByIdAndUpdate(
-    accountId,
+  const updatedAccount = await Account.findOneAndUpdate(
+    { _id: accountId },
     { $inc: { balance: amount * multiplier } },
     { new: true, runValidators: true }
   );
