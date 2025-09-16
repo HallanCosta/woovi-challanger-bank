@@ -10,7 +10,8 @@
 		"relay": "turbo run relay",
 		"schema": "turbo run schema",
 		"compose:up": "docker compose -f docker-compose.yml up -d",
-		"compose-down": "docker compose -f docker-compose down"
+		"compose:down": "docker compose -f docker-compose.yml down",
+		"k6:pix-ledger": "docker compose -f docker-compose.yml run --rm k6 run /scripts/pix-ledger-concurrency.js"
 	},
   "workspaces": [
     "apps/*",
