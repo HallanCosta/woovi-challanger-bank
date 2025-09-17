@@ -8,6 +8,7 @@
 		"schema": "tsx scripts/updateSchema.ts && cp schema/schema.graphql ../web/data",
 		"seeds:accounts": "tsx scripts/accountsSeed.ts",
 		"reset": "tsx scripts/reset.ts && pnpm seeds:accounts",
+		"reset:ledger": "tsx scripts/resetLedger.ts",
 		"test": "jest"
 	},
 	"dependencies": {
