@@ -170,7 +170,9 @@ type LedgerEntryEdge {
 type LedgerEntry implements Node {
   """The ID of an object"""
   id: ID!
-  value: Float
+
+  """Value in cents"""
+  value: Int
   type: String
   status: String
   ledgerAccount: Party
@@ -213,7 +215,9 @@ type PixTransactionEdge {
 type PixTransaction implements Node {
   """The ID of an object"""
   id: ID!
-  value: Float
+
+  """Value in cents"""
+  value: Int
   status: String
   debitParty: Party
   creditParty: Party

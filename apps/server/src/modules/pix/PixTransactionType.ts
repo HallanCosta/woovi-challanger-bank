@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLFloat } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLFloat, GraphQLInt } from 'graphql';
 import { globalIdField, connectionDefinitions } from 'graphql-relay';
 import type { ConnectionArguments } from 'graphql-relay';
 
@@ -16,8 +16,9 @@ const PixTransactionType = new GraphQLObjectType<ILedgerEntry>({
 	fields: () => ({
 		id: globalIdField('PixTransaction'),
 		value: {
-			type: GraphQLFloat,
-			resolve: (pixTransaction) => pixTransaction.value,
+			type: GraphQLInt,
+			description: 'Value in cents',
+			resolve: (pixTransaction) => Math.round(pixTransaction.value * 100),
 		},
 		status: {
 			type: GraphQLString,

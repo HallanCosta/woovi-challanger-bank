@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLNonNull } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLInt, GraphQLNonNull } from 'graphql';
 import { globalIdField, connectionDefinitions } from 'graphql-relay';
 import type { ConnectionArguments } from 'graphql-relay';
 
@@ -15,8 +15,9 @@ const LedgerEntryType = new GraphQLObjectType<ILedgerEntry>({
 	fields: () => ({
 		id: globalIdField('LedgerEntry'),
     value: {
-			type: GraphQLFloat,
-			resolve: (ledgerEntry) => ledgerEntry.value,
+			type: GraphQLInt,
+			description: 'Value in cents',
+			resolve: (ledgerEntry) => Math.round(ledgerEntry.value * 100),
 		},
     type: {
 			type: GraphQLString,
