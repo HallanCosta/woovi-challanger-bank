@@ -62,7 +62,7 @@ const transformLedgerEntriesToTransactions = (ledgerEntriesData: any, usersData:
     return {
       id: node.id,
       type: transactionType,
-      value: Math.abs(node.value),
+      value: Math.abs(node.value) / 100, // Converter centavos para reais
       description,
       sender: transactionType === 'CREDIT' ? sender : undefined,
       recipient: transactionType === 'DEBIT' ? recipient : undefined,
