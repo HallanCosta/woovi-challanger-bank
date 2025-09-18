@@ -2,12 +2,23 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export const options = {
-  vus: 1000, // Número de usuários virtuais simultâneos executando o teste
-  duration: '220s', // Duração total do teste de carga
+  stages: [
+    { duration: '30s', target: 100 },   // sobe até 100 VUs
+    { duration: '30s', target: 300 },   // sobe até 300
+    { duration: '1m', target: 500 },    // atinge 500
+    { duration: '2m', target: 500 },    // mantém 500 estáveis
+    { duration: '30s', target: 0 },     // desce para 0
+  ],
   thresholds: {
-    http_req_failed: ['rate<0.10'], // Taxa de falha das requisições HTTP deve ser menor que 10% (relaxado para alta carga)
-    http_req_duration: ['p(95)<5000'], // 95% das requisições devem ter duração menor que 5s (relaxado para alta carga)
-    checks: ['rate>0.80'], // 80% dos checks devem passar
+    http_req_failed: ['rate<0.01'],                // <1% de falha
+    http_req_duration: [
+      'p(95)<1000',   // 95% das requisições abaixo de 1s
+      'p(99)<2000',   // 99% abaixo de 2s
+      'max<5000',     // nunca passar de 5s
+    ],
+    checks: ['rate>0.98'],                         // pelo menos 98% dos checks ok
+    vus: ['value>=500'],                           // garantir pico planejado
+    iterations: ['count>10000'],                   // garantir carga mínima
   },
 };
 
@@ -35,12 +46,14 @@ export function setup() {
   const creditAccount = creditRes.json().data?.accounts?.edges?.[0]?.node;
 
   if (!debitAccount?.id || !creditAccount?.id) {
-    throw new Error('Contas seed não encontradas. Rode: pnpm -w --filter @challanger-bank/server seeds:accounts');
+    throw new Error('Contas seed não encontradas. Rode: pnpm seeds:accounts');
   }
 
-  console.log(`💰 Saldo inicial:
+  console.log(`
+    💰 Saldo inicial:
     Conta débito (${debitPixKey}): R$ ${(debitAccount.balance / 100).toFixed(2)}
-    Conta crédito (${creditPixKey}): R$ ${(creditAccount.balance / 100).toFixed(2)}`);
+    Conta crédito (${creditPixKey}): R$ ${(creditAccount.balance / 100).toFixed(2)}`
+  );
 
   const debitParty = {
     account: debitAccount.id,
@@ -52,7 +65,7 @@ export function setup() {
   const creditParty = {
     account: creditAccount.id,
     pixKey: creditPixKey,
-    type: 'COMPANY', // Corrigido: partyEnum.LEGAL = 'COMPANY'
+    type: 'COMPANY',
     psp: 'Bank Challanger LTDA',
   };
 
@@ -89,28 +102,6 @@ export default function (data) {
     JSON.stringify({ query: mutation, variables }),
     { headers: { 'Content-Type': 'application/json' } }
   );
-
-  // Verificar se temos uma resposta válida antes de tentar fazer parse JSON
-  let responseBody = null;
-  let hasValidResponse = false;
-  
-  try {
-    if (res.body && res.body.length > 0) {
-      responseBody = res.json();
-      hasValidResponse = true;
-    }
-  } catch (e) {
-    console.log(`❌ Erro ao fazer parse JSON da resposta: ${e.message}`);
-  }
-  
-  // Log detalhado para debug
-  if (!hasValidResponse || res.status !== 200 || (responseBody && responseBody.errors)) {
-    console.log(`❌ Falha na requisição:
-    Status: ${res.status}
-    Body length: ${res.body ? res.body.length : 'null'}
-    Errors: ${responseBody?.errors ? JSON.stringify(responseBody.errors, null, 2) : 'N/A'}
-    Response: ${responseBody ? JSON.stringify(responseBody, null, 2) : 'Body is null/empty'}`);
-  }
 
   check(res, {
     'status é 200': (r) => r.status === 200,
