@@ -1,6 +1,5 @@
-import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLInt, GraphQLNonNull } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 import { globalIdField, connectionDefinitions } from 'graphql-relay';
-import type { ConnectionArguments } from 'graphql-relay';
 
 import { ILedgerEntry } from './LedgerEntryModel';
 import { nodeInterface } from '../node/typeRegister';
@@ -16,8 +15,8 @@ const LedgerEntryType = new GraphQLObjectType<ILedgerEntry>({
 		id: globalIdField('LedgerEntry'),
     value: {
 			type: GraphQLInt,
-			description: 'Value in cents',
-			resolve: (ledgerEntry) => Math.round(ledgerEntry.value * 100),
+			description: 'The value integer',
+			resolve: (ledgerEntry) => ledgerEntry.value,
 		},
     type: {
 			type: GraphQLString,

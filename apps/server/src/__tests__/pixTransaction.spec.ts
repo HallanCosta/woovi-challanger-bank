@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { Account } from '../modules/account/AccountModel';
-import { updateMultipleAccountBalances } from '../modules/account/accountService';
+import { updateAccountBalances } from '../modules/account/accountService';
 import { ledgerEntryEnum } from '../modules/ledgerEntry/ledgerEntryEnum';
 import { createAccount } from './setup/fixtures/createAccount';
 import { setupDatabase } from './setup';
@@ -25,7 +25,7 @@ it('should be able to update multiple account balances in a pix transaction', as
     }
   ];
 
-  await updateMultipleAccountBalances(balanceUpdates);
+  await updateAccountBalances(balanceUpdates);
 
   const updatedAccount1 = await Account.findOne({ _id: account1._id });
   const updatedAccount2 = await Account.findOne({ _id: account2._id });

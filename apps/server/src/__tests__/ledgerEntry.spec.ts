@@ -8,7 +8,7 @@ import { Account } from '../modules/account/AccountModel';
 import { LedgerEntry } from '../modules/ledgerEntry/LedgerEntryModel';
 import type { ILedgerEntry } from '../modules/ledgerEntry/LedgerEntryModel';
 import { ledgerEntryEnum } from '../modules/ledgerEntry/ledgerEntryEnum';
-import { partyEnum } from '../modules/ledgerEntry/partyEnum';
+import { partyEnum } from '../modules/graphql/partyEnum';
 import { pixTransactionEnum } from '../modules/pix/pixTransactionEnum';
 import { toGlobalId } from 'graphql-relay';
 import { setupDatabase } from './setup';
@@ -16,7 +16,7 @@ import { createAccount } from './setup/fixtures/createAccount';
 
 setupDatabase();
 
-const countLedgerEntryOperation = 2;
+const countLedgerEntryOperation = 1;
 
 async function createLedgerEntries({ account1, account2, countLedgerEntryOperation }) {
   const entries: Partial<ILedgerEntry>[] = [];

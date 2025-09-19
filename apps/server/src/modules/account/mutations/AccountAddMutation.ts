@@ -6,7 +6,7 @@ import { PUB_SUB_EVENTS } from '../../pubSub/pubSubEvents';
 
 import { Account } from '../AccountModel';
 import { accountField } from '../accountFields';
-import { partyEnum } from '../../ledgerEntry/partyEnum';
+import { partyEnum } from '../../graphql/partyEnum';
 
 export type AccountAddInput = {
 	pixKey: string;

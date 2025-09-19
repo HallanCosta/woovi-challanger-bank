@@ -1,13 +1,14 @@
 import { PixTransactionType, PixTransactionConnection } from './PixTransactionType';
 // import { PixTransactionLoader } from './PixTransactionLoader';
-import { connectionArgs } from 'graphql-relay';
+import { connectionArgs, connectionFromArray } from 'graphql-relay';
 import { GraphQLInputObjectType, GraphQLString } from 'graphql';
+import { PixTransactionLoader } from './PixTransactionLoader';
+import { PixTransaction } from './PixTransactionModel';
 
 export const pixTransactionField = (key: string) => ({
 	[key]: {
 		type: PixTransactionType,
-		resolve: async (obj: Record<string, unknown>, _, context) => obj
-    // PixTransactionLoader.load(context, obj.pixTransaction as string),
+		resolve: async (obj: Record<string, unknown>, _, context) => PixTransactionLoader.load(context, obj.id as string),
 	},
 });
 
@@ -29,9 +30,7 @@ export const pixTransactionConnectionField = (key: string) => ({
       }
 		},
 		resolve: async (_, args, context) => {
-      // console.dir(args, { depth: null })
-      return [];
-			// return await PixTransactionLoader.loadAll(context, args);
+			return await PixTransactionLoader.loadAll(context, args);
 		},
 	},
 });

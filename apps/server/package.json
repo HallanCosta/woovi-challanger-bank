@@ -9,10 +9,12 @@
 		"seeds:accounts": "tsx scripts/accountsSeed.ts",
 		"reset": "tsx scripts/reset.ts && pnpm seeds:accounts",
 		"reset:ledger": "tsx scripts/resetLedger.ts",
+		"reset:pix": "tsx scripts/resetPixTransaction.ts",
 		"test": "jest"
 	},
 	"dependencies": {
 		"@entria/graphql-mongo-helpers": "^1.1.2",
+		"@types/uuid": "^11.0.0",
 		"dataloader": "^2.2.2",
 		"dotenv-safe": "^8.2.0",
 		"graphql": "^16.8.1",
@@ -30,6 +32,8 @@
 		"mongodb-memory-server": "^10.2.0",
 		"mongodb-memory-server-core": "^10.2.0",
 		"mongoose": "^7.0.3",
+		"redis": "^5.8.2",
+		"uuid": "^13.0.0",
 		"ws": "^8.14.2"
 	},
 	"devDependencies": {

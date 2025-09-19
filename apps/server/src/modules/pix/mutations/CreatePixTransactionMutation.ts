@@ -7,48 +7,16 @@ import { PUB_SUB_EVENTS } from '../../pubSub/pubSubEvents';
 
 import { PartyInputType } from '../../graphql/PartyType';
 
-import { IParty, LedgerEntry, ILedgerEntry } from '../../ledgerEntry/LedgerEntryModel';
-import { ledgerEntryEnum } from '../../ledgerEntry/ledgerEntryEnum';
-import { updateMultipleAccountBalances, hasSufficientBalance, UpdateBalanceParams } from '../../account/accountService';
+import { LedgerEntry, ILedgerEntry } from '../../ledgerEntry/LedgerEntryModel';
+import { updateAccountBalances, hasSufficientBalance, UpdateAccountBalanceProps } from '../../account/accountService';
 
+import { IParty } from '../../graphql/PartyModel';
+import { IPixTransactionStatus, PixTransaction } from '../PixTransactionModel';
 import { pixTransactionField } from '../pixTransactionFields';
+
+import { ledgerEntryEnum } from '../../ledgerEntry/ledgerEntryEnum';
 import { pixTransactionEnum } from '../pixTransactionEnum';
-import { IPixTransactionStatus } from '../PixTransactionModal';
-
-// Enum para tipos de erro
-enum PixTransactionError {
-  INVALID_DEBIT_ACCOUNT_ID = 'INVALID_DEBIT_ACCOUNT_ID',
-  INVALID_CREDIT_ACCOUNT_ID = 'INVALID_CREDIT_ACCOUNT_ID',
-  INSUFFICIENT_BALANCE = 'INSUFFICIENT_BALANCE',
-  DEBIT_ACCOUNT_NOT_FOUND = 'DEBIT_ACCOUNT_NOT_FOUND',
-  CREDIT_ACCOUNT_NOT_FOUND = 'CREDIT_ACCOUNT_NOT_FOUND',
-  LEDGER_ENTRY_CREATION_FAILED = 'LEDGER_ENTRY_CREATION_FAILED',
-  BALANCE_UPDATE_FAILED = 'BALANCE_UPDATE_FAILED',
-  INVALID_TRANSACTION_VALUE = 'INVALID_TRANSACTION_VALUE',
-  MISSING_REQUIRED_FIELDS = 'MISSING_REQUIRED_FIELDS'
-}
-
-// Mensagens de erro personalizadas
-const ERROR_MESSAGES = {
-  [PixTransactionError.INVALID_DEBIT_ACCOUNT_ID]: 'ID da conta de débito inválido ou malformado',
-  [PixTransactionError.INVALID_CREDIT_ACCOUNT_ID]: 'ID da conta de crédito inválido ou malformado',
-  [PixTransactionError.INSUFFICIENT_BALANCE]: 'Saldo insuficiente para realizar a transação PIX',
-  [PixTransactionError.DEBIT_ACCOUNT_NOT_FOUND]: 'Conta de débito não encontrada no sistema',
-  [PixTransactionError.CREDIT_ACCOUNT_NOT_FOUND]: 'Conta de crédito não encontrada no sistema',
-  [PixTransactionError.LEDGER_ENTRY_CREATION_FAILED]: 'Falha ao criar entradas contábeis da transação',
-  [PixTransactionError.BALANCE_UPDATE_FAILED]: 'Falha ao atualizar saldo das contas',
-  [PixTransactionError.INVALID_TRANSACTION_VALUE]: 'O valor do PIX não pode ser menor que R$ 0,01',
-  [PixTransactionError.MISSING_REQUIRED_FIELDS]: 'Campos obrigatórios não fornecidos'
-};
-
-// Função para criar erro personalizado
-function createPixError(errorType: PixTransactionError, details?: string): Error {
-  const message = ERROR_MESSAGES[errorType];
-  const fullMessage = details ? `${message}: ${details}` : message;
-  const error = new Error(fullMessage);
-  error.name = errorType;
-  return error;
-}
+import { PixTransactionError } from './pixTransactionErrorEnum';
 
 export type CreatePixTransactionInput = {
   value: number;
@@ -78,159 +46,131 @@ const mutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (args: CreatePixTransactionInput) => {
-    const transactionId = new mongoose.Types.ObjectId().toString();
-
-    // Converter valor recebido (em centavos) para reais
-    const centsValue = Math.round(args.value as unknown as number);
-    const realValue = centsValue / 100;
+    /**
+     * Fluxo robusto com transação MongoDB:
+     * 1. Validar se contas existem
+     * 2. Validar se conta de débito tem saldo suficiente
+     * 3. Executar transação atômica:
+     *    - Salvar transação PIX
+     *    - Criar entradas contábeis
+     *    - Atualizar saldos das contas
+     * 4. Rollback automático em caso de falha
+     */
+    console.log('🚀 Iniciando transação PIX');
+    console.log('Flow 1');
 
     // Validações iniciais (mínimo de 1 centavo)
-    if (!centsValue || centsValue < 1) {
-      throw createPixError(PixTransactionError.INVALID_TRANSACTION_VALUE);
+    if (args.value < 1) {
+      return {
+        error: PixTransactionError.INVALID_TRANSACTION_VALUE,
+      }
     }
 
-    if (!args.debitParty || !args.creditParty) {
-      throw createPixError(PixTransactionError.MISSING_REQUIRED_FIELDS, 'debitParty e creditParty são obrigatórios');
-    }
-
-    // Validar existência de chave PIX do destinatário
-    if (!args.creditParty.pixKey || !args.creditParty.pixKey.trim()) {
-      throw createPixError(PixTransactionError.MISSING_REQUIRED_FIELDS, 'chave PIX do destinatário é obrigatória');
-    }
+    console.log('Flow 2');
 
     // Validar se a conta de débito tem saldo suficiente
-    if (args.debitParty.account) {
-      try {
-        // Decodificar o ID global para obter o ObjectId
-        const { id: accountId } = fromGlobalId(args.debitParty.account);
-        
-        if (!accountId) {
-          throw createPixError(PixTransactionError.INVALID_DEBIT_ACCOUNT_ID);
-        }
-        
-        const hasBalance = await hasSufficientBalance(accountId, realValue);
-        if (!hasBalance) {
-          throw createPixError(PixTransactionError.INSUFFICIENT_BALANCE, `Valor solicitado: R$ ${realValue.toFixed(2)}`);
-        }
-      } catch (error: any) {
-        if (error.name === PixTransactionError.INVALID_DEBIT_ACCOUNT_ID || 
-            error.name === PixTransactionError.INSUFFICIENT_BALANCE) {
-          throw error;
-        }
-        throw createPixError(PixTransactionError.DEBIT_ACCOUNT_NOT_FOUND, error.message);
+    const debitAccountId = fromGlobalId(args.debitParty.account).id;
+    const creditAccountId = fromGlobalId(args.creditParty.account).id;
+    const transactionId = new mongoose.Types.ObjectId().toString();
+
+    console.log('✅ Validando saldo da conta de débito');
+    const hasBalance = await hasSufficientBalance(debitAccountId, args.value);
+    if (!hasBalance) {
+      return {
+        error: PixTransactionError.INSUFFICIENT_BALANCE,
       }
     }
 
-    // Criar as entradas contábeis apenas para contas válidas
-    const ledgerEntries: Partial<ILedgerEntry>[] = [];
-    
-    // Criar entrada de débito se houver conta de débito
-    if (args.debitParty.account) {
-      ledgerEntries.push({
-        value: realValue,
-        type: ledgerEntryEnum.DEBIT,
-        status: pixTransactionEnum.CREATED,
-        ledgerAccount: args.debitParty,
+    console.log('Flow 3');
+
+    // Executar transação atômica MongoDB
+    await mongoose.connection.transaction(async (session) => {
+      // Criar e salvar a transação PIX
+      const pixTransaction = await PixTransaction.create({
+        id: transactionId,
+        value: args.value,
+        status: args.status,
+        debitParty: args.debitParty,
+        creditParty: args.creditParty,
         description: args.description,
-        pixTransaction: transactionId.toString(),
       });
-    }
+
+      if (!pixTransaction) {
+        return {
+          error: PixTransactionError.FAILED_TO_CREATE_PIX_TRANSACTION,
+        }
+      }
+      console.log('Flow 3.1');
     
-    // Criar entrada de crédito se houver conta de crédito
-    if (args.creditParty.account) {
-      ledgerEntries.push({
-        value: realValue,
-        type: ledgerEntryEnum.CREDIT,
-        status: pixTransactionEnum.CREATED,
-        ledgerAccount: args.creditParty,
-        description: args.description,
-        pixTransaction: transactionId.toString(),
-      });
-    }
+      // Criar as entradas contábeis apenas para contas válidas
+      const ledgerEntries: Partial<ILedgerEntry>[] = [
+        {
+          value: pixTransaction.value,
+          type: ledgerEntryEnum.DEBIT,
+          status: pixTransactionEnum.CREATED,
+          ledgerAccount: pixTransaction.debitParty,
+          description: pixTransaction.description,
+          pixTransaction: pixTransaction.id,
+        },
+        {
+          value: pixTransaction.value,
+          type: ledgerEntryEnum.CREDIT,
+          status: pixTransactionEnum.CREATED,
+          ledgerAccount: pixTransaction.creditParty,
+          description: pixTransaction.description,
+          pixTransaction: pixTransaction.id,
+        }
+      ];
 
-    // Só criar entradas se houver contas válidas
-    let ledgerEntryResults: any[] = [];
-    if (ledgerEntries.length > 0) {
-      try {
-        ledgerEntryResults = await LedgerEntry.insertMany(ledgerEntries);
-      } catch (error: any) {
-        throw createPixError(PixTransactionError.LEDGER_ENTRY_CREATION_FAILED, error.message);
-      }
-    }
+      const [debitLedgerEntry, creditLedgerEntry] = await LedgerEntry.insertMany(ledgerEntries);
+      console.log('Flow 3.2');
 
-    // Atualizar o saldo das contas usando o serviço
-    try {
-      const balanceUpdates: UpdateBalanceParams[] = [];
-       
-      // Adicionar débito se houver conta de débito
-      if (args.debitParty.account) {
-        try {
-          const debitAccountId = fromGlobalId(args.debitParty.account).id;
-          
-          if (debitAccountId) {
-            balanceUpdates.push({
-              accountId: debitAccountId,
-              amount: realValue,
-              operation: ledgerEntryEnum.DEBIT
-            });
-          }
-        } catch (error: any) {
-          throw createPixError(PixTransactionError.INVALID_DEBIT_ACCOUNT_ID, error.message);
+      if (!debitLedgerEntry) {
+        return {
+          error: PixTransactionError.FAILED_TO_CREATE_DEBIT_LEDGER_ENTRY,
         }
       }
+
+      if (!creditLedgerEntry) {
+        return {
+          error: PixTransactionError.FAILED_TO_CREATE_CREDIT_LEDGER_ENTRY,
+        }
+      }
+      console.log('Flow 3.3');
+
+      // Atualizar o saldo das contas usando o serviço
+      const balanceUpdates: UpdateAccountBalanceProps[] = [
+        {
+          accountId: debitAccountId,
+          value: args.value,
+          operation: ledgerEntryEnum.DEBIT
+        },
+        {
+          accountId: creditAccountId,
+          value: args.value,
+          operation: ledgerEntryEnum.CREDIT
+        }
+      ];
+
+      await updateAccountBalances(balanceUpdates);
+      console.log('Flow 3.4');
+    })
       
-      // Adicionar crédito se houver conta de crédito
-      if (args.creditParty.account) {
-        try {
-          const creditAccountId = fromGlobalId(args.creditParty.account).id;
-          
-          if (creditAccountId) {
-            balanceUpdates.push({
-              accountId: creditAccountId,
-              amount: realValue,
-              operation: ledgerEntryEnum.CREDIT
-            });
-          }
-        } catch (error: any) {
-          throw createPixError(PixTransactionError.INVALID_CREDIT_ACCOUNT_ID, error.message);
-        }
-      }
-
-      // Só atualizar se houver contas para atualizar
-      if (balanceUpdates.length > 0) {
-        try {
-          await updateMultipleAccountBalances(balanceUpdates);
-        } catch (error: any) {
-          // Em caso de erro na atualização do saldo, reverter as entradas contábeis
-          await LedgerEntry.deleteMany({ pixTransaction: transactionId.toString() });
-          throw createPixError(PixTransactionError.BALANCE_UPDATE_FAILED, error.message);
-        }
-      }
-
-    } catch (error: any) {
-      // Se for um erro personalizado, apenas relançar
-      if (error.name && Object.values(PixTransactionError).includes(error.name as PixTransactionError)) {
-        throw error;
-      }
-      
-      // Em caso de erro inesperado, reverter as entradas contábeis
-      await LedgerEntry.deleteMany({ pixTransaction: transactionId.toString() });
-      throw createPixError(PixTransactionError.BALANCE_UPDATE_FAILED, error.message);
-    }
-
     // Publicar evento de transação PIX criada
     //   pixTransaction: transactionId.toString(),
     // });
 
+    console.log('Flow 4');
+
     return {
-      id: transactionId.toString(),
+      id: transactionId,
       message: 'Transação PIX efetuada com sucesso!',
-      value: realValue,
+      value: args.value,
       status: args.status,
       debitParty: args.debitParty,
       creditParty: args.creditParty,
       description: args.description,
-    } as any;
+    };
   },
   outputFields: {
     ...pixTransactionField('pixTransaction'),

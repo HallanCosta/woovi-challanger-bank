@@ -1,5 +1,4 @@
 import { createLoader } from '@entria/graphql-mongo-helpers';
-import { connectionFromArray } from 'graphql-relay';
 
 import { registerLoader } from '../loader/loaderRegister';
 

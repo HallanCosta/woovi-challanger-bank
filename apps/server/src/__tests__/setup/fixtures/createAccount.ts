@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Account } from "../../../modules/account/AccountModel";
-import { partyEnum } from "../../../modules/ledgerEntry/partyEnum";
+import { partyEnum } from "../../../modules/graphql/partyEnum";
 import { toGlobalId } from "graphql-relay";
 
 export async function createAccount({

@@ -2,16 +2,9 @@ import type { Document, Model } from 'mongoose';
 import mongoose from 'mongoose';
 
 import { ledgerEntryEnum } from './ledgerEntryEnum';
-import { partyEnum } from './partyEnum';
 import { pixTransactionEnum } from '../pix/pixTransactionEnum';
-import { IPixTransactionStatus } from '../pix/PixTransactionModal';
-
-export type IParty = {
-  psp: string;
-  account: string;
-  type: partyEnum.PHYSICAL | partyEnum.LEGAL;
-  pixKey: string;
-};
+import { IPixTransactionStatus } from '../pix/PixTransactionModel';
+import { IParty, PartySchema } from '../graphql/PartyModel';
 
 export type ILedgerEntry = {
 	value: number;
@@ -23,28 +16,6 @@ export type ILedgerEntry = {
 	createdAt: Date;
 	updatedAt: Date;
 } & Document;
-
-const PartySchema = new mongoose.Schema<IParty>(
-	{
-    psp: { 
-      type: String, 
-      description: 'The psp'
-    },
-    account: { 
-      type: String, 
-      description: 'The account id'
-    },
-    type: {
-      type: String,
-      enum: Object.values(partyEnum),
-    },
-		pixKey: { 
-			type: String,
-      description: 'The pix key'
-		},
-	},
-	{ _id: false }
-);
 
 const Schema = new mongoose.Schema<ILedgerEntry>(
 	{
@@ -84,7 +55,6 @@ const Schema = new mongoose.Schema<ILedgerEntry>(
 	}
 );
 
-// Adicionar virtual para id
 Schema.virtual('id').get(function() {
 	return this._id.toHexString();
 });
@@ -93,7 +63,8 @@ Schema.index({ ledgerAccount: 1, pixTransaction: 1 }, { unique: true });
 
 Schema.pre("save", function (next) {
   if (!this.isNew) {
-    return next(new Error("LedgerEntry transactions cannot be changed"));
+    next(new Error("LedgerEntry transactions cannot be changed"));
+    return;
   }
   next();
 });

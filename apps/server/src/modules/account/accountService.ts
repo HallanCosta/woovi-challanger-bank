@@ -3,71 +3,48 @@ import { ledgerEntryEnum } from '../ledgerEntry/ledgerEntryEnum';
 
 export const ACCOUNT_NOT_FOUND_MESSAGE = 'Conta não encontrada';
 
-export type UpdateBalanceParams = {
+export type UpdateAccountBalanceProps = {
   accountId: string;
-  amount: number;
+  value: number;
   operation: ledgerEntryEnum.DEBIT | ledgerEntryEnum.CREDIT;
-}
-
-/**
- * Atualiza o saldo de uma conta
- * @param accountId - ID da conta
- * @param amount - Valor a ser debitado ou creditado
- * @param operation - Tipo de operação (debit ou credit)
- * @returns Promise com a conta atualizada
- */
-export async function updateAccountBalance({
-  accountId,
-  amount,
-  operation
-}: UpdateBalanceParams) {
-  const multiplier = operation === ledgerEntryEnum.DEBIT ? -1 : 1;
-  
-  const updatedAccount = await Account.findOneAndUpdate(
-    { _id: accountId },
-    { $inc: { balance: amount * multiplier } },
-    { new: true, runValidators: true }
-  );
-
-  if (!updatedAccount) {
-    throw new Error(`${ACCOUNT_NOT_FOUND_MESSAGE}: ${accountId}`);
-  }
-
-  return updatedAccount;
 }
 
 /**
  * Atualiza o saldo de múltiplas contas em uma transação
  * @param updates - Array de atualizações de saldo
+ * @param session - Sessão MongoDB opcional para transações
  * @returns Promise com as contas atualizadas
  */
-export async function updateMultipleAccountBalances(updates: UpdateBalanceParams[]) {
-  const results: any[] = [];
-
-  for (const update of updates) {
-    try {
-      const result = await updateAccountBalance(update);
-      results.push(result);
-    } catch (error) {
-      throw new Error(`Erro ao atualizar conta ${update.accountId}: ${(error as Error).message}`);
-    }
-  }
-
-  return results;
+export async function updateAccountBalances(updates: UpdateAccountBalanceProps[], session?: any) {
+  const options = session ? { session } : {};
+  
+  return await Account.bulkWrite(
+    updates.map(({ accountId, value, operation }) => {
+      const multiplier = operation === ledgerEntryEnum.DEBIT ? -1 : 1
+      return {
+        updateOne: {
+          filter: { _id: accountId },
+          update: { $inc: { balance: value * multiplier } }
+        }
+      }
+    }),
+    options
+  )
 }
 
 /**
  * Verifica se uma conta tem saldo suficiente para uma operação
  * @param accountId - ID da conta
- * @param amount - Valor a ser debitado
+ * @param value - Valor a ser debitado
  * @returns Promise com boolean indicando se há saldo suficiente
  */
-export async function hasSufficientBalance(accountId: string, amount: number): Promise<boolean> {
-  const account = await Account.findById(accountId);
+export async function hasSufficientBalance(accountId: string, value: number, session?: any): Promise<boolean> {
+  const options = session ? { session } : undefined;
+  const account = await Account.findOne({ _id: accountId }, undefined, options);
   
   if (!account) {
-    throw new Error(`${ACCOUNT_NOT_FOUND_MESSAGE}: ${accountId}`);
+    return false;
   }
 
-  return account.balance >= amount;
+  return account.balance >= value;
 }

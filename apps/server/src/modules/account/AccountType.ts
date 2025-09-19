@@ -6,7 +6,7 @@ import { IAccount } from './AccountModel';
 import { nodeInterface } from '../node/typeRegister';
 import { registerTypeLoader } from '../node/typeRegister';
 import { AccountLoader } from './AccountLoader';
-import { partyEnum } from '../ledgerEntry/partyEnum';
+import { partyEnum } from '../graphql/partyEnum';
 import { UserType } from '../user/UserType';
 import { users } from '../user/users';
 

@@ -1,6 +1,6 @@
 import type { Document, Model } from 'mongoose';
 import mongoose from 'mongoose';
-import { partyEnum } from '../ledgerEntry/partyEnum';
+import { partyEnum } from '../graphql/partyEnum';
 
 export type IAccount = {
 	pixKey: string;

@@ -11,6 +11,7 @@ async function deleteCollection(Model: Model<any>, name: string): Promise<void> 
   
   if (count > 0) {
     await Model.deleteMany({});
+    await Model.collection.dropIndexes();
     console.log(`${name} deletadas com sucesso`);
   } else {
     console.log(`Não há ${name} para deletar`);
