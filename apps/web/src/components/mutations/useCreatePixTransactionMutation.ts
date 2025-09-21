@@ -16,6 +16,7 @@ const useCreatePixTransactionMutation = () => {
       account: string;
     };
     description?: string;
+    idempotencyKey: string;
   },
     handlers?: {
       onCompleted?: (response: any) => void;

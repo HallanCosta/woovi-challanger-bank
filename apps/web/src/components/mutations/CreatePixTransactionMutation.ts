@@ -9,7 +9,6 @@ const CreatePixTransaction = graphql`
         value
         status
         description
-        message
       }
     }
   }

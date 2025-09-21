@@ -10,6 +10,15 @@ import { AccountQuery } from '../queries/AccountQuery';
 import { useUser } from '../../hooks/useUser';
 import { useCreatePixTransactionMutation } from '../mutations';
 
+// Função para gerar UUID simples
+const generateUUID = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
 interface TransferModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -294,12 +303,15 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   type="button"
                   disabled={isInFlight}
                   onClick={() => {
+                    console.log('formData.value:', formData.value);
                     const cents = Math.round(formData.value * 100);
+                    const idempotencyKey = `pix:${generateUUID()}`;
                     createPixTransaction(
                       {
                         value: cents,
                         status: 'CREATED',
                         description: `Transferência PIX para ${recipientData?.user?.name || recipientData?.pixKey || ''}`,
+                        idempotencyKey,
                         debitParty: {
                           account: account?.id || '',
                           psp: 'Bank Challanger LTDA',

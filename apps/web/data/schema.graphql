@@ -171,13 +171,14 @@ type LedgerEntry implements Node {
   """The ID of an object"""
   id: ID!
 
-  """Value in cents"""
+  """The value integer"""
   value: Int
   type: String
   status: String
   ledgerAccount: Party
   description: String
   pixTransaction: String
+  idempotencyKey: String
   createdAt: String
 }
 
@@ -216,7 +217,7 @@ type PixTransaction implements Node {
   """The ID of an object"""
   id: ID!
 
-  """Value in cents"""
+  """The value integer"""
   value: Int
   status: String
   debitParty: Party
@@ -224,9 +225,6 @@ type PixTransaction implements Node {
   description: String
   createdAt: String
   updatedAt: String
-
-  """Mensagem de sucesso ou erro da criação da transação"""
-  message: String
 }
 
 """Filters for the pix transactions"""
@@ -251,6 +249,8 @@ input AccountAddInput {
 
 type CreatePixTransactionPayload {
   pixTransaction: PixTransaction
+  success: String
+  error: String
   clientMutationId: String
 }
 
@@ -260,6 +260,7 @@ input CreatePixTransactionInput {
   debitParty: PartyInput!
   creditParty: PartyInput!
   description: String
+  idempotencyKey: String!
   clientMutationId: String
 }
 
