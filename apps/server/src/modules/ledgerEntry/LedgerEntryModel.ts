@@ -13,6 +13,7 @@ export type ILedgerEntry = {
 	ledgerAccount: IParty;
 	description: string;
 	pixTransaction: string;
+	idempotencyKey: string;
 	createdAt: Date;
 	updatedAt: Date;
 } & Document;
@@ -46,6 +47,11 @@ const Schema = new mongoose.Schema<ILedgerEntry>(
       type: String, 
       description: 'The pix transaction id'
     },
+    idempotencyKey: {
+      type: String,
+      required: true,
+      description: 'Unique key for idempotency control'
+    },
   },
 	{
 		collection: 'LedgerEntry',
@@ -59,7 +65,12 @@ Schema.virtual('id').get(function() {
 	return this._id.toHexString();
 });
 
-Schema.index({ ledgerAccount: 1, pixTransaction: 1 }, { unique: true });
+// Índice composto para idempotência: garante que não haverá entradas duplicadas
+// para a mesma chave de idempotência e operação (DEBIT/CREDIT)
+Schema.index({ idempotencyKey: 1, type: 1 }, { unique: true });
+
+// Manter índice existente para consultas por conta e transação PIX
+Schema.index({ ledgerAccount: 1, pixTransaction: 1 });
 
 Schema.pre("save", function (next) {
   if (!this.isNew) {

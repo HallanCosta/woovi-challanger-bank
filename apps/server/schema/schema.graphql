@@ -178,6 +178,7 @@ type LedgerEntry implements Node {
   ledgerAccount: Party
   description: String
   pixTransaction: String
+  idempotencyKey: String
   createdAt: String
 }
 
@@ -248,6 +249,8 @@ input AccountAddInput {
 
 type CreatePixTransactionPayload {
   pixTransaction: PixTransaction
+  success: String
+  error: String
   clientMutationId: String
 }
 
@@ -257,6 +260,7 @@ input CreatePixTransactionInput {
   debitParty: PartyInput!
   creditParty: PartyInput!
   description: String
+  idempotencyKey: String!
   clientMutationId: String
 }
 

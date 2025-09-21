@@ -6,6 +6,7 @@ import { redisPubSub } from '../../pubSub/redisPubSub';
 import { PUB_SUB_EVENTS } from '../../pubSub/pubSubEvents';
 
 import { PartyInputType } from '../../graphql/PartyType';
+import { fieldString } from '../../graphql/fieldString';
 
 import { LedgerEntry, ILedgerEntry } from '../../ledgerEntry/LedgerEntryModel';
 import { updateAccountBalances, hasSufficientBalance, UpdateAccountBalanceProps } from '../../account/accountService';
@@ -24,6 +25,7 @@ export type CreatePixTransactionInput = {
   debitParty: IParty;
   creditParty: IParty;
   description: string;
+  idempotencyKey: string;
 };
 
 const mutation = mutationWithClientMutationId({
@@ -44,6 +46,9 @@ const mutation = mutationWithClientMutationId({
     description: {
       type: GraphQLString,
     },
+    idempotencyKey: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
   },
   mutateAndGetPayload: async (args: CreatePixTransactionInput) => {
     /**
@@ -58,6 +63,15 @@ const mutation = mutationWithClientMutationId({
      */
     console.log('🚀 Iniciando transação PIX');
     console.log('Flow 1');
+
+    // Verificar se já existe uma transação com a mesma idempotencyKey
+    const existingTransaction = await PixTransaction.findOne({ idempotencyKey: args.idempotencyKey });
+    if (existingTransaction) {
+      return {
+        id: existingTransaction.id,
+        error: 'Transação PIX já foi processada anteriormente!',
+      };
+    }
 
     // Validações iniciais (mínimo de 1 centavo)
     if (args.value < 1) {
@@ -83,97 +97,95 @@ const mutation = mutationWithClientMutationId({
 
     console.log('Flow 3');
 
-    // Executar transação atômica MongoDB
-    await mongoose.connection.transaction(async (session) => {
-      // Criar e salvar a transação PIX
-      const pixTransaction = await PixTransaction.create({
-        id: transactionId,
-        value: args.value,
-        status: args.status,
-        debitParty: args.debitParty,
-        creditParty: args.creditParty,
-        description: args.description,
-      });
-
-      if (!pixTransaction) {
-        return {
-          error: PixTransactionError.FAILED_TO_CREATE_PIX_TRANSACTION,
-        }
-      }
-      console.log('Flow 3.1');
-    
-      // Criar as entradas contábeis apenas para contas válidas
-      const ledgerEntries: Partial<ILedgerEntry>[] = [
-        {
-          value: pixTransaction.value,
-          type: ledgerEntryEnum.DEBIT,
-          status: pixTransactionEnum.CREATED,
-          ledgerAccount: pixTransaction.debitParty,
-          description: pixTransaction.description,
-          pixTransaction: pixTransaction.id,
-        },
-        {
-          value: pixTransaction.value,
-          type: ledgerEntryEnum.CREDIT,
-          status: pixTransactionEnum.CREATED,
-          ledgerAccount: pixTransaction.creditParty,
-          description: pixTransaction.description,
-          pixTransaction: pixTransaction.id,
-        }
-      ];
-
-      const [debitLedgerEntry, creditLedgerEntry] = await LedgerEntry.insertMany(ledgerEntries);
-      console.log('Flow 3.2');
-
-      if (!debitLedgerEntry) {
-        return {
-          error: PixTransactionError.FAILED_TO_CREATE_DEBIT_LEDGER_ENTRY,
-        }
-      }
-
-      if (!creditLedgerEntry) {
-        return {
-          error: PixTransactionError.FAILED_TO_CREATE_CREDIT_LEDGER_ENTRY,
-        }
-      }
-      console.log('Flow 3.3');
-
-      // Atualizar o saldo das contas usando o serviço
-      const balanceUpdates: UpdateAccountBalanceProps[] = [
-        {
-          accountId: debitAccountId,
-          value: args.value,
-          operation: ledgerEntryEnum.DEBIT
-        },
-        {
-          accountId: creditAccountId,
-          value: args.value,
-          operation: ledgerEntryEnum.CREDIT
-        }
-      ];
-
-      await updateAccountBalances(balanceUpdates);
-      console.log('Flow 3.4');
-    })
-      
-    // Publicar evento de transação PIX criada
-    //   pixTransaction: transactionId.toString(),
-    // });
-
-    console.log('Flow 4');
-
-    return {
+    // Criar e salvar a transação PIX
+    const pixTransaction = await PixTransaction.create({
       id: transactionId,
-      message: 'Transação PIX efetuada com sucesso!',
       value: args.value,
       status: args.status,
       debitParty: args.debitParty,
       creditParty: args.creditParty,
       description: args.description,
+      idempotencyKey: args.idempotencyKey,
+    });
+
+    if (!pixTransaction) {
+      return {
+        error: PixTransactionError.FAILED_TO_CREATE_PIX_TRANSACTION,
+      }
+    }
+
+    console.log('Flow 3.1');
+  
+    // Criar as entradas contábeis apenas para contas válidas
+    const ledgerEntries: Partial<ILedgerEntry>[] = [
+      {
+        value: pixTransaction.value,
+        type: ledgerEntryEnum.DEBIT,
+        status: pixTransactionEnum.CREATED,
+        ledgerAccount: pixTransaction.debitParty,
+        description: pixTransaction.description,
+        pixTransaction: pixTransaction.id,
+        idempotencyKey: `${pixTransaction.idempotencyKey}:${ledgerEntryEnum.DEBIT}`,
+      },
+      {
+        value: pixTransaction.value,
+        type: ledgerEntryEnum.CREDIT,
+        status: pixTransactionEnum.CREATED,
+        ledgerAccount: pixTransaction.creditParty,
+        description: pixTransaction.description,
+        pixTransaction: pixTransaction.id,
+        idempotencyKey: `${pixTransaction.idempotencyKey}:${ledgerEntryEnum.CREDIT}`,
+      }
+    ];
+
+    const [debitLedgerEntry, creditLedgerEntry] = await LedgerEntry.insertMany(ledgerEntries);
+    console.log('Flow 3.2');
+
+    if (!debitLedgerEntry) {
+      return {
+        error: PixTransactionError.FAILED_TO_CREATE_DEBIT_LEDGER_ENTRY,
+      }
+    }
+
+    if (!creditLedgerEntry) {
+      return {
+        error: PixTransactionError.FAILED_TO_CREATE_CREDIT_LEDGER_ENTRY,
+      }
+    }
+    console.log('Flow 3.3');
+
+    // Atualizar o saldo das contas usando o serviço
+    const balanceUpdates: UpdateAccountBalanceProps[] = [
+      {
+        accountId: debitAccountId,
+        value: args.value,
+        operation: ledgerEntryEnum.DEBIT
+      },
+      {
+        accountId: creditAccountId,
+        value: args.value,
+        operation: ledgerEntryEnum.CREDIT
+      }
+    ];
+
+    await updateAccountBalances(balanceUpdates);
+    console.log('Flow 3.4');
+    
+    // Publicar evento de transação PIX criada
+    //   pixTransaction: transactionId.toString(),
+    // });
+
+    console.log('Flow 4'); 
+
+    return {
+      id: transactionId,
+      success: 'Transação PIX efetuada com sucesso!',
     };
   },
   outputFields: {
     ...pixTransactionField('pixTransaction'),
+    ...fieldString('success'),
+    ...fieldString('error'),
   },
 });
 

@@ -32,6 +32,10 @@ const PixTransactionType = new GraphQLObjectType<IPixTransaction>({
 			type: GraphQLString,
 			resolve: (pixTransaction) => pixTransaction.description,
 		},
+    idempotencyKey: {
+			type: GraphQLString,
+			resolve: (pixTransaction) => pixTransaction.idempotencyKey,
+		},
 		createdAt: {
 			type: GraphQLString,
 			resolve: (pixTransaction) => pixTransaction.createdAt.toISOString(),

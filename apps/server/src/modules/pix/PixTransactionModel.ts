@@ -18,6 +18,7 @@ export type IPixTransaction = {
   debitParty: IParty;
   creditParty: IParty;
   description: string;
+  idempotencyKey: string;
   createdAt: Date;
   updatedAt: Date;
 } & Document;
@@ -45,6 +46,13 @@ const Schema = new mongoose.Schema<IPixTransaction>(
     description: { 
       type: String, 
       description: 'The description'
+    },
+    idempotencyKey: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+      description: 'Unique key for idempotency control'
     }
   },
 	{

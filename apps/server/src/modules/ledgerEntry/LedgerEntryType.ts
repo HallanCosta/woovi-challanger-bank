@@ -38,6 +38,10 @@ const LedgerEntryType = new GraphQLObjectType<ILedgerEntry>({
 			type: GraphQLString,
 			resolve: (ledgerEntry) => ledgerEntry.pixTransaction,
 		},
+    idempotencyKey: {
+			type: GraphQLString,
+			resolve: (ledgerEntry) => ledgerEntry.idempotencyKey,
+		},
 		createdAt: {
 			type: GraphQLString,
 			resolve: (ledgerEntry) => ledgerEntry.createdAt.toISOString(),
