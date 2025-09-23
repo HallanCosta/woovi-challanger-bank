@@ -7,9 +7,12 @@ import { createGraphqlWs } from './server/createGraphqlWs';
 import { getContext } from './server/getContext';
 import { schema } from './schema/schema';
 import { wsServer } from './server/wsServer';
+import { runBullMq } from './modules/worker/runBullMq';
 
 (async () => {
+	console.log('🚀 SERVIDOR INICIANDO');
 	await connectDatabase();
+	console.log('✅ Database conectado!');
 
 	const server = http.createServer(app.callback());
 
@@ -24,6 +27,9 @@ import { wsServer } from './server/wsServer';
 		schema,
 		context: async () => getContext(),
 	});
+
+  console.log('🔄 Iniciando BullMQ worker...');
+  await runBullMq();
 
 	server.listen(config.PORT, () => {
 		// eslint-disable-next-line

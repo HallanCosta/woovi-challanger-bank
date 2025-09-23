@@ -13,6 +13,14 @@ import { pixTransactionEnum } from '../modules/pix/pixTransactionEnum';
 import { toGlobalId } from 'graphql-relay';
 import { setupDatabase } from './setup';
 import { createAccount } from './setup/fixtures/createAccount';
+import { createLedgerEntriesJob } from '../modules/ledgerEntry/jobs/createLedgerEntriesJob';
+
+
+/**
+ * 1. Criar uma pix transaction e pegar o id
+ * 2.  Testar o createLedgerEntriesJob que o job recebe um pixTransactionId
+ * 
+ */
 
 setupDatabase();
 
@@ -23,6 +31,7 @@ async function createLedgerEntries({ account1, account2, countLedgerEntryOperati
 
   for (let i = 0; i < countLedgerEntryOperation; i++) {
     const pixTransactionId = new mongoose.Types.ObjectId().toString();
+    const baseIdempotencyKey = `pix:${pixTransactionId}-${i}`;
 
     entries.push({
       value: 100,
@@ -36,6 +45,7 @@ async function createLedgerEntries({ account1, account2, countLedgerEntryOperati
       },
       description: `Description pix transaction #${i+1}`,
       pixTransaction: pixTransactionId,
+      idempotencyKey: `${baseIdempotencyKey}`,
     });
     
     entries.push({
@@ -50,6 +60,7 @@ async function createLedgerEntries({ account1, account2, countLedgerEntryOperati
       },
       description: `Description pix transaction #${i+1}`,
       pixTransaction: pixTransactionId,
+      idempotencyKey: `${baseIdempotencyKey}`,
     });
   }
   
