@@ -14,7 +14,7 @@ import { IParty } from '../../graphql/PartyModel';
 import { IPixTransactionStatus, PixTransaction } from '../PixTransactionModel';
 import { pixTransactionField } from '../pixTransactionFields';
 
-import { PixTransactionError } from './pixTransactionErrorEnum';
+import { PixTransactionStatus } from './pixTransactionStatusEnum';
 import { bullMqQueues, BULLMQ_JOBS, createJob } from '../../queue';
 
 export type CreatePixTransactionInput = {
@@ -64,7 +64,7 @@ const mutation = mutationWithClientMutationId({
     // Validações iniciais (mínimo de 1 centavo)
     if (args.value < 1) {
       return {
-        error: PixTransactionError.INVALID_TRANSACTION_VALUE,
+        error: PixTransactionStatus.INVALID_TRANSACTION_VALUE,
       }
     }
 
@@ -78,7 +78,7 @@ const mutation = mutationWithClientMutationId({
     const hasBalance = await hasSufficientBalance(debitAccountId, args.value);
     if (!hasBalance) {
       return {
-        error: PixTransactionError.INSUFFICIENT_BALANCE,
+        error: PixTransactionStatus.INSUFFICIENT_BALANCE,
       }
     }
 
@@ -97,7 +97,7 @@ const mutation = mutationWithClientMutationId({
 
     if (!pixTransaction) {
       return {
-        error: PixTransactionError.FAILED_TO_CREATE_PIX_TRANSACTION,
+        error: PixTransactionStatus.FAILED_TO_CREATE_PIX_TRANSACTION,
       }
     }
 
@@ -135,7 +135,7 @@ const mutation = mutationWithClientMutationId({
 
     return {
       id: transactionId,
-      success: 'Transação PIX efetuada com sucesso!',
+      success: PixTransactionStatus.SUCCESS,
     };
   },
   outputFields: {

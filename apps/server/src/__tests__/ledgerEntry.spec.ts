@@ -4,23 +4,15 @@ import { graphql } from 'graphql';
 import { schema } from '../schema/schema';
 import { getContext } from '../server/getContext';
 
-import { Account } from '../modules/account/AccountModel';
 import { LedgerEntry } from '../modules/ledgerEntry/LedgerEntryModel';
 import type { ILedgerEntry } from '../modules/ledgerEntry/LedgerEntryModel';
 import { ledgerEntryEnum } from '../modules/ledgerEntry/ledgerEntryEnum';
-import { partyEnum } from '../modules/graphql/partyEnum';
 import { pixTransactionEnum } from '../modules/pix/pixTransactionEnum';
-import { toGlobalId } from 'graphql-relay';
 import { setupDatabase } from './setup';
 import { createAccount } from './setup/fixtures/createAccount';
-import { createLedgerEntriesJob } from '../modules/ledgerEntry/jobs/createLedgerEntriesJob';
-
-
-/**
- * 1. Criar uma pix transaction e pegar o id
- * 2.  Testar o createLedgerEntriesJob que o job recebe um pixTransactionId
- * 
- */
+import { PixTransactionStatus } from '../modules/pix/mutations/pixTransactionStatusEnum';
+import { uuidv4 } from 'mongodb-memory-server-core/lib/util/utils';
+import { createPixTransaction } from './setup/fixtures/createPixTransaction';
 
 setupDatabase();
 
@@ -120,5 +112,15 @@ it('should list ledger entries filtered by account', async () => {
   expect(edges.length).toBe(countLedgerEntryOperation);
 });
 
+it('should validate insufficient balance', async () => {
+  const account1 = await createAccount({});
+  const account2 = await createAccount({});
+
+  const idempotencyKey = uuidv4();
+
+  const pixTransaction = await createPixTransaction({ account1, account2, idempotencyKey, value: 10000 });
+
+  expect(pixTransaction.error).toBe(PixTransactionStatus.INSUFFICIENT_BALANCE);
+});
 
 
