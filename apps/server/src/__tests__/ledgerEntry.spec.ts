@@ -112,7 +112,7 @@ it('should list ledger entries filtered by account', async () => {
   expect(edges.length).toBe(countLedgerEntryOperation);
 });
 
-it('should validate insufficient balance', async () => {
+it('should validate transaction with insufficient balance', async () => {
   const account1 = await createAccount({});
   const account2 = await createAccount({});
 

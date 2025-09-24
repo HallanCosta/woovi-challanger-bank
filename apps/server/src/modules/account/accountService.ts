@@ -17,6 +17,21 @@ export type UpdateAccountBalanceProps = {
  */
 export async function updateAccountBalances(updates: UpdateAccountBalanceProps[], session?: any) {
   const options = session ? { session } : {};
+
+  if (updates.length < 2) {
+    return {
+      modifiedCount: 0,
+    };
+  }
+
+  const hasDebit = updates.some(update => update.operation === ledgerEntryEnum.DEBIT);
+  const hasCredit = updates.some(update => update.operation === ledgerEntryEnum.CREDIT);
+
+  if (!hasDebit || !hasCredit) {
+    return {
+      modifiedCount: 0,
+    };
+  }
   
   return await Account.bulkWrite(
     updates.map(({ accountId, value, operation }) => {
