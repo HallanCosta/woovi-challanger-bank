@@ -1,9 +1,21 @@
 import mongoose from "mongoose";
-import { PixTransaction } from "../../../modules/pix/PixTransactionModel";
+import { IPixTransaction, PixTransaction } from "../../../modules/pix/PixTransactionModel";
 import { pixTransactionEnum } from "../../../modules/pix/pixTransactionEnum";
 import { PixTransactionStatus } from "../../../modules/pix/mutations/pixTransactionStatusEnum";
 import { hasSufficientBalance } from "../../../modules/account/accountService";
+import { BULLMQ_JOBS, bullMqQueues, createJob } from "../../../modules/queue";
 
+export type PixTransactionCreated = {
+  error: string | null;
+  success: string;
+  pixTransaction: IPixTransaction;
+};
+
+/**
+ * Cria uma transação PIX
+ * @param payload {account1, account2, value, idempotencyKey} - Dados da transação
+ * @returns Transação PIX
+ */
 export async function createPixTransaction({
   ...payload
 }) {
@@ -21,7 +33,7 @@ export async function createPixTransaction({
     pixKey: payload.account2.pixKey,
   };
 
-  const hasBalance = await hasSufficientBalance(payload.account1.id, payload.value);
+  const hasBalance = await hasSufficientBalance(payload.account1._id.toString(), payload.value);
 
   if (!hasBalance) {
     return {
@@ -33,7 +45,7 @@ export async function createPixTransaction({
 
   const pixTransaction = await new PixTransaction({
     id: transactionId,
-    value: 1000,
+    value: payload.value,
     status: pixTransactionEnum.CREATED,
     debitParty,
     creditParty,

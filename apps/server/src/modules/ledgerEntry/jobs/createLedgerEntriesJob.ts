@@ -1,11 +1,12 @@
 import { Job } from "bullmq";
+import { fromGlobalId } from 'graphql-relay';
 import { LedgerEntry, ILedgerEntry } from "../LedgerEntryModel";
 import { PixTransaction } from "../../pix/PixTransactionModel";
 import { ledgerEntryEnum } from "../ledgerEntryEnum";
 import { pixTransactionEnum } from "../../pix/pixTransactionEnum";
 import { UpdateAccountBalanceProps } from "../../account/accountService";
 import { updateAccountBalances } from "../../account/accountService";
-import { fromGlobalId } from 'graphql-relay';
+import { PixTransactionStatus } from "../../pix/mutations/pixTransactionStatusEnum";
 
 export const createLedgerEntriesJob = async (job: Job) => {
   const { pixTransactionId } = job.data;
@@ -20,7 +21,7 @@ export const createLedgerEntriesJob = async (job: Job) => {
     if (existingEntries.length > 0) {
       console.log(`⚠️  Entradas do ledger já existem para PIX: ${pixTransactionId}`);
       return {
-        error: 'Entradas do ledger já existem para PIX',
+        error: PixTransactionStatus.ALREADY_PROCESSED,
       }; // Job já foi processado
     }
 
@@ -29,9 +30,9 @@ export const createLedgerEntriesJob = async (job: Job) => {
     });
 
     if (!pixTransaction) {
-      console.error(`❌ PIX transaction not found: ${pixTransactionId}`);
+      console.log(`❌ PIX transaction not found: ${pixTransactionId}`);
       return {
-        error: 'Transação PIX não encontrada',
+        error: PixTransactionStatus.NOT_FOUND,
       };
     }
 

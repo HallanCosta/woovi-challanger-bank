@@ -121,7 +121,7 @@ const mutation = mutationWithClientMutationId({
 
     if (!job) {
       return {
-        error: 'Falha ao adicionar job na fila ledger',
+        error: PixTransactionStatus.FAILED_TO_CREATE_JOB,
       }
     }
 

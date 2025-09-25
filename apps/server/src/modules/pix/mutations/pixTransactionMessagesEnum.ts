@@ -16,4 +16,7 @@ export const PixTransactionMessages = {
   [PixTransactionStatus.FAILED_TO_CREATE_CREDIT_LEDGER_ENTRY]: 'Falha ao criar entrada contábil de crédito',
   [PixTransactionStatus.FAILED_TO_UPDATE_ACCOUNT_BALANCES]: 'Falha ao atualizar saldo das contas',
   [PixTransactionStatus.SUCCESS]: 'Transação PIX efetuada com sucesso!',
+  [PixTransactionStatus.FAILED_TO_CREATE_JOB]: 'Falha ao criar job na fila ledger',
+  [PixTransactionStatus.NOT_FOUND]: 'Transação PIX não encontrada',
+  [PixTransactionStatus.ALREADY_PROCESSED]: 'Transação PIX já foi processada anteriormente!',
 };
