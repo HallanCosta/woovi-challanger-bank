@@ -20,7 +20,7 @@ const jestTransformer = () => {
 
 module.exports = {
   displayName: pack.name,
-  testPathIgnorePatterns: ['/node_modules/', './dist', '/src/__tests__/setup/'],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist', '<rootDir>/src/__tests__/setup/', '<rootDir>/src/__tests__/__mocks__/'],
   resetModules: false,
   transform: {
     ...jestTransformer(),

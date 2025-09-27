@@ -88,6 +88,9 @@ export const useTransactions = (initialBalance: number = 2500.75) => {
     data: ledgerEntriesData,
     refresh: refreshTransactions,
     isRefreshing: isRefreshingTransactions,
+    loadMore,
+    hasNext,
+    isLoadingNext,
   } = useLedgerEntryQuery({
     filters: account?.id ? { account: account.id } : undefined
   });
@@ -132,5 +135,8 @@ export const useTransactions = (initialBalance: number = 2500.75) => {
     setBalance,
     refreshTransactions,
     isRefreshingTransactions,
+    loadMore,
+    hasNext,
+    isLoadingNext,
   };
 };

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef, useCallback, memo } from 'react';
 import { ledgerEntryEnum } from '../../constants/ledgerEntryEnum';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, ReceiptText, RefreshCw } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, ReceiptText, RefreshCw, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { TRANSACTION_STATUS_LABELS } from '../../constants/transaction';
 
@@ -21,9 +21,55 @@ interface TransactionListProps {
   transactions: Transaction[];
   onRefresh?: () => void;
   isRefreshing?: boolean;
+  onLoadMore?: () => void;
+  hasNext?: boolean;
+  isLoadingNext?: boolean;
 }
 
-export const TransactionList: React.FC<TransactionListProps> = ({ transactions, onRefresh, isRefreshing }) => {
+const TransactionListComponent: React.FC<TransactionListProps> = ({ 
+  transactions, 
+  onRefresh, 
+  isRefreshing,
+  onLoadMore,
+  hasNext,
+  isLoadingNext
+}) => {
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  // Configurar Intersection Observer para detectar quando o usuário chega ao final da lista
+  useEffect(() => {
+    if (!onLoadMore || !hasNext) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && !isLoadingNext) {
+          onLoadMore();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '100px',
+      }
+    );
+
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [onLoadMore, hasNext, isLoadingNext]);
+
+  const handleLoadMore = useCallback(() => {
+    if (onLoadMore && hasNext && !isLoadingNext) {
+      onLoadMore();
+    }
+  }, [onLoadMore, hasNext, isLoadingNext]);
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -164,8 +210,43 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
               </div>
             </div>
           ))}
+          
+          {/* Indicador de carregamento e botão "Carregar mais" */}
+          {hasNext && (
+            <div ref={loadMoreRef} className="flex justify-center py-4">
+              {isLoadingNext ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm">Carregando mais transações...</span>
+                </div>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLoadMore}
+                  className="text-sm"
+                >
+                  Carregar mais transações
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
   );
 };
+
+// Memoizar o componente para evitar re-renderizações desnecessárias
+export const TransactionList = memo(TransactionListComponent, (prevProps, nextProps) => {
+  // Só re-renderizar se as transações mudaram ou se o estado de loading mudou
+  return (
+    prevProps.transactions.length === nextProps.transactions.length &&
+    prevProps.isRefreshing === nextProps.isRefreshing &&
+    prevProps.isLoadingNext === nextProps.isLoadingNext &&
+    prevProps.hasNext === nextProps.hasNext &&
+    prevProps.transactions.every((transaction, index) => 
+      transaction.id === nextProps.transactions[index]?.id
+    )
+  );
+});

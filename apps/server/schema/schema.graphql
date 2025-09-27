@@ -223,6 +223,7 @@ type PixTransaction implements Node {
   debitParty: Party
   creditParty: Party
   description: String
+  idempotencyKey: String
   createdAt: String
   updatedAt: String
 }

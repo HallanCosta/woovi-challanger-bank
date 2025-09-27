@@ -65,7 +65,7 @@ const mutation = mutationWithClientMutationId({
     if (args.value < 1) {
       return {
         error: PixTransactionStatus.INVALID_TRANSACTION_VALUE,
-      }
+      };
     }
 
     console.log('Flow 2');
@@ -79,7 +79,7 @@ const mutation = mutationWithClientMutationId({
     if (!hasBalance) {
       return {
         error: PixTransactionStatus.INSUFFICIENT_BALANCE,
-      }
+      };
     }
 
     console.log('Flow 3');
@@ -98,7 +98,7 @@ const mutation = mutationWithClientMutationId({
     if (!pixTransaction) {
       return {
         error: PixTransactionStatus.FAILED_TO_CREATE_PIX_TRANSACTION,
-      }
+      };
     }
 
     console.log('Flow 3.1');
@@ -117,21 +117,15 @@ const mutation = mutationWithClientMutationId({
           delay: 2000,
         },
       },
-    })
+    });
 
     if (!job) {
       return {
         error: PixTransactionStatus.FAILED_TO_CREATE_JOB,
-      }
+      };
     }
 
     console.log(`Flow 3.2`);
-    
-    // Publicar evento de transação PIX criada
-    //   pixTransaction: transactionId.toString(),
-    // });
-
-    console.log('Flow 4'); 
 
     return {
       id: transactionId,

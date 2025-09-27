@@ -11,7 +11,7 @@ import { PixTransactionStatus } from "../../pix/mutations/pixTransactionStatusEn
 export const createLedgerEntriesJob = async (job: Job) => {
   const { pixTransactionId } = job.data;
     
-    console.log(`🔄 Processando job ledger: ${job.id} - PIX: ${pixTransactionId}`);
+    // console.log(`🔄 Processando job ledger: ${job.id} - PIX: ${pixTransactionId}`);
 
     // 1. Verificar se já existem entradas para esta idempotencyKey
     const existingEntries = await LedgerEntry.find({

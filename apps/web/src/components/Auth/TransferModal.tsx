@@ -305,6 +305,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   onClick={() => {
                     console.log('formData.value:', formData.value);
                     const cents = Math.round(formData.value * 100);
+                    console.log('cents:', cents);
                     const idempotencyKey = `pix:${generateUUID()}`;
                     createPixTransaction(
                       {

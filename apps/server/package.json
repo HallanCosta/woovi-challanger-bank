@@ -7,6 +7,7 @@
 		"dev": "tsx watch src/index.ts",
 		"schema": "tsx scripts/updateSchema.ts && cp schema/schema.graphql ../web/data",
 		"seeds:accounts": "tsx scripts/accountsSeed.ts",
+		"reset:account": "tsx scripts/resetAccount.ts",
 		"reset": "tsx scripts/reset.ts && pnpm seeds:accounts",
 		"reset:ledger": "tsx scripts/resetLedger.ts",
 		"reset:pix": "tsx scripts/resetPixTransaction.ts",

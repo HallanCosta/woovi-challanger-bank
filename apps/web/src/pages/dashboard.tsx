@@ -27,7 +27,16 @@ const Dashboard = () => {
     refreshBalance,
     isRefreshingBalance
   } = useAuth();
-  const { balance, transactions, addTransaction, refreshTransactions, isRefreshingTransactions } = useTransactions(accountBalance);
+  const { 
+    balance, 
+    transactions, 
+    addTransaction, 
+    refreshTransactions, 
+    isRefreshingTransactions,
+    loadMore,
+    hasNext,
+    isLoadingNext
+  } = useTransactions(accountBalance);
   const { favorites, addFavorite, removeFavorite } = useFavorites();
   const [isAddFavoriteOpen, setIsAddFavoriteOpen] = useState(false);
 
@@ -135,6 +144,9 @@ const Dashboard = () => {
               transactions={transactions}
               onRefresh={refreshTransactions}
               isRefreshing={isRefreshingTransactions}
+              onLoadMore={loadMore}
+              hasNext={hasNext}
+              isLoadingNext={isLoadingNext}
             />
           )}
         </div>

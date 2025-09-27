@@ -11,7 +11,7 @@
 		"schema": "turbo run schema",
 		"compose:up": "docker compose -f docker-compose.yml up -d",
 		"compose:down": "docker compose -f docker-compose.yml down",
-		"k6:pix": "docker compose -f docker-compose.yml run --rm k6 run /scripts/pix-ledger-concurrency.js"
+		"k6:pix": "pnpm --filter @challanger-bank/server reset:pix && pnpm --filter @challanger-bank/server reset:ledger && pnpm --filter @challanger-bank/server reset:account && docker compose -f docker-compose.yml run --rm k6 run /scripts/pixTransaction-concurrency.js"
 	},
   "workspaces": [
     "apps/*",

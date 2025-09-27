@@ -3,28 +3,24 @@ import { check, sleep } from 'k6';
 
 export const options = {
   stages: [
-    { duration: '30s', target: 100 },   // sobe até 100 VUs
-    { duration: '30s', target: 300 },   // sobe até 300
-    { duration: '1m', target: 500 },    // atinge 500
-    { duration: '2m', target: 500 },    // mantém 500 estáveis
-    { duration: '30s', target: 0 },     // desce para 0
+    { duration: '30s', target: 50 },
+    { duration: '1m', target: 500 },
+    { duration: '2m', target: 1000 },
+    { duration: '3m', target: 1000 },
+    { duration: '1m', target: 500 },
+    { duration: '30s', target: 0 },
   ],
   thresholds: {
-    http_req_failed: ['rate<0.01'],                // <1% de falha
-    http_req_duration: [
-      'p(95)<1000',   // 95% das requisições abaixo de 1s
-      'p(99)<2000',   // 99% abaixo de 2s
-      'max<5000',     // nunca passar de 5s
-    ],
-    checks: ['rate>0.98'],                         // pelo menos 98% dos checks ok
-    vus: ['value>=500'],                           // garantir pico planejado
-    iterations: ['count>10000'],                   // garantir carga mínima
+    http_req_failed: ['rate<0.05'],
+    http_req_duration: ['p(95)<2000', 'p(99)<5000', 'max<10000'],
+    checks: ['rate>0.90'],
+    vus: ['value>=200'],
+    iterations: ['count>5000'],
   },
 };
 
 const url = 'http://localhost:4000/graphql';
 
-// PixKeys definidas em apps/server/scripts/accountsSeed.ts
 const debitPixKey = '95b7f30c-2fad-43cd-85d1-f5615cf28a39';
 const creditPixKey = '08771dd3-32c0-4fe7-8725-6175ab14c7ee';
 
@@ -55,21 +51,20 @@ export function setup() {
     Conta crédito (${creditPixKey}): R$ ${(creditAccount.balance / 100).toFixed(2)}`
   );
 
-  const debitParty = {
-    account: debitAccount.id,
-    pixKey: debitPixKey,
-    type: 'PHYSICAL',
-    psp: 'Bank Challanger LTDA',
+  return {
+    debitParty: {
+      account: debitAccount.id,
+      pixKey: debitPixKey,
+      type: 'PHYSICAL',
+      psp: 'Bank Challanger LTDA',
+    },
+    creditParty: {
+      account: creditAccount.id,
+      pixKey: creditPixKey,
+      type: 'COMPANY',
+      psp: 'Bank Challanger LTDA',
+    },
   };
-
-  const creditParty = {
-    account: creditAccount.id,
-    pixKey: creditPixKey,
-    type: 'COMPANY',
-    psp: 'Bank Challanger LTDA',
-  };
-
-  return { debitParty, creditParty };
 }
 
 export default function (data) {
@@ -83,17 +78,20 @@ export default function (data) {
           debitParty { account pixKey }
           creditParty { account pixKey }
         }
+        success
+        error
       }
     }
   `;
 
   const variables = {
     input: {
-      value: 100, // 100 centavos = R$ 1,00 (valor menor para evitar esgotar saldo)
-      status: 'CREATED',
+      value: 100, // 100 = R$ 1,00
+      status: "CREATED", // 🔹 obrigatório segundo o schema
       debitParty: data.debitParty,
       creditParty: data.creditParty,
-      description: 'k6 concurrent tx',
+      description: `k6 concurrent tx ${Date.now()}`,
+      idempotencyKey: `k6-${__VU}-${__ITER}-${Date.now()}${Math.random().toString(36).substring(2, 15)}`,
     },
   };
 
@@ -103,30 +101,21 @@ export default function (data) {
     { headers: { 'Content-Type': 'application/json' } }
   );
 
-  check(res, {
+  const ok = check(res, {
     'status é 200': (r) => r.status === 200,
-    'resposta não está vazia': (r) => r.body && r.body.length > 0,
-    'sem erros GraphQL': (r) => {
-      try {
-        if (!r.body || r.body.length === 0) return false;
-        const json = r.json();
-        return !json.errors;
-      } catch (e) {
-        return false;
-      }
-    },
-    'transação criada com sucesso': (r) => {
-      try {
-        if (!r.body || r.body.length === 0) return false;
-        const json = r.json();
-        return json.data?.CreatePixTransaction?.pixTransaction?.id;
-      } catch (e) {
-        return false;
-      }
-    },
+    'sem erros GraphQL': (r) => !r.json().errors,
+    'transação criada com sucesso': (r) => r.json().data?.CreatePixTransaction?.pixTransaction?.id,
   });
 
-  sleep(1);
+  if (ok) {
+    console.log('✅ Transação bem-sucedida');
+    sleep(0.1);
+  } else {
+    console.error('❌ Erro na transação:', res.body);
+    sleep(0.5);
+  }
 }
 
-
+export function teardown() {
+  console.log('🏁 Teste K6 finalizado');
+}

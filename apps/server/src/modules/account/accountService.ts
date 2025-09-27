@@ -36,6 +36,7 @@ export async function updateAccountBalances(updates: UpdateAccountBalanceProps[]
   return await Account.bulkWrite(
     updates.map(({ accountId, value, operation }) => {
       const multiplier = operation === ledgerEntryEnum.DEBIT ? -1 : 1
+
       return {
         updateOne: {
           filter: { _id: accountId },

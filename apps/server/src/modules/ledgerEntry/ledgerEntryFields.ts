@@ -29,12 +29,18 @@ export const ledgerEntryConnectionField = (key: string) => ({
         type: LedgerEntryFilters,
       }
 		},
-		resolve: async (_, args) => {
+		resolve: async (_, args, context) => {
 			const { filters } = args;
 			const query: any = {};
+			
 			if (filters?.account) {
 				query['ledgerAccount.account'] = filters.account;
 			}
+			
+			if (Object.keys(query).length === 0) {
+				return await LedgerEntryLoader.loadAll(context, args);
+			}
+			
 			const documents = await LedgerEntry.find(query).sort({ createdAt: -1 });
 			return connectionFromArray(documents, args);
 		},

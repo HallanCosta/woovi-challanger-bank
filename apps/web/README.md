@@ -1,86 +1,134 @@
-## Frontend — Novidades e Como Usar
+# Frontend - Woovi Challenger Bank
 
-Este documento descreve as funcionalidades novas adicionadas recentemente ao frontend do Challanger Bank, com foco na experiência do Dashboard (Transações e Saldo).
+Interface moderna e responsiva construída com React.js, TypeScript e Shadcn, oferecendo uma experiência bancária completa com PIX, gestão de contas e transações em tempo real.
 
-### O que mudou
+## 🏗️ Arquitetura
 
-- **Botão de Atualizar Extrato (Transações)**
-  - Agora a lista de transações possui um botão de atualização no cabeçalho.
-  - O extrato é atualizado em background, mantendo os itens atuais visíveis enquanto os novos chegam (sem “piscar” a tela).
-  - Um ícone de loading gira durante a atualização para indicar progresso.
+### Stack Tecnológica
+- **Framework**: React.js com TypeScript
+- **Styling**: Tailwind CSS + Shadcn
+- **API Client**: Relay GraphQL
+- **Testing**: Jest + React Testing Library
 
-- **Saldo atualizado automaticamente após transferência**
-  - Ao confirmar uma transferência PIX, o saldo exibido no cartão de saldo é refetchado imediatamente.
-  - O saldo é atualizado sem interromper a UI e sem “piscar”.
-
-### Como usar
-
-- **Atualizar extrato**: vá até a seção "Transações" no Dashboard e clique no ícone de atualizar (seta circular) no canto direito do título.
-- **Fazer transferência**: use a ação de transferência rápida, preencha os dados e confirme. Após a confirmação, o saldo do cartão será atualizado automaticamente.
-
-### Detalhes técnicos (para desenvolvedores)
-
-- **Query de lançamentos (`useLedgerEntryQuery`)**
-  - Passou a retornar `{ data, refresh, isRefreshing }`.
-  - Implementado `fetchKey` e `fetchPolicy: 'store-and-network'` para manter dados do cache visíveis enquanto busca atualizações no servidor.
-  - Arquivo: `apps/web/src/components/queries/useLedgerEntryQuery.ts`.
-
-- **Hook de transações (`useTransactions`)**
-  - Agora expõe `refreshTransactions` e `isRefreshingTransactions` vindos da query.
-  - As transações locais continuam sendo mescladas às transações reais do servidor.
-  - Arquivo: `apps/web/src/hooks/useTransactions.ts`.
-
-- **Lista de transações (`TransactionList`)**
-  - Adicionadas props `onRefresh` e `isRefreshing`.
-  - Renderiza botão de atualizar com spinner no cabeçalho, sem bloquear a lista.
-  - Arquivo: `apps/web/src/components/Auth/TransactionList.tsx`.
-
-- **Dashboard (`pages/dashboard.tsx`)**
-  - Passa `onRefresh` e `isRefreshing` para `TransactionList`.
-  - Após confirmar uma transferência, chama `refreshBalance()` para refetchar o saldo.
-  - Arquivo: `apps/web/src/pages/dashboard.tsx`.
-
-- **Saldo (`BalanceCard`)**
-  - Já exibia um botão de atualizar; a lógica de refetch do saldo usa `store-and-network` e mantém a UI estável.
-  - Arquivo: `apps/web/src/components/Auth/BalanceCard.tsx`.
-
-### UX e acessibilidade
-
-- **Sem flickering**: as atualizações usam cache visível e busca em background.
-- **Feedback claro**: spinner no botão de atualizar, estados desabilitados durante operação.
-
-### Observações
-
-- A chegada de novos itens depende da latência da rede/servidor. Durante o refresh, o conteúdo atual permanece visível.
-- Caso uma transferência falhe, nenhum refetch de saldo é disparado.
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-pnpm dev
+### Estrutura do Projeto
+```
+src/
+├── components/           # Componentes React
+│   ├── Auth/            # Componentes autenticados
+│   ├── Dashboard/       # Componentes do dashboard
+│   ├── ui/              # Componentes base
+│   ├── queries/         # Queries GraphQL
+│   └── mutations/       # Mutations GraphQL
+├── hooks/               # Custom hooks
+├── pages/               # Páginas Next.js
+├── relay/               # Configuração Relay
+├── styles/              # Estilos globais
+└── theme/               # Sistema de temas
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Funcionalidades
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### 🔐 Autenticação
+- **Login Seguro**: Formulário com validação
+- **Gerenciamento de Sessão**: localStorage com verificação automática
+- **Redirecionamento**: Fluxo automático baseado no estado de auth
+- **Proteção de Rotas**: Middleware de autenticação
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+### 💳 Dashboard Bancário
+- **Cartão de Saldo**: Visualização do saldo com toggle de visibilidade
+- **Extrato em Tempo Real**: Lista de transações com atualização automática
+- **Transferências PIX**: Modal para envio de PIX
+- **Favoritos**: Lista de contatos para transferências rápidas
+- **Ações Rápidas**: Botões de acesso direto às funcionalidades
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### 💸 Sistema PIX
+- **Transferência**: Modal intuitivo para envio de PIX
+- **Validação**: Validação em tempo real de chaves PIX
+- **Histórico**: Lista completa de transações PIX
+- **Status**: Indicadores visuais de status das transações
+- **Feedback**: Confirmações e notificações de sucesso/erro
 
-## Learn More
+### 📊 Gestão de Transações
+- **Extrato Detalhado**: Histórico completo com filtros
+- **Atualização Manual**: Botão de refresh do extrato
+- **Categorização**: Diferentes tipos de transação (crédito/débito)
+- **Timestamps**: Datas e horários das transações
 
-To learn more about Next.js, take a look at the following resources:
+## 🎣 Custom Hooks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn/foundations/about-nextjs) - an interactive Next.js tutorial.
+### `useAuth`
+- Gerenciamento de autenticação
+- Estado do usuário e conta
+- Funções de login/logout
+- Refresh de dados
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### `useTransactions`
+- Estado das transações
+- Adição de transações locais
+- Refresh do extrato
+- Merge com dados do servidor
 
-## Deploy on Vercel
+### `useDashboardState`
+- Estado do dashboard
+- Toggles de visibilidade
+- Modal states
+- Preenchimento de dados
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_source=github.com&utm_medium=referral&utm_campaign=turborepo-readme) from the creators of Next.js.
+### `useFavorites`
+- Lista de favoritos
+- Adição/remoção de favoritos
+- Persistência local
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### `useToast`
+- Sistema de notificações
+- Toast de sucesso/erro
+- Auto-dismiss
+
+## 🎨 Sistema de Design
+
+### Tema
+- **Cores**: Paleta consistente com modo escuro/claro
+- **Tipografia**: Hierarquia clara de textos
+- **Espaçamento**: Sistema de grid responsivo
+- **Componentes**: Biblioteca reutilizável
+
+## 🧪 Testes
+
+### Configuração
+- **Framework**: Jest + React Testing Library
+- **Environment**: jsdom para testes de componentes
+- **Coverage**: Cobertura completa de componentes
+- **Mocks**: Mocks para hooks e APIs
+
+### Componentes Testados
+- ✅ `Login` - Autenticação e validação
+- ✅ `TransactionList` - Lista de transações
+- ✅ `TransferModal` - Modal de transferência
+
+
+## 🚀 Scripts Disponíveis
+
+```bash
+# Desenvolvimento
+pnpm dev                 # Inicia servidor de desenvolvimento
+pnpm build              # Build de produção
+pnpm start              # Inicia servidor de produção
+
+# Relay
+pnpm relay              # Compila queries GraphQL
+
+# Testes
+pnpm test               # Executa testes
+pnpm test:watch         # Testes em modo watch
+pnpm test:coverage      # Testes com cobertura
+
+# Linting
+pnpm lint               # Verifica código com ESLint
+```
+
+### Funcionaldiades
+- [x] Login / Logout
+- [x] Transferir PIX
+- [x] Favoritar chave PIX
+- [x] Histórico de transferências
+- [x] Atualizar saldo da conta

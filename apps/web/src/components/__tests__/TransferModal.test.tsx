@@ -110,91 +110,89 @@ const MockTransferModal = ({
   )
 }
 
-describe('TransferModal - Funcionalidade Core', () => {
-  const defaultProps = {
-    isOpen: true,
-    onClose: jest.fn(),
-    onSuccess: jest.fn(),
-  }
+const defaultProps = {
+  isOpen: true,
+  onClose: jest.fn(),
+  onSuccess: jest.fn(),
+}
 
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
+beforeEach(() => {
+  jest.clearAllMocks()
+})
 
-  it('deve processar transferência com sucesso', async () => {
-    const user = userEvent.setup()
-    const mockOnSuccess = jest.fn()
-    
-    render(<MockTransferModal {...defaultProps} onSuccess={mockOnSuccess} />)
-    
-    // Preencher formulário com dados válidos
-    const valueInput = screen.getByTestId('value-input')
-    const pixKeyInput = screen.getByTestId('pixkey-input')
-    const submitButton = screen.getByTestId('submit-button')
-    
-    await user.type(valueInput, '100.50')
-    await user.type(pixKeyInput, 'chave-pix-valida@test.com')
-    await user.click(submitButton)
-    
-    // Verificar se a transação foi processada com sucesso
-    expect(mockCreatePixTransaction).toHaveBeenCalledWith({
-      value: 100.50,
-      pixKey: 'chave-pix-valida@test.com'
-    })
-    expect(mockOnSuccess).toHaveBeenCalledWith({
-      success: true,
-      value: '100.50',
-      pixKey: 'chave-pix-valida@test.com'
-    })
+it('should process transfer successfully', async () => {
+  const user = userEvent.setup()
+  const mockOnSuccess = jest.fn()
+  
+  render(<MockTransferModal {...defaultProps} onSuccess={mockOnSuccess} />)
+  
+  // Preencher formulário com dados válidos
+  const valueInput = screen.getByTestId('value-input')
+  const pixKeyInput = screen.getByTestId('pixkey-input')
+  const submitButton = screen.getByTestId('submit-button')
+  
+  await user.type(valueInput, '100.50')
+  await user.type(pixKeyInput, 'chave-pix-valida@test.com')
+  await user.click(submitButton)
+  
+  // Verificar se a transação foi processada com sucesso
+  expect(mockCreatePixTransaction).toHaveBeenCalledWith({
+    value: 100.50,
+    pixKey: 'chave-pix-valida@test.com'
   })
+  expect(mockOnSuccess).toHaveBeenCalledWith({
+    success: true,
+    value: '100.50',
+    pixKey: 'chave-pix-valida@test.com'
+  })
+})
 
-  it('deve tratar falha de transferência esperada', async () => {
-    const user = userEvent.setup()
-    const mockOnSuccess = jest.fn()
-    
-    render(<MockTransferModal {...defaultProps} onSuccess={mockOnSuccess} />)
-    
-    // Preencher formulário com dados inválidos (valor zero)
-    const valueInput = screen.getByTestId('value-input')
-    const pixKeyInput = screen.getByTestId('pixkey-input')
-    const submitButton = screen.getByTestId('submit-button')
-    
-    await user.type(valueInput, '0')
-    await user.type(pixKeyInput, 'xx') // chave muito curta
-    await user.click(submitButton)
-    
-    // Verificar se a falha foi tratada
-    expect(mockOnSuccess).toHaveBeenCalledWith({
-      success: false,
-      error: 'Dados inválidos'
-    })
-    expect(mockCreatePixTransaction).not.toHaveBeenCalled()
+it('should handle expected transfer failure', async () => {
+  const user = userEvent.setup()
+  const mockOnSuccess = jest.fn()
+  
+  render(<MockTransferModal {...defaultProps} onSuccess={mockOnSuccess} />)
+  
+  // Preencher formulário com dados inválidos (valor zero)
+  const valueInput = screen.getByTestId('value-input')
+  const pixKeyInput = screen.getByTestId('pixkey-input')
+  const submitButton = screen.getByTestId('submit-button')
+  
+  await user.type(valueInput, '0')
+  await user.type(pixKeyInput, 'xx') // chave muito curta
+  await user.click(submitButton)
+  
+  // Verificar se a falha foi tratada
+  expect(mockOnSuccess).toHaveBeenCalledWith({
+    success: false,
+    error: 'Dados inválidos'
   })
+  expect(mockCreatePixTransaction).not.toHaveBeenCalled()
+})
 
-  it('deve renderizar modal quando isOpen é true', () => {
-    render(<MockTransferModal {...defaultProps} />)
-    
-    expect(screen.getByTestId('transfer-modal')).toBeInTheDocument()
-    expect(screen.getByText('Nova Transferência PIX')).toBeInTheDocument()
-    expect(screen.getByLabelText(/valor/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/chave pix/i)).toBeInTheDocument()
-  })
+it('should render modal when isOpen is true', () => {
+  render(<MockTransferModal {...defaultProps} />)
+  
+  expect(screen.getByTestId('transfer-modal')).toBeInTheDocument()
+  expect(screen.getByText('Nova Transferência PIX')).toBeInTheDocument()
+  expect(screen.getByLabelText(/valor/i)).toBeInTheDocument()
+  expect(screen.getByLabelText(/chave pix/i)).toBeInTheDocument()
+})
 
-  it('deve não renderizar quando isOpen é false', () => {
-    render(<MockTransferModal {...defaultProps} isOpen={false} />)
-    
-    expect(screen.queryByTestId('transfer-modal')).not.toBeInTheDocument()
-  })
+it('should not render when isOpen is false', () => {
+  render(<MockTransferModal {...defaultProps} isOpen={false} />)
+  
+  expect(screen.queryByTestId('transfer-modal')).not.toBeInTheDocument()
+})
 
-  it('deve fechar modal ao clicar em cancelar', async () => {
-    const user = userEvent.setup()
-    const mockOnClose = jest.fn()
-    
-    render(<MockTransferModal {...defaultProps} onClose={mockOnClose} />)
-    
-    const cancelButton = screen.getByRole('button', { name: /cancelar/i })
-    await user.click(cancelButton)
-    
-    expect(mockOnClose).toHaveBeenCalledTimes(1)
-  })
+it('should close modal when clicking cancel', async () => {
+  const user = userEvent.setup()
+  const mockOnClose = jest.fn()
+  
+  render(<MockTransferModal {...defaultProps} onClose={mockOnClose} />)
+  
+  const cancelButton = screen.getByRole('button', { name: /cancelar/i })
+  await user.click(cancelButton)
+  
+  expect(mockOnClose).toHaveBeenCalledTimes(1)
 })

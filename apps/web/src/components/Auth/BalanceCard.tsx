@@ -18,7 +18,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   onRefreshBalance,
   isRefreshingBalance = false,
 }) => {
-  console.log('💰 Balance:', balance);
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -28,7 +27,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 
   const getBalanceDisplay = () => {
     if (isVisible) {
-      return formatCurrency(balance);
+      return formatCurrency(balance / 100);
     }
     return '••••••';
   };
