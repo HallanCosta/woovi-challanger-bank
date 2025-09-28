@@ -55,6 +55,7 @@ const LedgerEntryConnection = connectionDefinitions({
 	nodeType: LedgerEntryType,
 });
 
+// @ts-ignore
 registerTypeLoader(LedgerEntryType, LedgerEntryLoader.load);
 
 export { LedgerEntryType, LedgerEntryConnection };

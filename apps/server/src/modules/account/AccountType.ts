@@ -48,6 +48,7 @@ const AccountConnection = connectionDefinitions({
 	nodeType: AccountType,
 });
 
+// @ts-ignore
 registerTypeLoader(AccountType, AccountLoader.load);
 
 export { AccountType, AccountConnection };

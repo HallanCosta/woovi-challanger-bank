@@ -26,4 +26,36 @@ services:
     volumes:
       - ./k6:/scripts   # pasta onde estão os scripts k6
     network_mode: "host"  # permite acessar o backend local (localhost:4000)
-    # command: run /scripts/pix-ledger-concurrency.js
+
+  app:
+    image: node:22-alpine
+    container_name: bank-app
+    working_dir: /app
+    ports:
+      - "3000:3000"  
+      - "4000:4000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/server/node_modules
+      - /app/apps/web/node_modules
+      - /app/packages/ui/node_modules
+      - /app/packages/eslint-config-custom/node_modules
+      - /app/packages/tsconfig/node_modules
+      - /app/packages/types/node_modules
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017/woovi-playground
+      - REDIS_URL=redis://redis:6379
+    command: >
+      sh -c "
+        npm install -g pnpm@10.0.0 &&
+        pnpm install &&
+        pnpm run build &&
+        pnpm --filter web start &&
+        pnpm --filter server start:prod
+      "
+    depends_on:
+      - mongodb
+      - redis
+    restart: unless-stopped

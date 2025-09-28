@@ -61,7 +61,9 @@ export const createGraphqlWs = (
 		wss
 	);
 
+	// @ts-ignore
 	server.on('upgrade', function upgrade(request, socket, head) {
+		// @ts-ignore
 		const { pathname } = urlParse(request.url);
 
 		if (pathname === path) {

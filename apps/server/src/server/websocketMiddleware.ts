@@ -22,7 +22,9 @@ export const createWebsocketMiddleware = (
 			return server;
 		}
 
+		// @ts-ignore
 		const newServer = new WebSocketServer({
+			// @ts-ignore
 			...(options.wsOptions || {}),
 			noServer: true,
 		});

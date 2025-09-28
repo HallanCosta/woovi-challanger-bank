@@ -25,7 +25,9 @@ export const ws = async (ctx) => {
 				context: async (wsContext: WsContext) => getContext(),
 				execute,
 				subscribe,
+				// @ts-ignore
 				onConnect: async (wsContext: WsContext) => {},
+        // @ts-ignore
 				onSubscribe: async (wsContext: WsContext, message) => {
 					const { operationName, query, variables } = message.payload;
 

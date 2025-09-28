@@ -53,6 +53,7 @@ const PixTransactionConnection = connectionDefinitions({
 	nodeType: PixTransactionType,
 });
 
+// @ts-ignore
 registerTypeLoader(PixTransactionType, PixTransactionLoader.load);
 
 export { PixTransactionType, PixTransactionConnection };
