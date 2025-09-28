@@ -37,3 +37,4 @@ npm-debug.log*
 **/__generated__/*.ts
 
 mongodb-binaries/
+.pnpm-store

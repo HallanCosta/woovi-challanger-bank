@@ -3,6 +3,7 @@
 	"name": "challanger-bank",
 	"scripts": {
 		"build": "turbo run build",
+		"start": "turbo run start --parallel --filter=@challanger-bank/server --filter=@challanger-bank/web",
 		"config:local": "turbo run config:local",
 		"dev": "turbo run dev",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",

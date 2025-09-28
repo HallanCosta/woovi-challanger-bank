@@ -1,0 +1,60 @@
+name: 🚀 Deploy to Production 
+
+on:
+  workflow_dispatch:
+  # push:
+   # branches:
+   #  - main
+
+jobs:
+  deploy:
+    name: 🚀 Deployment to Production
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 🕒 Generate timestamp to update version project
+        run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 🔨 Creating .env file (WEB)
+        run: |
+          echo -n "${{ secrets.PRODUCTION_DEPLOY_ENV_WEB }}" | tr -d '\r' > ./apps/web/.env
+          echo -e "\nAPP_VERSION=${{ env.timestamp }}" >> ./apps/web/.env
+
+      - name: 🔨 Creating .env file (SERVER)
+        run: |
+          echo -n "${{ secrets.PRODUCTION_DEPLOY_ENV_SERVER }}" | tr -d '\r' > ./apps/server/.env
+          echo -e "\nAPP_VERSION=${{ env.timestamp }}" >> ./apps/server/.env
+
+      - name: 👷 Building
+        run: |
+          npm install -g pnpm@10.0.0 &&
+          pnpm install &&
+          pnpm build
+
+      - name: 🚀 Deploy to Production server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
+          ARGS: '-rlgoDzvc -i'
+          SOURCE: '.'
+          REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
+          REMOTE_USER: ${{ secrets.PRODUCTION_SUDO_USERNAME }}
+          EXCLUDE: '/.docker/, /node_modules/ /docker-compose.yml'
+          TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
+          SCRIPT_BEFORE: |
+            echo "Checking if containers are running..."
+            if docker ps --format '{{.Names}}' | grep -q "nome-do-container"; then
+              echo "Containers are running. Stopping via PNPM..."
+              pnpm --prefix ${{ secrets.PRODUCTION_PROJECT_DIR }} compose:down
+            else
+              echo "No containers running. Skipping stop."
+            fi
+
+          SCRIPT_AFTER: |
+            echo "Starting containers via PNPM..."
+            pnpm --prefix ${{ secrets.PRODUCTION_PROJECT_DIR }} compose:up

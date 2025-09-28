@@ -4,11 +4,11 @@
 	"private": true,
 	"scripts": {
 		"build": "next build",
+		"start": "next start",
 		"config:local": "cp .env.example .env",
 		"dev": "next dev",
 		"lint": "next lint",
 		"relay": "relay-compiler",
-		"start": "next start",
 		"test": "jest",
 		"test:watch": "jest --watch",
 		"test:coverage": "jest --coverage"
