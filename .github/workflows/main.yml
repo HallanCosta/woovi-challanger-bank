@@ -46,7 +46,7 @@ jobs:
           SOURCE: '.'
           REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
           REMOTE_USER: ${{ secrets.PRODUCTION_SUDO_USERNAME }}
-          EXCLUDE: '/.docker/, /node_modules/ /k6/'
+          EXCLUDE: '/.docker/, /node_modules/, /k6/'
           TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
           SCRIPT_BEFORE: |
             echo "Checking if containers are running..."
