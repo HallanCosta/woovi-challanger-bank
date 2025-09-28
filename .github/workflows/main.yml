@@ -46,17 +46,8 @@ jobs:
           SOURCE: '.'
           REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
           REMOTE_USER: ${{ secrets.PRODUCTION_SUDO_USERNAME }}
-          EXCLUDE: '/.docker/, /node_modules/, /k6/'
+          EXCLUDE: '/.docker/, /node_modules/, /k6/, docker-compose.yml'
           TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
-          SCRIPT_BEFORE: |
-            echo "Checking if containers are running..."
-            if docker ps --format '{{.Names}}' | grep -q "bank-app"; then
-              echo "Containers are running. Stopping via PNPM..."
-              pnpm --prefix ${{ secrets.PRODUCTION_PROJECT_DIR }} compose:down
-            else
-              echo "No containers running. Skipping stop."
-            fi
-
           SCRIPT_AFTER: |
             echo "Starting containers via PNPM..."
-            pnpm --prefix ${{ secrets.PRODUCTION_PROJECT_DIR }} compose:up
+            pnpm --prefix ${{ secrets.PRODUCTION_PROJECT_DIR }} compose:up:production
