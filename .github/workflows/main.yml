@@ -34,8 +34,8 @@ jobs:
         run: |
           npm install -g pnpm@10.0.0 &&
           pnpm install &&
-          pnpm relay &&
           pnpm schema &&
+          pnpm relay &&
           pnpm build
 
       - name: 🚀 Deploy to Production server
