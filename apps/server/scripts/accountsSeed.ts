@@ -1,6 +1,6 @@
 import { Account } from '../src/modules/account/AccountModel';
 import { users } from '../src/modules/user/users';
-import { partyEnum } from '../src/modules/ledgerEntry/partyEnum';
+import { partyEnum } from '../src/modules/graphql/partyEnum';
 
 import { connectDatabase } from '../src/database';
 

@@ -1,20 +1,4 @@
 #!/bin/bash
-
-echo "🔧 Configurando MongoDB Replica Set..."
-
-# Parar MongoDB atual
-echo "⏹️  Parando MongoDB atual..."
-docker-compose down mongodb
-
-# Subir MongoDB com configuração de replica set
-echo "🚀 Subindo MongoDB com replica set..."
-docker-compose up -d mongodb
-
-# Aguardar MongoDB inicializar
-echo "⏳ Aguardando MongoDB inicializar..."
-sleep 10
-
-# Inicializar replica set
 echo "🔄 Inicializando replica set..."
 docker exec -it mongodb mongosh --eval "
 rs.initiate({
