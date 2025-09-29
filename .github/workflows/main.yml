@@ -50,4 +50,5 @@ jobs:
           TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
           SCRIPT_AFTER: |
             echo "Starting containers via PNPM..."
-            pnpm --prefix ${{ secrets.PRODUCTION_PROJECT_DIR }} compose:up:production
+            pnpm compose:up:production
+            pnpm mongo:replica
