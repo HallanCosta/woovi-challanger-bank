@@ -46,7 +46,7 @@ jobs:
           SOURCE: '.'
           REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
           REMOTE_USER: ${{ secrets.PRODUCTION_SUDO_USERNAME }}
-          EXCLUDE: '/.docker/, /node_modules/, /k6/, docker-compose.yml'
+          EXCLUDE: '/.docker/, /k6/, docker-compose.yml'
           TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
           SCRIPT_AFTER: |
             echo "Starting containers via PNPM..."

@@ -5,6 +5,7 @@
 		"build": "turbo run build",
 		"start": "turbo run start --parallel --filter=@challanger-bank/server --filter=@challanger-bank/web",
 		"start:production": "pm2 start ecosystem.config.js",
+    "restart:production": "pm2 restart ecosystem.config.js",
     "config:local": "turbo run config:local",
 		"dev": "turbo run dev",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -15,6 +16,7 @@
 		"compose:up:production": "docker compose -f docker-compose.prod.yml up -d",
 		"compose:down": "docker compose -f docker-compose.yml down",
 		"compose:down:production": "docker compose -f docker-compose.prod.yml down",
+    "mongo:replica": "bash scripts/setup-mongodb-replica.sh",
 		"k6:pix": "pnpm --filter @challanger-bank/server reset:pix && pnpm --filter @challanger-bank/server reset:ledger && pnpm --filter @challanger-bank/server reset:account && docker compose -f docker-compose.yml run --rm k6 run /scripts/pixTransaction-concurrency.js"
 	},
   "workspaces": [
