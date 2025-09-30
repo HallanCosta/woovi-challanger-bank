@@ -13,7 +13,8 @@
 		"reset": "tsx scripts/reset.ts && pnpm seeds:accounts",
 		"reset:ledger": "tsx scripts/resetLedger.ts",
 		"reset:pix": "tsx scripts/resetPixTransaction.ts",
-		"test": "jest"
+		"test": "jest",
+    "docs:generate:collections": "mkdir -p docs && gql2postman -s ./schema/schema.graphql -o ./docs/graphql-api-collection.json -p -O depth=3,includeDeprecatedFields=true"
 	},
 	"dependencies": {
 		"@entria/graphql-mongo-helpers": "^1.1.2",

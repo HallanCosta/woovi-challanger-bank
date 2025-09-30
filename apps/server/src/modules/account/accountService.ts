@@ -64,3 +64,16 @@ export async function hasSufficientBalance(accountId: string, value: number, ses
 
   return account.balance >= value;
 }
+
+/**
+ * Verifica se uma conta existe
+ * @param accountId - ID da conta
+ * @param session - Sessão MongoDB opcional para transações
+ * @returns Promise com boolean indicando se a conta existe
+ */
+export async function accountExists(accountId: string, session?: any): Promise<boolean> {
+  const options = session ? { session } : undefined;
+  const account = await Account.findOne({ _id: accountId }, undefined, options);
+  
+  return !!account;
+}

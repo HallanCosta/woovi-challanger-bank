@@ -8,7 +8,7 @@ import { mutationWithClientMutationId, fromGlobalId } from 'graphql-relay';
 import { PartyInputType } from '../../graphql/PartyType';
 import { fieldString } from '../../graphql/fieldString';
 
-import { hasSufficientBalance } from '../../account/accountService';
+import { hasSufficientBalance, accountExists } from '../../account/accountService';
 
 import { IParty } from '../../graphql/PartyModel';
 import { IPixTransactionStatus, PixTransaction } from '../PixTransactionModel';
@@ -50,9 +50,7 @@ const mutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (args: CreatePixTransactionInput) => {
     console.log('🚀 Iniciando transação PIX');
-    console.log('Flow 1');
 
-    // Verificar se já existe uma transação com a mesma idempotencyKey
     const existingTransaction = await PixTransaction.findOne({ idempotencyKey: args.idempotencyKey });
     if (existingTransaction) {
       return {
@@ -61,17 +59,29 @@ const mutation = mutationWithClientMutationId({
       };
     }
 
-    // Validações iniciais (mínimo de 1 centavo)
     if (args.value < 1) {
       return {
         error: PixTransactionStatus.INVALID_TRANSACTION_VALUE,
       };
     }
 
-    console.log('Flow 2');
-
-    // Validar se a conta de débito tem saldo suficiente
+    const creditAccountId = fromGlobalId(args.creditParty.account).id;
     const debitAccountId = fromGlobalId(args.debitParty.account).id;
+    
+    const debitAccountExists = await accountExists(debitAccountId);
+    if (!debitAccountExists) {
+      return {
+        error: PixTransactionStatus.DEBIT_ACCOUNT_NOT_FOUND,
+      };
+    }
+
+    const creditAccountExists = await accountExists(creditAccountId);
+    if (!creditAccountExists) {
+      return {
+        error: PixTransactionStatus.CREDIT_ACCOUNT_NOT_FOUND,
+      };
+    }
+
     const transactionId = new mongoose.Types.ObjectId().toString();
 
     console.log('✅ Validando saldo da conta de débito');
@@ -82,9 +92,6 @@ const mutation = mutationWithClientMutationId({
       };
     }
 
-    console.log('Flow 3');
-
-    // Criar e salvar a transação PIX
     const pixTransaction = await PixTransaction.create({
       id: transactionId,
       value: args.value,
@@ -101,8 +108,6 @@ const mutation = mutationWithClientMutationId({
       };
     }
 
-    console.log('Flow 3.1');
-    
     const job = await createJob({
       queue: bullMqQueues.LEDGER,
       jobName: BULLMQ_JOBS.LEDGER_ENTRIES_CREATE,
@@ -124,8 +129,6 @@ const mutation = mutationWithClientMutationId({
         error: PixTransactionStatus.FAILED_TO_CREATE_JOB,
       };
     }
-
-    console.log(`Flow 3.2`);
 
     return {
       id: transactionId,

@@ -1,0 +1,50 @@
+{
+	"info": {
+		"_postman_id": "e7440aa4-4610-4a4c-b44b-e3ed7efb9a0d",
+		"name": "Postman Collection (from GraphQL)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48891101",
+		"_collection_link": "https://hallancosta-2571599.postman.co/workspace/a6f64e06-e34d-46bb-802a-d7d579ce46e4/collection/48891101-e7440aa4-4610-4a4c-b44b-e3ed7efb9a0d?action=share&source=collection_link&creator=48891101"
+	},
+	"item": [
+		{
+			"name": "Local",
+			"item": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "",
+			"description": "URL for the request."
+		},
+		{
+			"key": "url_production",
+			"value": ""
+		}
+	]
+}
