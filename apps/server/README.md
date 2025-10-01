@@ -1,90 +1,91 @@
 # Backend - Woovi Challenger Bank
 
-API GraphQL moderna construída com Koa.js, MongoDB e Redis, oferecendo funcionalidades completas de sistema bancário com suporte a PIX, contas e transações.
+Modern GraphQL API built with Koa.js, MongoDB and Redis, offering complete banking system functionality with PIX, accounts and transactions support.
 
-## 🏗️ Arquitetura
+## 🏗️ Architecture
 
-### Stack Tecnológica
-- **Framework**: Koa.js com TypeScript
-- **API**: GraphQL com Relay
-- **Banco de Dados**: MongoDB com Mongoose
+### Technology Stack
+- **Framework**: Koa.js with TypeScript
+- **API**: GraphQL with Relay
+- **Database**: MongoDB with Mongoose
 - **Jobs**: Redis
-- **Testes**: Jest com MongoDB Memory Server
-- **Build**: tsc para desenvolvimento
+- **Testing**: Jest with MongoDB Memory Server
+- **Build**: tsc for development
 
-## ✅ Módulos Implementados
+## ✅ Implemented Modules
 
-### 1. 👤 User (Usuário)
-**Funcionalidades:**
-- Modelo de dados com email e senha
-- Type GraphQL com Relay
-- Autenticação básica
+### 1. 👤 User
+**Features:**
+- Data model with email and password
+- GraphQL Type with Relay
+- Basic authentication
 
-### 2. 💳 Account (Conta)
-**Funcionalidades:**
-- Gestão de contas bancárias
-- Suporte a contas físicas e empresariais
-- Sistema de chaves PIX
-- Controle de saldo
+### 2. 💳 Account
+**Features:**
+- Banking account management
+- Support for individual and business accounts
+- PIX key system
+- Balance control
 
-### 3. 📊 LedgerEntry (Lançamento Contábil)
-**Funcionalidades:**
-- Sistema de lançamentos contábeis
-- Suporte a débito e crédito
-- Rastreamento de transações
+### 3. 📊 LedgerEntry (Accounting Entry)
+**Features:**
+- Accounting entry system
+- Support for debit and credit
+- Transaction tracking
 
 **Features:**
-- Jobs de processamento em background
+- Background processing jobs
 
-### 4. 💸 PixTransaction (Transação PIX)
-**Funcionalidades:**
-- Sistema de transações PIX
-- Criação automática de lançamentos contábeis
-- Controle de status e validações
+### 4. 💸 PixTransaction (PIX Transaction)
+**Features:**
+- PIX transaction system
+- Automatic creation of accounting entries
+- Status control and validations
 
 **Mutations:**
-- `CreatePixTransaction`: Criar nova transação PIX
+- `CreatePixTransaction`: Create new PIX transaction
 
-## 🧪 Testes
+## 🧪 Testing
 
-### Configuração
-- **Framework**: Jest com Babel para TypeScript
-- **Banco**: MongoDB Memory Server
-- **Mocks**: Redis mock para testes isolados
+### Configuration
+- **Framework**: Jest with Babel for TypeScript
+- **Database**: MongoDB Memory Server
+- **Mocks**: Redis mock for isolated tests
 
-### Cobertura de Testes
-- ✅ Operações de débito e crédito em contas
-- ✅ Validação de saldo suficiente
-- ✅ Consistência de dados em transações PIX
-- ✅ Tratamento de erros e rollback
-- ✅ Sistema de lançamentos contábeis
+### Test Coverage
+- ✅ Debit and credit operations on accounts
+- ✅ Sufficient balance validation
+- ✅ Data consistency in PIX transactions
+- ✅ Error handling and rollback
+- ✅ Accounting entry system
 
-### Executar Testes
+### Run Tests
 ```bash
-# Todos os testes
+# All tests
 pnpm test
 ```
 
-## 🚀 Scripts Disponíveis
+## 🚀 Available Scripts
 
 ```bash
-# Desenvolvimento
-pnpm dev                    # Inicia servidor com hot reload
+# Development
+pnpm dev                    # Start server with hot reload
 
-# Configuração
-pnpm config:local          # Copia .env.example para .env
+# Configuration
+pnpm config:local          # Copy .env.example to .env
 
 # Schema
-pnpm schema                # Atualiza schema GraphQL
+pnpm schema                # Update GraphQL schema
 
 # Seeds
-pnpm seeds:accounts        # Popula banco com contas de teste
+pnpm seeds:accounts        # Populate database with test accounts
 
 # Reset
-pnpm reset                 # Limpa banco e recria seeds
-pnpm reset:ledger          # Limpa apenas lançamentos ledger
-pnpm reset:pix             # Limpa apenas transações PIX
+pnpm reset                 # Clear database and recreate seeds
+pnpm reset:ledger          # Clear only ledger entries
+pnpm reset:pix             # Clear only PIX transactions
+pnpm reset:accounts        # Reset balance accounts
 
-# Testes
-pnpm test                  # Executa testes
+# Testing
+pnpm test                  # Run tests
 ```

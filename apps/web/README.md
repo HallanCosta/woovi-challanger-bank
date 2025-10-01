@@ -1,56 +1,51 @@
 # Frontend - Woovi Challenger Bank
 
-Interface moderna e responsiva construída com React.js, TypeScript e Shadcn, oferecendo uma experiência bancária completa com PIX, gestão de contas e transações.
+Modern and responsive interface built with React.js, TypeScript and Shadcn, offering a complete banking experience with PIX, account management and transactions.
 
-## 🏗️ Arquitetura
+## 🏗️ Architecture
 
-### Stack Tecnológica
-- **Framework**: React.js com TypeScript
+### Technology Stack
+- **Framework**: React.js with TypeScript
 - **Styling**: Tailwind CSS + Shadcn
 - **API Client**: Relay GraphQL
 - **Testing**: Jest + React Testing Library
 
-## 🚀 Funcionalidades
+## 🚀 Features
 
-### 🔐 Autenticação
-- **Login**: Formulário com validação
-- **Gerenciamento de Sessão**: localStorage com verificação automática
+### 🔐 Authentication
+- **Login**: Form with validation
+- **Session Management**: localStorage with automatic verification
 
-### 💳 Dashboard Bancário
-- **Cartão de Saldo**: Visualização do saldo com toggle de visibilidade
-- **Extrato**: Lista de transações com atualização
-- **Transferências PIX**: Modal para envio de PIX
-- **Favoritos**: Lista de contatos para transferências rápidas
-- **Ações Rápidas**: Botões de acesso direto às funcionalidades
+### 💳 Banking Dashboard
+- **Balance Card**: Balance visualization with visibility toggle
+- **Statement**: Transaction list with updates
+- **PIX Transfers**: Modal for PIX sending
+- **Favorites**: Contact list for quick transfers
+- **Quick Actions**: Direct access buttons to functionalities
 
-## 🧪 Testes
+## 🧪 Testing
 
-### Configuração
+### Configuration
 - **Framework**: Jest + React Testing Library
-- **Coverage**: Cobertura completa de componentes
-- **Mocks**: Mocks para hooks e APIs
+- **Coverage**: Complete component coverage
+- **Mocks**: Mocks for hooks and APIs
 
-### Componentes Testados
-- ✅ `Login` - Autenticação e validação
-- ✅ `TransactionList` - Lista de transações
-- ✅ `TransferModal` - Modal de transferência
+### Tested Components
+- ✅ `Login` - Authentication and validation
+- ✅ `TransactionList` - Transaction list
+- ✅ `TransferModal` - Transfer modal
 
-## 🚀 Scripts Disponíveis
+## 🚀 Available Scripts
 
 ```bash
-# Desenvolvimento
-pnpm dev                 # Inicia servidor de desenvolvimento
-pnpm build              # Build de produção
-pnpm start              # Inicia servidor de produção
+# Development
+pnpm dev                 # Start development server
+pnpm build              # Production build
+pnpm start              # Start production server
 
 # Relay
-pnpm relay              # Compila queries GraphQL
+pnpm relay              # Compile GraphQL queries
 
-# Testes
-pnpm test               # Executa testes
-pnpm test:watch         # Testes em modo watch
-pnpm test:coverage      # Testes com cobertura
-
-# Linting
-pnpm lint               # Verifica código com ESLint
+# Testing
+pnpm test               # Run tests
 ```

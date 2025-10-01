@@ -1,7 +1,7 @@
 # Woovi Challenger Bank
 
 <div id="top"></div>
-Uma aplicação bancária moderna construída com tecnologias de ponta, oferecendo funcionalidades completas de PIX, gestão de contas e transações em tempo real.
+A modern banking application built with cutting-edge technologies, offering complete PIX functionality, account management and real-time transactions.
 
 ### Built With
 
@@ -14,172 +14,172 @@ Uma aplicação bancária moderna construída com tecnologias de ponta, oferecen
 [![Redis][redis]][redis-url]
 [![TypeScript][typescript]][typescript-url]
 
-## Documentação por App
+## Documentation by App
 
 ### Frontend (Next.js)
-- **Local**: `apps/web/`
+- **Location**: `apps/web/`
 - **README**: [`apps/web/README.md`](apps/web/README.md)
-- **Descrição**: Interface moderna com dashboard, autenticação, transferências PIX, e gestão de favoritos.
+- **Description**: Modern interface with dashboard, authentication, PIX transfers, and favorites management.
 
 ### Backend (Koa, GraphQL, MongoDB)
-- **Local**: `apps/server/`
+- **Location**: `apps/server/`
 - **README**: [`apps/server/README.md`](apps/server/README.md)
-- **Descrição**: API GraphQL completa com módulos de usuário, conta, transações PIX e lançamentos contábeis.
+- **Description**: Complete GraphQL API with user, account, PIX transactions and accounting entries modules.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## 🛠️ Getting Started
 
-Para executar o projeto localmente, siga estes passos:
+To run the project locally, follow these steps:
 
-### Pré-requisitos
+### Prerequisites
 
-- **Node.js** (versão 18 ou superior)
+- **Node.js** (version 18 or higher)
   ```sh
   https://nodejs.org/en/download/
   ```
 
-- **PNPM** (gerenciador de pacotes)
+- **PNPM** (package manager)
   ```sh
   npm install pnpm -g
   ```
 
-- **Docker** (para MongoDB e Redis)
+- **Docker** (for MongoDB and Redis)
   ```sh
   https://www.docker.com/get-started/
   ```
 
-### Instalação
+### Installation
 
-1. **Clone o repositório**
+1. **Clone the repository**
    ```sh
    git clone https://github.com/hallancosta/woovi-challanger-bank.git
    cd woovi-challanger-bank
    ```
 
-2. **Instale as dependências**
+2. **Install dependencies**
    ```sh
    pnpm install
    ```
 
-3. **Inicie os serviços (MongoDB e Redis)**
+3. **Start services (MongoDB and Redis)**
    ```sh
    pnpm compose:up
    ```
 
-4. **Configure as variáveis de ambiente**
+4. **Configure environment variables**
    ```sh
    pnpm config:local
    ```
 
-5. **Execute o Schema Compiler**
+5. **Run Schema Compiler**
    ```sh
    pnpm schema
    ```
 
-6. **Execute o Relay Compiler**
+6. **Run Relay Compiler**
    ```sh
    pnpm relay
    ```
 
-7. **Execute o Relay Compiler**
+7. **Run Relay Compiler**
    ```sh
    pnpm mongo:replica
    ```
 
-8. **Cria contas**
+8. **Create accounts**
    ```sh
    pnpm seeds:accounts
    ```
 
-9. **Reseta Saldo das contas**
+9. **Reset account balances**
    ```sh
    pnpm reset:accounts
    ```
 
-10. **Inicie o projeto**
-   ```sh
-   pnpm dev
-   ```
+10. **Start the project**
+    ```sh
+    pnpm dev
+    ```
 
-## 🧪 Testes
+## 🧪 Testing
 
-### Executar Testes
+### Run Tests
 ```sh
-# Todos os testes
+# All tests
 pnpm test
 ```
 
-### Teste de Carga (K6)
+### Load Testing (K6)
 ```sh
 pnpm k6:pix
 ```
 
-### URLs de Acesso
+### Access URLs
 - **Frontend**: http://localhost:3000
 - **Backend GraphQL**: http://localhost:4000/graphql
 
-#### Usuários de Teste (Local)
+#### Test Users (Local)
 
-Usuário 1:
+User 1:
 - Email: hallan1@test.com
-- Senha: 123
-- AccountId: {{ DEPOIS DE GERADO SEEDER }}
-- Chave PIX: 95b7f30c-2fad-43cd-85d1-f5615cf28a39
+- Password: 123
+- AccountId: {{ AFTER ACCOUNT SEEDER GENERATION }}
+- PIX Key: 95b7f30c-2fad-43cd-85d1-f5615cf28a39
 
-Usuário 2:
+User 2:
 - Email: hallan2@test.com  
-- Senha: 123
-- AccountId: {{ DEPOIS DE GERADO SEEDER }}
-- Chave PIX: 08771dd3-32c0-4fe7-8725-6175ab14c7ee
+- Password: 123
+- AccountId: {{ AFTER ACCOUNT SEEDER GENERATION }}
+- PIX Key: 08771dd3-32c0-4fe7-8725-6175ab14c7ee
 
-### URLs de Acesso (Produção)
+### Access URLs (Production)
 - **Frontend**: https://bank.hallancosta.com
 - **Backend GraphQL**: https://server-bank.hallancosta.com/graphql
 
-#### Usuários de Teste (Produção)
+#### Test Users (Production)
 
-Usuário 1:
+User 1:
 - Email: hallan1@test.com
-- Senha: 123
+- Password: 123
 - AccountId: QWNjb3VudDo2OGRiMTY4MTIwNWNkNmMyNTMxZWJjNWU=
-- Chave PIX: 95b7f30c-2fad-43cd-85d1-f5615cf28a39
+- PIX Key: 95b7f30c-2fad-43cd-85d1-f5615cf28a39
 
-Usuário 2:
+User 2:
 - Email: hallan2@test.com  
-- Senha: 123
+- Password: 123
 - AccountId: QWNjb3VudDo2OGRiMTY4MTIwNWNkNmMyNTMxZWJjNjA=
-- Chave PIX: 08771dd3-32c0-4fe7-8725-6175ab14c7ee
+- PIX Key: 08771dd3-32c0-4fe7-8725-6175ab14c7ee
 
 ### Postman
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/28811256-c0c7c9c7-c2c4-4c2c-9c5c-c2c4c2c4c2c4?action=collection%2Ffork&source=rip-rip)
 
-### Testar no Postman
-[Baixar arquivo Postman](https://raw.githubusercontent.com/HallanCosta/woovi-challanger-bank/refs/heads/main/apps/server/docs/graphql-api-collection.json)
+### Test in Postman
+[Download Postman file](https://raw.githubusercontent.com/HallanCosta/woovi-challanger-bank/refs/heads/main/apps/server/docs/graphql-api-collection.json)
 
-#### Ambiente Local
-1. Importe a coleção no Postman usando o botão acima ou o arquivo JSON
-2. Configure uma variável de ambiente `url` com valor `http://localhost:4000/graphql`
-3. Execute as requisições da coleção
+#### Local Environment
+1. Import the collection in Postman using the button above or the JSON file
+2. Configure an environment variable `url` with value `http://localhost:4000/graphql`
+3. Execute the collection requests
 
-#### Ambiente de Produção  
-1. Importe a coleção no Postman usando o botão acima ou o arquivo JSON
-2. Configure uma variável de ambiente `url_production` com valor `https://server-bank.hallancosta.com/graphql`
-3. Execute as requisições da coleção
+#### Production Environment  
+1. Import the collection in Postman using the button above or the JSON file
+2. Configure an environment variable `url_production` with value `https://server-bank.hallancosta.com/graphql`
+3. Execute the collection requests
 
-## 🤝 Contribuição
+## 🤝 Contributing
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+1. Fork the project
+2. Create a branch for your feature (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📝 Licença
+## 📝 License
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+This project is under the MIT license. See the `LICENSE` file for more details.
 
-## 👥 Autores
+## 👥 Authors
 
 - **Hallan Costa** - [@hallancosta](https://github.com/hallancosta)
 
