@@ -51,4 +51,6 @@ jobs:
           SCRIPT_AFTER: |
             echo "Starting containers via PNPM..."
             pnpm compose:up:production
+            sleep 10
             pnpm mongo:replica
+            pnpm restart:production

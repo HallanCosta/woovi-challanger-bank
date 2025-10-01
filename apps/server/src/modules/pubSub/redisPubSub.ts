@@ -1,31 +1,46 @@
 import { RedisPubSub } from 'graphql-redis-subscriptions';
+import { createMockRedisPubSub } from '../../__tests__/setup/fixtures/mockRedisPubSub';
 
-// Criar uma instância condicional baseada no ambiente
-const createRedisPubSub = () => {
-	// Em ambiente de teste, não inicializar Redis se não houver configuração
-	if (process.env.NODE_ENV === 'test' && !process.env.REDIS_HOST) {
-		// Mock do RedisPubSub para testes
-		return {
-			publish: async () => Promise.resolve(),
-			subscribe: () => ({
-				[Symbol.asyncIterator]: async function* () {
-					// Mock iterator vazio
-				}
-			}),
-			close: async () => Promise.resolve(),
-		} as any;
+// Instância global do RedisPubSub (lazy loading)
+let _redisPubSub: any = null;
+
+// Função para obter a instância do RedisPubSub
+const getRedisPubSub = () => {
+	if (_redisPubSub) {
+		return _redisPubSub;
 	}
-	
-	return new RedisPubSub({
-		connection: process.env.REDIS_HOST,
-	});
+
+	// Em ambiente de teste ou quando REDIS_HOST não está definido, usar mock
+	if (process.env.NODE_ENV === 'test' || !process.env.REDIS_HOST) {
+		_redisPubSub = createMockRedisPubSub();
+		return _redisPubSub;
+	}
+
+	try {
+		_redisPubSub = new RedisPubSub({
+			connection: process.env.REDIS_HOST,
+		});
+	} catch (error) {
+		// Se falhar ao criar RedisPubSub, usar mock
+		console.warn('Falha ao conectar com Redis, usando mock:', error);
+		_redisPubSub = createMockRedisPubSub();
+	}
+
+	return _redisPubSub;
 };
 
 // Função para fechar conexões (útil para testes)
 export const closeRedisPubSub = async () => {
-	if (redisPubSub) {
-		await redisPubSub.close();
+	if (_redisPubSub && typeof _redisPubSub.close === 'function') {
+		await _redisPubSub.close();
+		_redisPubSub = null;
 	}
 };
 
-export const redisPubSub = createRedisPubSub();
+// Exportar a instância usando getter para lazy loading
+export const redisPubSub = new Proxy({} as any, {
+	get(target, prop) {
+		const instance = getRedisPubSub();
+		return instance[prop];
+	}
+});

@@ -8,6 +8,7 @@
     "restart:production": "pm2 restart ecosystem.config.js",
     "config:local": "turbo run config:local",
 		"dev": "turbo run dev",
+    "test": "pnpm --filter @challanger-bank/server test && pnpm --filter @challanger-bank/web test",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
 		"lint": "turbo run lint",
 		"relay": "turbo run relay",
