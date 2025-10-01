@@ -49,6 +49,9 @@ jobs:
           EXCLUDE: '/.docker/, /k6/, docker-compose.yml'
           TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
           SCRIPT_AFTER: |
+            cd ${{ secrets.PRODUCTION_PROJECT_DIR }}
+            export PNPM_HOME="$HOME/.local/share/pnpm"
+            export PATH="$PNPM_HOME:$PATH"
             echo "Starting containers with PNPM..."
             pnpm compose:up:production
             sleep 10
