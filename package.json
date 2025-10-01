@@ -13,6 +13,8 @@
 		"lint": "turbo run lint",
 		"relay": "turbo run relay",
 		"schema": "turbo run schema",
+    "seeds:accounts": "pnpm --filter @challanger-bank/server seeds:accounts",
+    "reset:accounts": "pnpm --filter @challanger-bank/server reset:accounts",
 		"compose:up": "docker compose -f docker-compose.yml up -d",
 		"compose:up:production": "docker compose -f docker-compose.prod.yml up -d",
 		"compose:down": "docker compose -f docker-compose.yml down",
