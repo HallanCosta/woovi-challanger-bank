@@ -49,8 +49,11 @@ jobs:
           EXCLUDE: '/.docker/, /k6/, docker-compose.yml'
           TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
           SCRIPT_AFTER: |
-            echo "Starting containers via PNPM..."
+            echo "Starting containers with PNPM..."
             pnpm compose:up:production
             sleep 10
+            echo "Starting MongoDB replica with PNPM..."
             pnpm mongo:replica
+            echo "Restarting production server with PNPM..."
+            sleep 5
             pnpm restart:production
