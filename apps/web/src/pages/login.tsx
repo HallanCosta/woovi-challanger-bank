@@ -20,9 +20,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const { login, isLoading } = useAuth(false); // Não redirecionar na página de login
+  const { login, isLoading } = useAuth(false);
 
-  // Verificar se já está logado e redirecionar ANTES de renderizar
   useEffect(() => {
     const checkAuthAndRedirect = () => {
       try {
@@ -38,7 +37,6 @@ const Login = () => {
         console.error('Erro ao verificar autenticação:', error);
       }
       
-      // Se não está logado, mostrar a tela de login
       setIsCheckingAuth(false);
     };
 
@@ -54,7 +52,6 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
 
-  // Mostrar loading enquanto verifica autenticação
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-[#0B1220] dark:to-[#0B1220]">
@@ -73,7 +70,7 @@ const Login = () => {
           <div className="mx-auto w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-4">
             <AccountCircleIcon className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">Challanger Bank 3</CardTitle>
+          <CardTitle className="text-2xl font-bold">Challanger Bank</CardTitle>
           <CardDescription>
             Faça login na sua conta bancária
           </CardDescription>

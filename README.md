@@ -19,12 +19,12 @@ Uma aplicação bancária moderna construída com tecnologias de ponta, oferecen
 ### Frontend (Next.js)
 - **Local**: `apps/web/`
 - **README**: [`apps/web/README.md`](apps/web/README.md)
-- **Descrição**: Interface moderna com dashboard, autenticação, transferências PIX, extrato em tempo real e gestão de favoritos.
+- **Descrição**: Interface moderna com dashboard, autenticação, transferências PIX, e gestão de favoritos.
 
 ### Backend (Koa, GraphQL, MongoDB)
 - **Local**: `apps/server/`
 - **README**: [`apps/server/README.md`](apps/server/README.md)
-- **Descrição**: API GraphQL completa com módulos de usuário, conta, transações PIX, lançamentos contábeis e sistema de mensagens em tempo real.
+- **Descrição**: API GraphQL completa com módulos de usuário, conta, transações PIX e lançamentos contábeis.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -94,11 +94,17 @@ Para executar o projeto localmente, siga estes passos:
 
 ### URLs de Acesso
 - **Frontend**: http://localhost:3000
-- **Backend GraphQL**: http://localhost:4000/graphql)
+- **Backend GraphQL**: http://localhost:4000/graphql
 
 ### URLs de Acesso (Produção)
 - **Frontend**: https://bank.hallancosta.com
-- **Backend GraphQL**: https://bank.hallancosta.com/graphql
+- **Backend GraphQL**: https://server-bank.hallancosta.com/graphql
+
+### Postman
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/28811256-c0c7c9c7-c2c4-4c2c-9c5c-c2c4c2c4c2c4?action=collection%2Ffork&source=rip-rip)
+
+[Baixar arquivo Postman](https://raw.githubusercontent.com/HallanCosta/woovi-challanger-bank/refs/heads/main/apps/server/docs/graphql-api-collection.json)
+
 
 ## 🧪 Testes
 
@@ -106,6 +112,7 @@ Para executar o projeto localmente, siga estes passos:
 ```sh
 # Todos os testes
 pnpm test
+```
 
 ### Teste de Carga (K6)
 ```sh
