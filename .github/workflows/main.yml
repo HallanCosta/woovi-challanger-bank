@@ -50,13 +50,12 @@ jobs:
           TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
           SCRIPT_AFTER: |
             cd ${{ secrets.PRODUCTION_PROJECT_DIR }}
-            export PNPM_HOME="$HOME/.local/share/pnpm"
-            export PATH="$PNPM_HOME:$PATH"
+            export PATH=$HOME/.nvm/versions/node/v22.20.0/bin:$PATH
             echo "Starting containers with PNPM..."
             pnpm compose:up:production
             sleep 10
             echo "Starting MongoDB replica with PNPM..."
             pnpm mongo:replica
-            echo "Restarting production server with PNPM..."
             sleep 5
+            echo "Restarting production server with PNPM..."
             pnpm restart:production

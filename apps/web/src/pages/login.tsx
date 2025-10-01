@@ -73,7 +73,7 @@ const Login = () => {
           <div className="mx-auto w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-4">
             <AccountCircleIcon className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">Challanger Bank 2</CardTitle>
+          <CardTitle className="text-2xl font-bold">Challanger Bank 3</CardTitle>
           <CardDescription>
             Faça login na sua conta bancária
           </CardDescription>
