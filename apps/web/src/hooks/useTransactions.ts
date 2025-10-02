@@ -50,7 +50,11 @@ export const useTransactions = (initialBalance: number = 2500.75) => {
     hasNext,
     isLoadingNext,
   } = useLedgerEntryQuery({
-    filters: account?.id ? { account: account.id } : undefined
+    filters: account?.id ? { account: account.id } : undefined,
+    onRefresh: () => {
+      // Limpar transações locais quando fizer refresh
+      setTransactions([]);
+    }
   });
   
   const realTransactions = useMemo(() => {

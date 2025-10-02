@@ -73,19 +73,6 @@ const TransactionListComponent: React.FC<TransactionListProps> = ({
     }
   }, [onLoadMore, hasNext, isLoadingNext]);
 
-  const getStatusIcon = (status: Transaction['status']) => {
-    switch (status) {
-      case TransactionStatus.COMPLETED:
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case TransactionStatus.PENDING:
-        return <Clock className="w-4 h-4 text-yellow-500" />;
-      case TransactionStatus.FAILED:
-        return <XCircle className="w-4 h-4 text-red-500" />;
-    }
-  };
-
-  const getStatusText = (status: Transaction['status']) => TRANSACTION_STATUS_LABELS[status];
-
   const getTypeIcon = (type: Transaction['type']) => {
     return type === ledgerEntryEnum.CREDIT ? (
       <ArrowDownLeft className="w-4 h-4 text-green-500" />
@@ -98,28 +85,60 @@ const TransactionListComponent: React.FC<TransactionListProps> = ({
     return type === ledgerEntryEnum.CREDIT ? 'text-green-600' : 'text-red-600';
   };
 
-  if (transactions.length === 0) {
+  const getTransactionPerson = (transaction: Transaction) => {
+    if (transaction.type === ledgerEntryEnum.CREDIT) {
+      return `De: ${transaction.sender}`;
+    }
+
+    if (transaction.type === ledgerEntryEnum.DEBIT) {
+      return `Para: ${transaction.recipient}`; 
+    }
+  };
+
+  const TransactionListCardHeader = () => {
+    return (
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CardTitle>Transações</CardTitle>
+          </div>
+          {onRefresh && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onRefresh}
+              disabled={isRefreshing}
+              title="Atualizar extrato"
+            >
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          )}
+        </div>
+        <CardDescription>Histórico de suas transações</CardDescription>
+      </CardHeader>
+    );
+  };
+
+  if (isRefreshing) {
     return (
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CardTitle>Transações</CardTitle>
+        <TransactionListCardHeader />
+        <CardContent>
+          <div className="flex justify-center py-8">
+            <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">Buscando novas transações...</span>
             </div>
-            {onRefresh && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onRefresh}
-                disabled={isRefreshing}
-                title="Atualizar extrato"
-              >
-                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              </Button>
-            )}
           </div>
-          <CardDescription>Histórico de suas transações</CardDescription>
-        </CardHeader>
+        </CardContent>
+      </Card>
+    ); 
+  } 
+
+  if (!isRefreshing && transactions.length === 0) {
+    return (
+      <Card>
+        <TransactionListCardHeader />
         <CardContent>
           <div className="text-center py-8 text-gray-500">
             <Clock className="w-12 h-12 mx-auto mb-4 text-gray-300" />
@@ -130,16 +149,6 @@ const TransactionListComponent: React.FC<TransactionListProps> = ({
       </Card>
     );
   }
-
-  const getTransactionPerson = (transaction: Transaction) => {
-    if (transaction.type === ledgerEntryEnum.CREDIT) {
-      return `De: ${transaction.sender}`;
-    }
-
-    if (transaction.type === ledgerEntryEnum.DEBIT) {
-      return `Para: ${transaction.recipient}`; 
-    }
-  };
 
   return (
     <Card>
@@ -195,10 +204,10 @@ const TransactionListComponent: React.FC<TransactionListProps> = ({
                   {transaction.type === ledgerEntryEnum.CREDIT ? '+' : '-'}{formatCurrency(transaction.value)}
                 </p>
                 <div className="flex items-center gap-1 justify-end">
-                  {getStatusIcon(transaction.status)}
-                  <span className="text-xs text-muted-foreground">
+                  {/* {getStatusIcon(transaction.status)} */}
+                 {/*  <span className="text-xs text-muted-foreground">
                     {getStatusText(transaction.status)}
-                  </span>
+                  </span> */}
                 </div>
               </div>
             </div>

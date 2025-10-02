@@ -8,6 +8,7 @@ interface UseLedgerEntryQueryOptions {
   filters?: {
     account?: string;
   };
+  onRefresh?: () => void;
 }
 
 const useLedgerEntryQuery = (options: UseLedgerEntryQueryOptions = {}) => {
@@ -28,7 +29,7 @@ const useLedgerEntryQuery = (options: UseLedgerEntryQueryOptions = {}) => {
     },
     {
       fetchPolicy: 'store-and-network',
-      fetchKey: refreshKey, // Apenas para refresh, não para loadMore
+      fetchKey: refreshKey,
     }
   );
 
@@ -39,21 +40,37 @@ const useLedgerEntryQuery = (options: UseLedgerEntryQueryOptions = {}) => {
       const pageInfo = initialData.ledgerEntries.pageInfo;
       
       setAllTransactions(newTransactions);
-      setHasNextPage(pageInfo?.hasNextPage || false);
-      setEndCursor(pageInfo?.endCursor || null);
+      setHasNextPage(pageInfo?.hasNextPage);
+      setEndCursor(pageInfo?.endCursor);
     }
   }, [initialData]);
 
-  useEffect(() => {
-    if (isRefreshing) {
-      setIsRefreshing(false);
-    }
-  }, [initialData, isRefreshing]);
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     setIsRefreshing(true);
+    
+    if (options.onRefresh) {
+      options.onRefresh();
+    }
+    
     setRefreshKey(prev => prev + 1);
-  }, []);
+
+    const environment = createEnvironment();
+    const result = await fetchQuery(environment, LedgerEntryQuery, {
+      first: 10,
+      after: null, // Sempre buscar do início no refresh
+      filters: options.filters,
+    }).toPromise() as LedgerEntryQueryType['response'];
+
+    if (result?.ledgerEntries) {
+      const newTransactions = result.ledgerEntries.edges?.map(edge => edge.node) || [];
+      setAllTransactions(newTransactions);
+    }
+
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 1000);
+  }, [options.filters]);
 
   const loadMore = useCallback(async () => {
     if (hasNextPage && !isLoadingMore && endCursor) {
