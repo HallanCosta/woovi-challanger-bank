@@ -22,8 +22,13 @@ A modern banking application built with cutting-edge technologies, offering comp
 - **Description**: Modern interface with dashboard, authentication, PIX transfers, and favorites management.
 
 #### Screenshots
+**Dashboard Overview**
 ![Dashboard](screenshots/dashboard.png)
+
+**Favorites Management & PIX Transfer**
 ![Favorites and Transfer](screenshots/favorites-n-transfer.png)
+
+**Transaction History**
 ![Transaction History](screenshots/history-transactions.png)
 
 ### Backend (Koa, GraphQL, MongoDB)
