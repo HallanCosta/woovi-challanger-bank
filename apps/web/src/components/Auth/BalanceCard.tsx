@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Wallet, TrendingUp, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { Button } from '../ui/button';
+import { formatCurrency } from '../../lib/utils';
 
 interface BalanceCardProps {
   balance: number;
@@ -18,12 +19,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   onRefreshBalance,
   isRefreshingBalance = false,
 }) => {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
 
   const getBalanceDisplay = () => {
     if (isVisible) {

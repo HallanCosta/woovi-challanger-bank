@@ -9,6 +9,21 @@ const CreatePixTransaction = graphql`
         value
         status
         description
+        debitParty {
+          psp
+          account
+          type
+          pixKey
+          name
+        }
+        creditParty {
+          psp
+          account
+          type
+          pixKey
+          name
+        }
+        idempotencyKey
       }
     }
   }

@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, ReceiptText, RefreshCw, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { TRANSACTION_STATUS_LABELS } from '../../constants/transaction';
+import { TransactionStatus } from '../../constants/transactionStatus';
+import { formatCurrency, formatDate } from '../../lib/utils';
 
 export interface Transaction {
   id: string;
@@ -13,7 +15,7 @@ export interface Transaction {
   recipient?: string;
   sender?: string;
   date: string;
-  status: 'COMPLETED' | 'PENDING' | 'FAILED';
+  status: TransactionStatus;
   psp?: string;
 }
 
@@ -70,30 +72,14 @@ const TransactionListComponent: React.FC<TransactionListProps> = ({
       onLoadMore();
     }
   }, [onLoadMore, hasNext, isLoadingNext]);
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   const getStatusIcon = (status: Transaction['status']) => {
     switch (status) {
-      case 'COMPLETED':
+      case TransactionStatus.COMPLETED:
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'PENDING':
+      case TransactionStatus.PENDING:
         return <Clock className="w-4 h-4 text-yellow-500" />;
-      case 'FAILED':
+      case TransactionStatus.FAILED:
         return <XCircle className="w-4 h-4 text-red-500" />;
     }
   };
@@ -145,6 +131,16 @@ const TransactionListComponent: React.FC<TransactionListProps> = ({
     );
   }
 
+  const getTransactionPerson = (transaction: Transaction) => {
+    if (transaction.type === ledgerEntryEnum.CREDIT) {
+      return `De: ${transaction.sender}`;
+    }
+
+    if (transaction.type === ledgerEntryEnum.DEBIT) {
+      return `Para: ${transaction.recipient}`; 
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -183,10 +179,7 @@ const TransactionListComponent: React.FC<TransactionListProps> = ({
                 <div>
                   <p className="font-medium text-sm">{transaction.description}</p>
                   <p className="text-xs text-muted-foreground">
-                    {transaction.type === ledgerEntryEnum.CREDIT 
-                      ? `De: ${transaction.sender || 'Transferência PIX'}`
-                      : `Para: ${transaction.recipient || 'Transferência PIX'}`
-                    }
+                    {getTransactionPerson(transaction)}
                   </p>
                   {transaction.psp && (
                     <p className="text-xs text-muted-foreground">

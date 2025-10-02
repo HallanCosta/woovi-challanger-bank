@@ -187,6 +187,7 @@ type Party {
   account: String
   type: String
   pixKey: String
+  name: String
 }
 
 """Filters for the ledger entries"""
@@ -234,18 +235,7 @@ input PixTransactionFilters {
 }
 
 type Mutation {
-  AccountAdd(input: AccountAddInput!): AccountAddPayload
   CreatePixTransaction(input: CreatePixTransactionInput!): CreatePixTransactionPayload
-}
-
-type AccountAddPayload {
-  account: Account
-  clientMutationId: String
-}
-
-input AccountAddInput {
-  content: String!
-  clientMutationId: String
 }
 
 type CreatePixTransactionPayload {
@@ -270,4 +260,5 @@ input PartyInput {
   account: String
   type: String
   pixKey: String
+  name: String
 }

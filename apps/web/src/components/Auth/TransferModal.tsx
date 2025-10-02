@@ -10,7 +10,7 @@ import { AccountQuery } from '../queries/AccountQuery';
 import { useUser } from '../../hooks/useUser';
 import { useCreatePixTransactionMutation } from '../mutations';
 import { v4 as uuidv4 } from 'uuid';
-import { maskEmail } from '../../lib/utils';
+import { maskEmail, formatCurrencyInput } from '../../lib/utils';
 
 interface TransferModalProps {
   isOpen: boolean;
@@ -164,31 +164,34 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const handleCreatePixTransaction = () => {
     const cents = Math.round(formData.value * 100);
     const idempotencyKey = `pix:${uuidv4()}`;
-    
+    console.log('🔍 recipientData:', recipientData);
+    console.log('🔍 recipientData account:', account);
     createPixTransaction(
       {
         value: cents,
         status: 'CREATED',
-        description: `Transferência PIX para ${recipientData?.user?.name || recipientData?.pixKey || ''}`,
+        description: `Transferência PIX para ${recipientData?.user?.name}`,
         idempotencyKey,
         debitParty: {
-          account: account?.id || '',
+          account: account?.id,
           psp: 'Bank Challanger LTDA',
-          type: account?.type || 'PHYSICAL',
-          pixKey: myPixKey || '',
+          type: account?.type,
+          pixKey: myPixKey,
+          name: account?.user?.name,
         } as any,
         creditParty: {
-          account: recipientData?.id || '',
+          account: recipientData?.id,
           psp: 'Bank Challanger LTDA',
-          type: recipientData?.type || 'PHYSICAL',
-          pixKey: recipientData?.pixKey || '',
+          type: recipientData?.type,
+          pixKey: recipientData?.pixKey,
+          name: recipientData?.user?.name,
         } as any,
       },
       {
         onCompleted: () => {
           onTransfer({
             ...formData,
-            recipientName: recipientData?.user?.name || recipientData?.pixKey || '',
+            recipientName: recipientData?.user?.name,
           });
           onClose();
           resetForm();
@@ -208,10 +211,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
     const numericValue = cents / 100;
     setFormData(prev => ({ ...prev, value: numericValue }));
     // Formatar para pt-BR sem prefixo R$
-    const formatted = numericValue.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    const formatted = formatCurrencyInput(numericValue);
     setValueDisplay(formatted);
     if (numericValue >= 0.01) {
       setFormErrors(prev => ({ ...prev, value: false }));

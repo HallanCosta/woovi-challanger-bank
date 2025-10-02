@@ -46,7 +46,8 @@ export const createLedgerEntriesJob = async (job: Job) => {
           account: pixTransaction.debitParty.account,
           psp: pixTransaction.debitParty.psp,
           type: pixTransaction.debitParty.type,
-          pixKey: pixTransaction.debitParty.pixKey
+          pixKey: pixTransaction.debitParty.pixKey,
+          name: pixTransaction.creditParty.name
         },
         description: pixTransaction.description,
         pixTransaction: pixTransactionId,
@@ -60,7 +61,8 @@ export const createLedgerEntriesJob = async (job: Job) => {
           account: pixTransaction.creditParty.account,
           psp: pixTransaction.creditParty.psp, 
           type: pixTransaction.creditParty.type,
-          pixKey: pixTransaction.creditParty.pixKey
+          pixKey: pixTransaction.creditParty.pixKey,
+          name: pixTransaction.debitParty.name
         },
         description: pixTransaction.description,
         pixTransaction: pixTransactionId,
@@ -72,7 +74,6 @@ export const createLedgerEntriesJob = async (job: Job) => {
     console.log(`✅ Criadas ${createdEntries.length} entradas no ledger`);
 
     // 3. Atualizar saldos das contas usando sua função updateAccountBalances
-    // Decodificar os Global IDs para ObjectIds
     const debitAccountId = fromGlobalId(pixTransaction.debitParty.account).id;
     const creditAccountId = fromGlobalId(pixTransaction.creditParty.account).id;
     

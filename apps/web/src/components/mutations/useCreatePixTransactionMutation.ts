@@ -11,9 +11,17 @@ const useCreatePixTransactionMutation = () => {
     status: string;
     debitParty: {
       account: string;
+      name: string;
+      psp: string;
+      type: string;
+      pixKey: string;
     };
     creditParty: {
       account: string;
+      name: string;
+      psp: string;
+      type: string;
+      pixKey: string;
     };
     description?: string;
     idempotencyKey: string;

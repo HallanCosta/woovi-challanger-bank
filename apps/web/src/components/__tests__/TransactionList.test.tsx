@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { TransactionList, Transaction } from '../Auth/TransactionList'
 import { ledgerEntryEnum } from '../../constants/ledgerEntryEnum'
+import { TransactionStatus } from '../../constants/transactionStatus'
 import '@testing-library/jest-dom'
 
 // Mock dos ícones
@@ -22,7 +23,7 @@ const mockTransactions: Transaction[] = [
     description: 'PIX recebido',
     sender: 'João Silva',
     date: '2024-01-15T10:30:00Z',
-    status: 'COMPLETED',
+    status: TransactionStatus.COMPLETED,
   },
   {
     id: '2',
@@ -31,7 +32,7 @@ const mockTransactions: Transaction[] = [
     description: 'PIX enviado',
     recipient: 'Maria Santos',
     date: '2024-01-14T15:45:00Z',
-    status: 'FAILED',
+    status: TransactionStatus.FAILED,
   },
 ]
 

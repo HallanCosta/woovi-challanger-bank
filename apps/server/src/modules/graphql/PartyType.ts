@@ -4,7 +4,8 @@ const fields = {
   psp: { type: GraphQLString },
   account: { type: GraphQLString },
   type: { type: GraphQLString },
-  pixKey: { type: GraphQLString }
+  pixKey: { type: GraphQLString },
+  name: { type: GraphQLString }
 }
 
 export const PartyType = new GraphQLObjectType({

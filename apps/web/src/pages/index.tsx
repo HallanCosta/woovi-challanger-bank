@@ -6,7 +6,6 @@ const Index = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirecionar para a página de login
     router.push('/login');
   }, [router]);
 

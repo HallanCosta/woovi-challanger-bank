@@ -24,6 +24,7 @@ export async function createPixTransaction({
     psp: payload.account1.psp,
     type: payload.account1.type,
     pixKey: payload.account1.pixKey,
+    name: payload.account1.user.name,
   };
 
   const creditParty = {
@@ -31,6 +32,7 @@ export async function createPixTransaction({
     psp: payload.account2.psp,
     type: payload.account2.type,
     pixKey: payload.account2.pixKey,
+    name: payload.account2.user.name,
   };
 
   const hasBalance = await hasSufficientBalance(payload.account1._id.toString(), payload.value);

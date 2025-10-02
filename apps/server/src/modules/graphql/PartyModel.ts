@@ -6,6 +6,7 @@ export type IParty = {
   account: string;
   type: partyEnum.PHYSICAL | partyEnum.LEGAL;
   pixKey: string;
+  name: string;
 };
 
 export const PartySchema = new mongoose.Schema<IParty>(
@@ -26,6 +27,10 @@ export const PartySchema = new mongoose.Schema<IParty>(
 			type: String,
       description: 'The pix key'
 		},
+    name: {
+      type: String,
+      description: 'The user name'
+    },
 	},
 	{ _id: false }
 );

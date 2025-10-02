@@ -18,6 +18,7 @@ const LedgerEntryQuery = graphql`
             account
             type
             pixKey
+            name
           }
           type
           description
