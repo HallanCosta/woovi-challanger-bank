@@ -14,7 +14,28 @@ A modern banking application built with cutting-edge technologies, offering comp
 [![Redis][redis]][redis-url]
 [![TypeScript][typescript]][typescript-url]
 
-## Documentation by App
+## Documentation
+
+### Access URLs (Production)
+- **Frontend**: https://bank.hallancosta.com
+- **Backend GraphQL**: https://server-bank.hallancosta.com/graphql
+
+#### Test Users (Production)
+
+User 1:
+- Email: hallan1@test.com
+- Password: 123
+- AccountId: QWNjb3VudDo2OGRiMTY4MTIwNWNkNmMyNTMxZWJjNWU=
+- PIX Key: 95b7f30c-2fad-43cd-85d1-f5615cf28a39
+
+User 2:
+- Email: hallan2@test.com  
+- Password: 123
+- AccountId: QWNjb3VudDo2OGRiMTY4MTIwNWNkNmMyNTMxZWJjNjA=
+- PIX Key: 08771dd3-32c0-4fe7-8725-6175ab14c7ee
+
+### Test in Postman
+[Download Postman file](https://raw.githubusercontent.com/HallanCosta/woovi-challanger-bank/refs/heads/main/apps/server/docs/graphql-api-collection.json)
 
 ### Frontend (Next.js)
 - **Location**: `apps/web/`
@@ -146,29 +167,6 @@ User 2:
 - AccountId: {{ AFTER ACCOUNT SEEDER GENERATION }}
 - PIX Key: 08771dd3-32c0-4fe7-8725-6175ab14c7ee
 
-### Access URLs (Production)
-- **Frontend**: https://bank.hallancosta.com
-- **Backend GraphQL**: https://server-bank.hallancosta.com/graphql
-
-#### Test Users (Production)
-
-User 1:
-- Email: hallan1@test.com
-- Password: 123
-- AccountId: QWNjb3VudDo2OGRiMTY4MTIwNWNkNmMyNTMxZWJjNWU=
-- PIX Key: 95b7f30c-2fad-43cd-85d1-f5615cf28a39
-
-User 2:
-- Email: hallan2@test.com  
-- Password: 123
-- AccountId: QWNjb3VudDo2OGRiMTY4MTIwNWNkNmMyNTMxZWJjNjA=
-- PIX Key: 08771dd3-32c0-4fe7-8725-6175ab14c7ee
-
-### Postman
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/28811256-c0c7c9c7-c2c4-4c2c-9c5c-c2c4c2c4c2c4?action=collection%2Ffork&source=rip-rip)
-
-### Test in Postman
-[Download Postman file](https://raw.githubusercontent.com/HallanCosta/woovi-challanger-bank/refs/heads/main/apps/server/docs/graphql-api-collection.json)
 
 #### Local Environment
 1. Import the collection in Postman using the button above or the JSON file
