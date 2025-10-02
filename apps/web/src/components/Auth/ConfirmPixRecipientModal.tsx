@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
+import { maskEmail } from '../../lib/utils';
 
 type RecipientInfo = {
   id: string;
@@ -20,12 +21,6 @@ interface ConfirmPixRecipientModalProps {
   recipient: RecipientInfo | null;
 }
 
-function maskEmail(email: string): string {
-  const [user, domain] = email.split('@');
-  if (!user || !domain) return email;
-  const visible = user.slice(0, 2);
-  return `${visible}****@${domain}`;
-}
 
 function maskPixKey(pixKey: string): string {
   if (!pixKey) return '';

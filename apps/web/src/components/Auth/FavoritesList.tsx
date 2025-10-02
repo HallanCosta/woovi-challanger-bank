@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Button } from '../ui/button';
 import { Trash2, Heart, Send } from 'lucide-react';
 import { FavoriteRecipient } from '../../hooks/useFavorites';
+import { maskEmail } from '../../lib/utils';
 
 interface FavoritesListProps {
   favorites: FavoriteRecipient[];
@@ -11,13 +12,6 @@ interface FavoritesListProps {
 }
 
 export const FavoritesList: React.FC<FavoritesListProps> = ({ favorites, onRemove, onTransfer }) => {
-  const maskEmail = (email?: string) => {
-    if (!email) return '';
-    const [user, domain] = email.split('@');
-    if (!user || !domain) return email;
-    const visible = user.slice(0, 2);
-    return `${visible}****@${domain}`;
-  };
   return (
     <Card>
       <CardHeader>

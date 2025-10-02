@@ -7,6 +7,7 @@ import { useRelayEnvironment } from 'react-relay';
 import { fetchQuery } from 'relay-runtime';
 import { AccountQuery } from '../queries/AccountQuery';
 import { useUser } from '../../hooks/useUser';
+import { maskEmail } from '../../lib/utils';
 
 interface AddFavoriteModalProps {
   isOpen: boolean;
@@ -208,7 +209,7 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({ isOpen, onCl
             <label className="text-sm font-medium mb-2 block">E-mail</label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-              <Input className="pl-10" placeholder="email@exemplo.com" value={email.replace(/(^..).*(@.*$)/, '$1****$2')} disabled readOnly />
+              <Input className="pl-10" placeholder="email@exemplo.com" value={maskEmail(email)} disabled readOnly />
             </div>
           </div>
 
