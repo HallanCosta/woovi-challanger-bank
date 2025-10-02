@@ -40,7 +40,6 @@ Modern GraphQL API built with Koa.js, MongoDB and Redis, offering complete banki
 **Features:**
 - PIX transaction system
 - Automatic creation of accounting entries
-- Status control and validations
 
 **Mutations:**
 - `CreatePixTransaction`: Create new PIX transaction
@@ -52,24 +51,20 @@ Modern GraphQL API built with Koa.js, MongoDB and Redis, offering complete banki
 - **Database**: MongoDB Memory Server
 - **Mocks**: Redis mock for isolated tests
 
-### Test Coverage
-- ✅ Debit and credit operations on accounts
-- ✅ Sufficient balance validation
-- ✅ Data consistency in PIX transactions
-- ✅ Error handling and rollback
-- ✅ Accounting entry system
-
 ### Run Tests
 ```bash
-# All tests
+#
 pnpm test
 ```
 
 ## 🚀 Available Scripts
 
 ```bash
+# Folder
+cd apps/server             # Enter folder  
+
 # Development
-pnpm dev                    # Start server with hot reload
+pnpm dev                   # Start server with hot reload
 
 # Configuration
 pnpm config:local          # Copy .env.example to .env
@@ -81,11 +76,8 @@ pnpm schema                # Update GraphQL schema
 pnpm seeds:accounts        # Populate database with test accounts
 
 # Reset
-pnpm reset                 # Clear database and recreate seeds
 pnpm reset:ledger          # Clear only ledger entries
 pnpm reset:pix             # Clear only PIX transactions
 pnpm reset:accounts        # Reset balance accounts
-
-# Testing
-pnpm test                  # Run tests
+pnpm reset                 # Clear database and recreate seeds accounts
 ```

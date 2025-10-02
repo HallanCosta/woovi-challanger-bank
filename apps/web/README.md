@@ -6,7 +6,7 @@ Modern and responsive interface built with React.js, TypeScript and Shadcn, offe
 
 ### Technology Stack
 - **Framework**: React.js with TypeScript
-- **Styling**: Tailwind CSS + Shadcn
+- **Styling**: Shadcn
 - **API Client**: Relay GraphQL
 - **Testing**: Jest + React Testing Library
 
@@ -20,14 +20,12 @@ Modern and responsive interface built with React.js, TypeScript and Shadcn, offe
 - **Balance Card**: Balance visualization with visibility toggle
 - **Statement**: Transaction list with updates
 - **PIX Transfers**: Modal for PIX sending
-- **Favorites**: Contact list for quick transfers
+- **Favorites**: Favorites list for quick transfers
 - **Quick Actions**: Direct access buttons to functionalities
-
-## 🧪 Testing
 
 ### Configuration
 - **Framework**: Jest + React Testing Library
-- **Coverage**: Complete component coverage
+- **Coverage**: Some component coverage
 - **Mocks**: Mocks for hooks and APIs
 
 ### Tested Components
@@ -38,14 +36,19 @@ Modern and responsive interface built with React.js, TypeScript and Shadcn, offe
 ## 🚀 Available Scripts
 
 ```bash
+#Folder
+cd apps/web             # Enter folder
+
 # Development
-pnpm dev                 # Start development server
-pnpm build              # Production build
-pnpm start              # Start production server
+pnpm dev                # Start development server
 
 # Relay
 pnpm relay              # Compile GraphQL queries
 
 # Testing
 pnpm test               # Run tests
+
+# Production
+pnpm build              # Production build
+pnpm start              # Start production server
 ```
