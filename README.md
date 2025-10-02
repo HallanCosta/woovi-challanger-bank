@@ -21,10 +21,18 @@ A modern banking application built with cutting-edge technologies, offering comp
 - **README**: [`apps/web/README.md`](apps/web/README.md)
 - **Description**: Modern interface with dashboard, authentication, PIX transfers, and favorites management.
 
+#### Screenshots
+![Dashboard](screenshots/dashboard.png)
+![Favorites and Transfer](screenshots/favorites-n-transfer.png)
+![Transaction History](screenshots/history-transactions.png)
+
 ### Backend (Koa, GraphQL, MongoDB)
 - **Location**: `apps/server/`
 - **README**: [`apps/server/README.md`](apps/server/README.md)
 - **Description**: Complete GraphQL API with user, account, PIX transactions and accounting entries modules.
+
+#### Load Testing Results (K6)
+![K6 Load Test Results](screenshots/test-k6.png)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
