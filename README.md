@@ -121,7 +121,7 @@ To run the project locally, follow these steps:
    pnpm mongo:replica
    ```
 
-8. **Create accounts (IMPORTANT) - Account 1 starts with a balance of R$ 5,000 and Account 2 with R$ 1,000**
+8. **Create accounts (IMPORTANT) - Create Account 1: R$5,000, Account 2: R$1,000**
    ```sh
    pnpm seeds:accounts
    ```
