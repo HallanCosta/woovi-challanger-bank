@@ -96,7 +96,7 @@ To run the project locally, follow these steps:
    pnpm install
    ```
 
-3. **Start services (MongoDB and Redis)**
+3. **Start services (MongoDB, Redis, K6)**
    ```sh
    pnpm compose:up
    ```
@@ -116,17 +116,17 @@ To run the project locally, follow these steps:
    pnpm relay
    ```
 
-7. **Run Relay Compiler**
+7. **Configure Mongo Replica Set (IMPORTANT)**
    ```sh
    pnpm mongo:replica
    ```
 
-8. **Create accounts**
+8. **Create accounts (IMPORTANT) - Account 1 starts with a balance of R$ 5,000 and Account 2 with R$ 1,000**
    ```sh
    pnpm seeds:accounts
    ```
 
-9. **Reset account balances**
+9. **Reset account balances (Optional) - Both accounts will be reset to R$ 10 million**
    ```sh
    pnpm reset:accounts
    ```
