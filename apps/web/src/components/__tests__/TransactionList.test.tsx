@@ -43,18 +43,18 @@ it('should display completed transaction successfully', () => {
   const successTransaction = [mockTransactions[0]]
   render(<TransactionList transactions={successTransaction} />)
   
-  expect(screen.getByText('PIX recebido')).toBeInTheDocument()
   expect(screen.getByText('+R$ 100,50')).toBeInTheDocument()
   expect(screen.getByText('De: João Silva')).toBeInTheDocument()
+  expect(screen.getByText('Banco: Challanger Bank')).toBeInTheDocument()
 })
 
 it('should display transaction with expected failure', () => {
   const failedTransaction = [mockTransactions[1]]
   render(<TransactionList transactions={failedTransaction} />)
   
-  expect(screen.getByText('PIX enviado')).toBeInTheDocument()
   expect(screen.getByText('-R$ 50,25')).toBeInTheDocument()
   expect(screen.getByText('Para: Maria Santos')).toBeInTheDocument()
+  expect(screen.getByText('Banco: Challanger Bank')).toBeInTheDocument()
 })
 
 it('should display empty list when there are no transactions', () => {
@@ -67,8 +67,8 @@ it('should display empty list when there are no transactions', () => {
 it('should display all provided transactions', () => {
   render(<TransactionList transactions={mockTransactions} />)
   
-  expect(screen.getByText('PIX recebido')).toBeInTheDocument()
-  expect(screen.getByText('PIX enviado')).toBeInTheDocument()
   expect(screen.getByText('+R$ 100,50')).toBeInTheDocument()
   expect(screen.getByText('-R$ 50,25')).toBeInTheDocument()
+  expect(screen.getByText('De: João Silva')).toBeInTheDocument()
+  expect(screen.getByText('Para: Maria Santos')).toBeInTheDocument()
 })

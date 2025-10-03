@@ -19,7 +19,7 @@ export const createLedgerEntriesJob = async (job: Job) => {
     });
 
     if (existingEntries.length > 0) {
-      console.log(`⚠️  Entradas do ledger já existem para PIX: ${pixTransactionId}`);
+      // console.log(`⚠️  Entradas do ledger já existem para PIX: ${pixTransactionId}`);
       return {
         error: PixTransactionStatus.ALREADY_PROCESSED,
       }; // Job já foi processado
@@ -30,7 +30,7 @@ export const createLedgerEntriesJob = async (job: Job) => {
     });
 
     if (!pixTransaction) {
-      console.log(`❌ PIX transaction not found: ${pixTransactionId}`);
+      // console.log(`❌ PIX transaction not found: ${pixTransactionId}`);
       return {
         error: PixTransactionStatus.NOT_FOUND,
       };
@@ -71,7 +71,7 @@ export const createLedgerEntriesJob = async (job: Job) => {
     ];
 
     const createdEntries = await LedgerEntry.insertMany(ledgerEntries);
-    console.log(`✅ Criadas ${createdEntries.length} entradas no ledger`);
+    // console.log(`✅ Criadas ${createdEntries.length} entradas no ledger`);
 
     // 3. Atualizar saldos das contas usando sua função updateAccountBalances
     const debitAccountId = fromGlobalId(pixTransaction.debitParty.account).id;
@@ -91,7 +91,7 @@ export const createLedgerEntriesJob = async (job: Job) => {
     ];
 
     const bulkResult = await updateAccountBalances(balanceUpdates);
-    console.log(`✅ Saldos atualizados - Modificados: ${bulkResult.modifiedCount}`);
+    // console.log(`✅ Saldos atualizados - Modificados: ${bulkResult.modifiedCount}`);
 
     if (bulkResult.modifiedCount !== 2) {
       return {
@@ -99,5 +99,5 @@ export const createLedgerEntriesJob = async (job: Job) => {
       };
     }
 
-    console.log(`✅ Job ledger processado com sucesso: ${job.id}`);
+    // console.log(`✅ Job ledger processado com sucesso: ${job.id}`);
 };
