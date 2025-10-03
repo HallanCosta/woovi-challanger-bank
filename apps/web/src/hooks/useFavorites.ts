@@ -1,80 +1,116 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { TABLES } from '../config/database';
 
-export type FavoriteRecipient = {
+export type AccountType = 'PHYSICAL' | 'COMPANY';
+
+export interface FavoriteRecipient {
   id: string;
   pixKey: string;
   nickname?: string;
   userName: string;
   userEmail?: string;
-  accountType?: 'PHYSICAL' | 'COMPANY' | string;
+  accountType?: AccountType | string;
   accountId?: string;
   createdAt: string;
-};
+}
 
-function safeParse<T>(raw: string | null, fallback: T): T {
+export type CreateFavoriteData = Omit<FavoriteRecipient, 'id' | 'createdAt'>;
+
+export interface UseFavoritesReturn {
+  favorites: FavoriteRecipient[];
+  total: number;
+  addFavorite: (favorite: CreateFavoriteData) => boolean;
+  removeFavorite: (id: string) => void;
+  clearFavorites: () => void;
+  getByPixKey: (pixKey: string) => FavoriteRecipient | null;
+}
+
+function safeJsonParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
+  
   try {
     return JSON.parse(raw) as T;
-  } catch {
+  } catch (error) {
     return fallback;
   }
 }
 
-export function useFavorites() {
-  const [favorites, setFavorites] = useState<FavoriteRecipient[]>([]);
+function generateUniqueId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function normalizePixKey(pixKey: string): string {
+  return pixKey.trim();
+}
+
+export function useFavorites(): UseFavoritesReturn {
+  const [favoritesList, setFavoritesList] = useState<FavoriteRecipient[]>([]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const raw = window.localStorage.getItem(TABLES.FAVORITES);
-    const initial = safeParse<FavoriteRecipient[]>(raw, []);
-    setFavorites(initial);
+    const storedData = window.localStorage.getItem(TABLES.FAVORITES);
+    const initialFavorites = safeJsonParse<FavoriteRecipient[]>(storedData, []);
+    setFavoritesList(initialFavorites);
   }, []);
 
-  const persist = useCallback((next: FavoriteRecipient[]) => {
-    setFavorites(next);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(TABLES.FAVORITES, JSON.stringify(next));
+  const persistFavorites = useCallback((newFavorites: FavoriteRecipient[]) => {
+    setFavoritesList(newFavorites);
+    
+    window.localStorage.setItem(TABLES.FAVORITES, JSON.stringify(newFavorites));
+  }, []);
+
+  const addFavorite = useCallback((favoriteData: CreateFavoriteData): boolean => {
+    const normalizedPixKey = normalizePixKey(favoriteData.pixKey);
+    
+    const alreadyExists = favoritesList.some(
+      (favorite) => normalizePixKey(favorite.pixKey) === normalizedPixKey
+    );
+    
+    if (alreadyExists) {
+      return false;
     }
-  }, []);
 
-  const addFavorite = useCallback((favorite: Omit<FavoriteRecipient, 'id' | 'createdAt'>) => {
-    const exists = favorites.some((f) => f.pixKey.trim() === favorite.pixKey.trim());
-    if (exists) return false;
-    const item: FavoriteRecipient = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    const newFavorite: FavoriteRecipient = {
+      id: generateUniqueId(),
       createdAt: new Date().toISOString(),
-      ...favorite,
-      pixKey: favorite.pixKey.trim(),
+      ...favoriteData,
+      pixKey: normalizedPixKey,
     };
-    const next = [item, ...favorites];
-    persist(next);
-    return true;
-  }, [favorites, persist]);
 
-  const removeFavorite = useCallback((id: string) => {
-    const next = favorites.filter((f) => f.id !== id);
-    persist(next);
-  }, [favorites, persist]);
+    const updatedFavorites = [newFavorite, ...favoritesList];
+    persistFavorites(updatedFavorites);
+    
+    return true;
+  }, [favoritesList, persistFavorites]);
+
+  const removeFavorite = useCallback((favoriteId: string) => {
+    const updatedFavorites = favoritesList.filter(
+      (favorite) => favorite.id !== favoriteId
+    );
+    persistFavorites(updatedFavorites);
+  }, [favoritesList, persistFavorites]);
 
   const clearFavorites = useCallback(() => {
-    persist([]);
-  }, [persist]);
+    persistFavorites([]);
+  }, [persistFavorites]);
 
-  const getByPixKey = useCallback((pixKey: string) => {
-    const key = pixKey.trim();
-    return favorites.find((f) => f.pixKey === key) || null;
-  }, [favorites]);
+  const getByPixKey = useCallback((pixKey: string): FavoriteRecipient | null => {
+    const normalizedPixKey = normalizePixKey(pixKey);
+    return favoritesList.find(
+      (favorite) => normalizePixKey(favorite.pixKey) === normalizedPixKey
+    ) || null;
+  }, [favoritesList]);
 
-  const total = favorites.length;
+  const totalFavorites = favoritesList.length;
 
-  const ordered = useMemo(() => {
-    return [...favorites].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [favorites]);
+  const sortedFavorites = useMemo(() => {
+    return [...favoritesList].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [favoritesList]);
 
   return {
-    favorites: ordered,
-    total,
+    favorites: sortedFavorites,
+    total: totalFavorites,
     addFavorite,
     removeFavorite,
     clearFavorites,

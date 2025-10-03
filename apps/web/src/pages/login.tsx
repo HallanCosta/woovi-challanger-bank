@@ -3,6 +3,7 @@ import { GetServerSideProps } from 'next';
 import { useAuth } from '../hooks/useAuth';
 import { useRouter } from 'next/router';
 import { TABLES } from '../config/database';
+import { MESSAGES } from '../constants/messages';
 
 import {
   Visibility as VisibilityIcon,
@@ -24,17 +25,12 @@ const Login = () => {
 
   useEffect(() => {
     const checkAuthAndRedirect = () => {
-      try {
-        const savedUser = localStorage.getItem(TABLES.USER);
-        const savedAccount = localStorage.getItem(TABLES.ACCOUNT);
-        
-        if (savedUser && savedAccount) {
-          // Usuário já está logado, redirecionar imediatamente
-          router.replace('/dashboard');
-          return;
-        }
-      } catch (error) {
-        console.error('Erro ao verificar autenticação:', error);
+      const savedUser = localStorage.getItem(TABLES.USER);
+      const savedAccount = localStorage.getItem(TABLES.ACCOUNT);
+      
+      if (savedUser && savedAccount) {
+        router.replace('/dashboard');
+        return;
       }
       
       setIsCheckingAuth(false);
@@ -57,7 +53,7 @@ const Login = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-[#0B1220] dark:to-[#0B1220]">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">Verificando autenticação...</p>
+          <p className="text-gray-600 dark:text-gray-300">{MESSAGES.LOADING_LOADING}</p>
         </div>
       </div>
     );
@@ -79,14 +75,14 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
-                E-mail
+                {MESSAGES.LABEL_EMAIL}
               </label>
               <div className="relative">
                 <AccountCircleIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                 <Input
                   id="email"
                   type="text"
-                  placeholder="Digite o e-mail"
+                  placeholder={MESSAGES.PLACEHOLDER_EMAIL}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
@@ -97,14 +93,14 @@ const Login = () => {
 
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                Senha
+                {MESSAGES.LABEL_PASSWORD}
               </label>
               <div className="relative">
                 <LockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Digite sua senha"
+                  placeholder={MESSAGES.PLACEHOLDER_PASSWORD}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10 pr-10"
@@ -132,10 +128,10 @@ const Login = () => {
               {isLoading ? (
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Entrando...</span>
+                  <span>{MESSAGES.LOADING_PROCESSING}</span>
                 </div>
               ) : (
-                'Entrar'
+                MESSAGES.BUTTON_LOGIN
               )}
             </Button>
           </form>

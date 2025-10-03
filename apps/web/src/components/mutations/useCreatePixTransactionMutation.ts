@@ -34,11 +34,9 @@ const useCreatePixTransactionMutation = () => {
     return commit({
       variables: { input },
       onCompleted: (response) => {
-        console.log('PIX Transaction created:', response);
         handlers?.onCompleted?.(response);
       },
       onError: (error) => {
-        console.error('Error creating PIX transaction:', error);
         handlers?.onError?.(error as any);
       },
     });

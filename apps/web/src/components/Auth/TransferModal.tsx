@@ -11,6 +11,7 @@ import { useUser } from '../../hooks/useUser';
 import { useCreatePixTransactionMutation } from '../mutations';
 import { v4 as uuidv4 } from 'uuid';
 import { maskEmail, formatCurrencyInput } from '../../lib/utils';
+import { MESSAGES } from '../../constants/messages';
 
 interface TransferModalProps {
   isOpen: boolean;
@@ -53,12 +54,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const pixKeyErrorMessage = useMemo(() => {
     if (!formErrors.pixKey) return '';
     if (isSelfPixKey) {
-      return 'Você está tentando transferir para a sua própria conta (chave PIX)';
+      return MESSAGES.VALIDATION_PIX_KEY_SELF_TRANSFER;
     }
     if (pixKeyNotFound) {
-      return 'A chave PIX informada não está cadastrada em nenhuma instituição de pagamento';
+      return MESSAGES.VALIDATION_PIX_KEY_NOT_REGISTERED;
     }
-    return 'Chave PIX é obrigatória';
+    return MESSAGES.VALIDATION_PIX_KEY_INVALID;
   }, [formErrors.pixKey, isSelfPixKey, pixKeyNotFound]);
 
   const resetForm = () => {
@@ -102,7 +103,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       return;
     }
 
-    // Bloquear transferência para a própria chave PIX
     if (myPixKey && formData.pixKey.trim() === myPixKey) {
       setIsSelfPixKey(true);
       setPixKeyNotFound(false);
@@ -112,7 +112,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       return;
     }
 
-    // Buscar conta por chave PIX
     try {
       setPixKeyNotFound(false);
       setIsSelfPixKey(false);
@@ -164,13 +163,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const handleCreatePixTransaction = () => {
     const cents = Math.round(formData.value * 100);
     const idempotencyKey = `pix:${uuidv4()}`;
-    console.log('🔍 recipientData:', recipientData);
-    console.log('🔍 recipientData account:', account);
+
     createPixTransaction(
       {
         value: cents,
         status: 'CREATED',
-        description: `Transferência PIX para ${recipientData?.user?.name}`,
+        description: MESSAGES.DESCRIPTION_TRANSFER(recipientData?.user?.name || ''),
         idempotencyKey,
         debitParty: {
           account: account?.id,
@@ -197,22 +195,22 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           resetForm();
         },
         onError: () => {
-          // Sinalizar erro inline no campo chave PIX
           setFormErrors({ value: false, pixKey: true });
         },
       }
     );
   };
 
-  // Tratamento de input monetário (BRL) digitando só números
   const handleMoneyInputChange = (raw: string) => {
     const digitsOnly = raw.replace(/\D/g, '');
     const cents = digitsOnly ? parseInt(digitsOnly, 10) : 0;
     const numericValue = cents / 100;
-    setFormData(prev => ({ ...prev, value: numericValue }));
-    // Formatar para pt-BR sem prefixo R$
     const formatted = formatCurrencyInput(numericValue);
+
+    setFormData(prev => ({ ...prev, value: numericValue }));
+
     setValueDisplay(formatted);
+
     if (numericValue >= 0.01) {
       setFormErrors(prev => ({ ...prev, value: false }));
     }
@@ -227,7 +225,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           <div>
             <CardTitle className="flex items-center gap-2">
               <PixIcon />
-              {step === 'form' ? 'Nova Transferência' : 'Confirmar transferência PIX'}
+              {step === 'form' ? MESSAGES.TITLE_NEW_TRANSFER : MESSAGES.TITLE_CONFIRM_TRANSFER}
             </CardTitle>
           </div>
           {/* <Button variant="ghost" size="sm" onClick={onClose}>
@@ -247,11 +245,11 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             }`}
           >
               <div>
-                <label className="text-sm font-medium mb-2 block">Valor (R$)</label>
+                <label className="text-sm font-medium mb-2 block">{MESSAGES.LABEL_VALUE}</label>
                 <Input
                   type="text"
                   inputMode="numeric"
-                  placeholder="0,00"
+                  placeholder={MESSAGES.PLACEHOLDER_VALUE}
                   value={valueDisplay}
                   onChange={(e) => handleMoneyInputChange(e.target.value)}
                   aria-invalid={formErrors.value}
@@ -259,16 +257,16 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   required
                 />
                 {formErrors.value && (
-                  <p className="mt-1 text-sm text-red-600">O valor do PIX não pode ser menor que R$ 0,01</p>
+                  <p className="mt-1 text-sm text-red-600">{MESSAGES.VALIDATION_VALUE_TOO_LOW}</p>
                 )}
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Chave PIX</label>
+                <label className="text-sm font-medium mb-2 block">{MESSAGES.LABEL_PIX_KEY}</label>
                 <div className="relative">
                   {/* <CreditCard className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" /> */}
                   <Input
-                    placeholder="Chave aleatória"
+                    placeholder={MESSAGES.PLACEHOLDER_PIX_KEY}
                     value={formData.pixKey}
                     onChange={(e) => handleInputChange('pixKey', e.target.value)}
                     aria-invalid={formErrors.pixKey}
@@ -283,11 +281,11 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
               <div className="flex gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-                  Cancelar
+                  {MESSAGES.BUTTON_CANCEL}
                 </Button>
                 <Button type="submit" className="flex-1">
                   <Send className="w-4 h-4 mr-2" />
-                  Transferir
+                  {MESSAGES.BUTTON_TRANSFER}
                 </Button>
               </div>
           </form>
@@ -329,7 +327,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
               </div>
               <div className="flex gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={() => setStep('form')} className="flex-1">
-                  Voltar
+                  {MESSAGES.BUTTON_BACK}
                 </Button>
                 <Button
                   type="button"
@@ -337,7 +335,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   onClick={handleCreatePixTransaction}
                   className="flex-1"
                 >
-                  {isInFlight ? 'Enviando...' : 'Confirmar'}
+                  {isInFlight ? MESSAGES.LOADING_SENDING : MESSAGES.BUTTON_CONFIRM}
                 </Button>
               </div>
           </div>

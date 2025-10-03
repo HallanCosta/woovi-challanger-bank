@@ -7,6 +7,7 @@ import { AddFavoriteModal } from '../components/Auth/AddFavoriteModal';
 import { TransferModal, TransferData } from '../components/Auth/TransferModal';
 import { DashboardHeader, QuickActions, LoadingScreen } from '../components/Dashboard';
 import { useToast } from '../hooks/useToast';
+import { MESSAGES } from '../constants/messages';
 import { useAuth } from '../hooks/useAuth';
 import { useTransactions } from '../hooks/useTransactions';
 import { useDashboardState } from '../hooks/useDashboardState';
@@ -58,13 +59,8 @@ const Dashboard = () => {
 
   const handleTransfer = (transferData: TransferData) => {
     addTransaction(transferData);
-    showSuccess(`Transferência de R$ ${transferData.value.toFixed(2)} realizada com sucesso!`);
-    // Atualizar saldo da conta após confirmar a transação
-    try {
-      refreshBalance();
-    } catch {
-      // noop
-    }
+    showSuccess(MESSAGES.SUCCESS_TRANSFER(transferData.value));
+    refreshBalance();
   };
 
   const handleLogout = () => {

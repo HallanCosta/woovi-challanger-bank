@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { TransactionList, Transaction } from '../Auth/TransactionList'
+import { TransactionList, LedgerEntryNode } from '../Auth/TransactionList'
 import { ledgerEntryEnum } from '../../constants/ledgerEntryEnum'
-import { TransactionStatus } from '../../constants/transactionStatus'
 import '@testing-library/jest-dom'
 
 // Mock dos ícones
@@ -15,24 +14,28 @@ jest.mock('lucide-react', () => ({
   RefreshCw: () => <div data-testid="refresh-icon" />,
 }))
 
-const mockTransactions: Transaction[] = [
+const mockTransactions: LedgerEntryNode[] = [
   {
     id: '1',
     type: ledgerEntryEnum.CREDIT,
-    value: 100.50,
+    value: 10050, // 100.50 em centavos
     description: 'PIX recebido',
-    sender: 'João Silva',
-    date: '2024-01-15T10:30:00Z',
-    status: TransactionStatus.COMPLETED,
+    createdAt: '2024-01-15T10:30:00Z',
+    ledgerAccount: {
+      name: 'João Silva',
+      psp: 'Challanger Bank',
+    },
   },
   {
     id: '2',
     type: ledgerEntryEnum.DEBIT,
-    value: 50.25,
+    value: 5025, // 50.25 em centavos
     description: 'PIX enviado',
-    recipient: 'Maria Santos',
-    date: '2024-01-14T15:45:00Z',
-    status: TransactionStatus.FAILED,
+    createdAt: '2024-01-14T15:45:00Z',
+    ledgerAccount: {
+      name: 'Maria Santos',
+      psp: 'Challanger Bank',
+    },
   },
 ]
 
@@ -42,7 +45,6 @@ it('should display completed transaction successfully', () => {
   
   expect(screen.getByText('PIX recebido')).toBeInTheDocument()
   expect(screen.getByText('+R$ 100,50')).toBeInTheDocument()
-  expect(screen.getByTestId('check-circle-icon')).toBeInTheDocument()
   expect(screen.getByText('De: João Silva')).toBeInTheDocument()
 })
 
@@ -52,7 +54,6 @@ it('should display transaction with expected failure', () => {
   
   expect(screen.getByText('PIX enviado')).toBeInTheDocument()
   expect(screen.getByText('-R$ 50,25')).toBeInTheDocument()
-  expect(screen.getByTestId('x-circle-icon')).toBeInTheDocument()
   expect(screen.getByText('Para: Maria Santos')).toBeInTheDocument()
 })
 

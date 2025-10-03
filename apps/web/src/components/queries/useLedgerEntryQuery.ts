@@ -3,6 +3,7 @@ import { useLazyLoadQuery, fetchQuery } from 'react-relay';
 import { LedgerEntryQuery } from './LedgerEntryQuery';
 import { LedgerEntryQuery as LedgerEntryQueryType } from '../../__generated__/LedgerEntryQuery.graphql';
 import { createEnvironment } from '../../relay/environment';
+import { MESSAGES } from '../../constants/messages';
 
 interface UseLedgerEntryQueryOptions {
   filters?: {
@@ -19,13 +20,12 @@ const useLedgerEntryQuery = (options: UseLedgerEntryQueryOptions = {}) => {
   const [endCursor, setEndCursor] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Query inicial - apenas para primeira carga
   const initialData = useLazyLoadQuery<LedgerEntryQueryType>(
     LedgerEntryQuery,
     {
       first: 10,
       after: null,
-      filters: options.filters || null,
+      filters: options.filters,
     },
     {
       fetchPolicy: 'store-and-network',
@@ -33,7 +33,6 @@ const useLedgerEntryQuery = (options: UseLedgerEntryQueryOptions = {}) => {
     }
   );
 
-  // Atualizar estado quando os dados iniciais mudam
   useEffect(() => {
     if (initialData?.ledgerEntries) {
       const newTransactions = initialData.ledgerEntries.edges?.map(edge => edge.node) || [];
@@ -58,7 +57,7 @@ const useLedgerEntryQuery = (options: UseLedgerEntryQueryOptions = {}) => {
     const environment = createEnvironment();
     const result = await fetchQuery(environment, LedgerEntryQuery, {
       first: 10,
-      after: null, // Sempre buscar do início no refresh
+      after: null,
       filters: options.filters,
     }).toPromise() as LedgerEntryQueryType['response'];
 
@@ -67,9 +66,7 @@ const useLedgerEntryQuery = (options: UseLedgerEntryQueryOptions = {}) => {
       setAllTransactions(newTransactions);
     }
 
-    setTimeout(() => {
-      setIsRefreshing(false);
-    }, 1000);
+    setIsRefreshing(false);
   }, [options.filters]);
 
   const loadMore = useCallback(async () => {
@@ -77,7 +74,6 @@ const useLedgerEntryQuery = (options: UseLedgerEntryQueryOptions = {}) => {
       setIsLoadingMore(true);
       
       try {
-        // Fazer fetch direto sem usar useLazyLoadQuery para evitar re-renderização
         const environment = createEnvironment();
         const result = await fetchQuery(environment, LedgerEntryQuery, {
           first: 10,
@@ -89,20 +85,18 @@ const useLedgerEntryQuery = (options: UseLedgerEntryQueryOptions = {}) => {
           const newTransactions = result.ledgerEntries.edges?.map(edge => edge.node) || [];
           const pageInfo = result.ledgerEntries.pageInfo;
           
-          // Adicionar novas transações sem re-renderizar tudo
           setAllTransactions(prev => [...prev, ...newTransactions]);
           setHasNextPage(pageInfo?.hasNextPage || false);
           setEndCursor(pageInfo?.endCursor || null);
         }
       } catch (error) {
-        console.error('Erro ao carregar mais transações:', error);
+        console.error(MESSAGES.ERROR_NETWORK, error);
       } finally {
         setIsLoadingMore(false);
       }
     }
   }, [hasNextPage, isLoadingMore, endCursor, options.filters]);
 
-  // Criar objeto de dados compatível com o formato esperado
   const paginatedData = useMemo(() => ({
     ledgerEntries: {
       edges: allTransactions.map(transaction => ({ node: transaction })),

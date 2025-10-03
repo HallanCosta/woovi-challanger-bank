@@ -8,6 +8,7 @@ import { fetchQuery } from 'relay-runtime';
 import { AccountQuery } from '../queries/AccountQuery';
 import { useUser } from '../../hooks/useUser';
 import { maskEmail } from '../../lib/utils';
+import { MESSAGES } from '../../constants/messages';
 
 interface AddFavoriteModalProps {
   isOpen: boolean;
@@ -81,34 +82,39 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({ isOpen, onCl
 
   const searchRecipient = async () => {
     const key = pixKey.trim();
+    
     if (!key) {
-      setPixFieldError('Informe a chave PIX');
+      setPixFieldError(MESSAGES.VALIDATION_PIX_KEY_REQUIRED);
       return;
     }
+
     setError('');
+    
     if (myPixKey && key === myPixKey) {
-      setPixFieldError('Você não pode salvar sua própria chave PIX', false);
+      setPixFieldError(MESSAGES.VALIDATION_PIX_KEY_SELF_FAVORITE, false);
       return;
     }
+    
     setIsSearching(true);
+
     try {
       const node = await fetchRecipientByPixKey(key);
       if (!node) {
-        setPixFieldError('A chave PIX informada não foi encontrada');
+        setPixFieldError(MESSAGES.VALIDATION_PIX_KEY_NOT_FOUND);
         resetRecipientFields();
         setLastSearchedPixKey(null);
         return;
       }
-      setName(node.user?.name || '');
-      setNickname(node.user?.name || '');
-      setEmail(node.user?.email || '');
-      setAccountType(node.type || '');
-      setAccountId(node.id || '');
+      setName(node.user?.name);
+      setNickname(node.user?.name);
+      setEmail(node.user?.email);
+      setAccountType(node.type);
+      setAccountId(node.id);
       setFormErrors({ pixKey: false });
       setShake({ pixKey: false });
       setLastSearchedPixKey(key);
     } catch (e) {
-      setPixFieldError('Erro ao buscar destinatário', false);
+      setPixFieldError(MESSAGES.ERROR_RECIPIENT_SEARCH, false);
     } finally {
       setIsSearching(false);
     }
@@ -117,17 +123,17 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({ isOpen, onCl
   const handleAdd = async () => {
     const key = pixKey.trim();
     if (!key) {
-      setPixFieldError('Informe a chave PIX');
+      setPixFieldError(MESSAGES.VALIDATION_PIX_KEY_REQUIRED);
       return;
     }
     if (myPixKey && key === myPixKey) {
-      setPixFieldError('Você não pode salvar sua própria chave PIX', false);
+      setPixFieldError(MESSAGES.VALIDATION_PIX_KEY_SELF_FAVORITE, false);
       return;
     }
     try {
       const node = await fetchRecipientByPixKey(key);
       if (!node) {
-        setPixFieldError('A chave PIX informada não foi encontrada');
+        setPixFieldError(MESSAGES.VALIDATION_PIX_KEY_NOT_FOUND);
         resetRecipientFields();
         setLastSearchedPixKey(null);
         return;
@@ -141,13 +147,13 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({ isOpen, onCl
         nickname: nickname.trim() || undefined,
       });
       if (!added) {
-        setPixFieldError('Esta chave PIX já está salva', false);
+        setPixFieldError(MESSAGES.VALIDATION_PIX_KEY_ALREADY_SAVED, false);
         return;
       }
       resetFormState();
       onClose();
     } catch (e) {
-      setPixFieldError('Erro ao validar a chave PIX', false);
+      setPixFieldError(MESSAGES.ERROR_PIX_VALIDATION, false);
     }
   };
 
@@ -165,16 +171,16 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({ isOpen, onCl
           <div>
             <CardTitle className="flex items-center gap-2">
               <Heart className="w-5 h-5 text-rose-500 fill-current" />
-              Novo Favorito
+              {MESSAGES.TITLE_NEW_FAVORITE}
             </CardTitle>
-            <CardDescription className="mt-2">Salve uma chave PIX como favorita</CardDescription>
+            <CardDescription className="mt-2">{MESSAGES.DESCRIPTION_SAVE_FAVORITE}</CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Chave PIX</label>
+            <label className="text-sm font-medium mb-2 block">{MESSAGES.LABEL_PIX_KEY}</label>
             <Input
-              placeholder="Chave aleatória"
+              placeholder={MESSAGES.PLACEHOLDER_PIX_KEY}
               value={pixKey}
               onChange={(e) => {
                 setPixKey(e.target.value);
@@ -188,41 +194,41 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({ isOpen, onCl
               className={`${formErrors.pixKey ? 'border-red-500 focus-visible:ring-red-500' : ''} ${shake.pixKey ? 'animate-ui-shake' : ''}`}
             />
             {(formErrors.pixKey || error) && (
-              <p className="mt-1 text-sm text-red-600">{error || 'Informe a chave PIX'}</p>
+              <p className="mt-1 text-sm text-red-600">{error || MESSAGES.VALIDATION_PIX_KEY_REQUIRED}</p>
             )}
             <div className="flex gap-2 mt-2">
-              <Button type="button" variant="outline" onClick={searchRecipient} disabled={isSearching}>Buscar</Button>
+              <Button type="button" variant="outline" onClick={searchRecipient} disabled={isSearching}>{MESSAGES.BUTTON_SEARCH}</Button>
 
-              <Button type="button" variant="ghost" onClick={() => { resetFormState(); }}>Limpar dados</Button>
+              <Button type="button" variant="ghost" onClick={() => { resetFormState(); }}>{MESSAGES.BUTTON_CLEAR}</Button>
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Nome</label>
+            <label className="text-sm font-medium mb-2 block">{MESSAGES.LABEL_RECIPIENT_NAME}</label>
             <div className="relative">
               <User2 className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-              <Input className="pl-10" placeholder="Nome do destinatário" value={name} disabled readOnly />
+              <Input className="pl-10" placeholder={MESSAGES.PLACEHOLDER_RECIPIENT_NAME} value={name} disabled readOnly />
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">E-mail</label>
+            <label className="text-sm font-medium mb-2 block">{MESSAGES.LABEL_EMAIL}</label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-              <Input className="pl-10" placeholder="email@exemplo.com" value={maskEmail(email)} disabled readOnly />
+              <Input className="pl-10" placeholder={MESSAGES.PLACEHOLDER_EMAIL} value={maskEmail(email)} disabled readOnly />
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Apelido</label>
-            <Input placeholder="Como você quer chamar este favorito?" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+            <label className="text-sm font-medium mb-2 block">{MESSAGES.LABEL_NICKNAME}</label>
+            <Input placeholder={MESSAGES.PLACEHOLDER_NICKNAME} value={nickname} onChange={(e) => setNickname(e.target.value)} />
           </div>
 
           {/* Erros de PIX aparecem abaixo do campo de chave PIX */}
 
           <div className="flex gap-2 pt-2">
-            <Button type="button" variant="outline" className="flex-1" onClick={handleCancel}>Cancelar</Button>
-            <Button type="button" className={`flex-1 bg-gradient-to-b from-rose-500 to-pink-600 text-white hover:opacity-95 ${!isValid ? 'opacity-60 cursor-not-allowed' : ''}`} onClick={handleAdd} disabled={!isValid}>Salvar</Button>
+            <Button type="button" variant="outline" className="flex-1" onClick={handleCancel}>{MESSAGES.BUTTON_CANCEL}</Button>
+            <Button type="button" className={`flex-1 bg-gradient-to-b from-rose-500 to-pink-600 text-white hover:opacity-95 ${!isValid ? 'opacity-60 cursor-not-allowed' : ''}`} onClick={handleAdd} disabled={!isValid}>{MESSAGES.BUTTON_SAVE}</Button>
           </div>
         </CardContent>
       </Card>
