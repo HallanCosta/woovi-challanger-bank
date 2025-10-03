@@ -35,7 +35,12 @@ User 2:
 - PIX Key: 08771dd3-32c0-4fe7-8725-6175ab14c7ee
 
 ### Test in Postman
-[Download Postman file](https://raw.githubusercontent.com/HallanCosta/woovi-challanger-bank/refs/heads/main/apps/server/docs/graphql-api-collection.json)
+
+**Version 2.1**
+- [Download Postman Collection v2.1](https://raw.githubusercontent.com/HallanCosta/woovi-challanger-bank/refs/heads/main/apps/server/docs/graphql-api-collection-v2.1.json)
+
+**Version 2.0**
+- [Download Postman Collection v2.0](https://raw.githubusercontent.com/HallanCosta/woovi-challanger-bank/refs/heads/main/apps/server/docs/graphql-api-collection.json)
 
 ### Frontend (Next.js)
 - **Location**: `apps/web/`

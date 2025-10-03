@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "e7440aa4-4610-4a4c-b44b-e3ed7efb9a0d",
 		"name": "Postman Collection (from GraphQL)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "48891101",
 		"_collection_link": "https://hallancosta-2571599.postman.co/workspace/H%C3%A1llan-da-Silva-Costa's-Workspa~a6f64e06-e34d-46bb-802a-d7d579ce46e4/collection/48891101-e7440aa4-4610-4a4c-b44b-e3ed7efb9a0d?action=share&source=collection_link&creator=48891101"
 	},
@@ -25,7 +25,12 @@
 										"variables": "{\n  \"input\": {\n    \"value\": \"\",\n    \"status\": \"\",\n    \"debitParty\": {\n      \"psp\": \"\",\n      \"account\": \"\",\n      \"type\": \"\",\n      \"pixKey\": \"\"\n    },\n    \"creditParty\": {\n      \"psp\": \"\",\n      \"account\": \"\",\n      \"type\": \"\",\n      \"pixKey\": \"\"\n    },\n    \"description\": \"\",\n    \"idempotencyKey\": \"\",\n    \"clientMutationId\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url}}"
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
 							},
 							"response": []
 						}
@@ -46,7 +51,12 @@
 										"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"before\": \"\",\n  \"last\": 0,\n  \"filters\": {\n    \"user\": \"\",\n    \"pixKey\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url}}"
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
 							},
 							"response": []
 						},
@@ -62,7 +72,12 @@
 										"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"before\": \"\",\n  \"last\": 0,\n  \"filters\": {\n    \"email\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url}}"
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
 							},
 							"response": []
 						},
@@ -78,7 +93,12 @@
 										"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"before\": \"\",\n  \"last\": 0,\n  \"filters\": {\n    \"account\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url}}"
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
 							},
 							"response": []
 						},
@@ -94,7 +114,12 @@
 										"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"before\": \"\",\n  \"last\": 0,\n  \"filters\": {\n    \"user\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url}}"
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
 							},
 							"response": []
 						}
@@ -120,7 +145,12 @@
 										"variables": "{\n  \"input\": {\n    \"value\": \"\",\n    \"status\": \"\",\n    \"debitParty\": {\n      \"psp\": \"\",\n      \"account\": \"\",\n      \"type\": \"\",\n      \"pixKey\": \"\"\n    },\n    \"creditParty\": {\n      \"psp\": \"\",\n      \"account\": \"\",\n      \"type\": \"\",\n      \"pixKey\": \"\"\n    },\n    \"description\": \"\",\n    \"idempotencyKey\": \"\",\n    \"clientMutationId\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url_production}}"
+								"url": {
+									"raw": "{{url_production}}",
+									"host": [
+										"{{url_production}}"
+									]
+								}
 							},
 							"response": []
 						}
@@ -141,7 +171,12 @@
 										"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"before\": \"\",\n  \"last\": 0,\n  \"filters\": {\n    \"user\": \"\",\n    \"pixKey\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url_production}}"
+								"url": {
+									"raw": "{{url_production}}",
+									"host": [
+										"{{url_production}}"
+									]
+								}
 							},
 							"response": []
 						},
@@ -157,7 +192,12 @@
 										"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"before\": \"\",\n  \"last\": 0,\n  \"filters\": {\n    \"email\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url_production}}"
+								"url": {
+									"raw": "{{url_production}}",
+									"host": [
+										"{{url_production}}"
+									]
+								}
 							},
 							"response": []
 						},
@@ -173,7 +213,12 @@
 										"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"before\": \"\",\n  \"last\": 0,\n  \"filters\": {\n    \"account\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url_production}}"
+								"url": {
+									"raw": "{{url_production}}",
+									"host": [
+										"{{url_production}}"
+									]
+								}
 							},
 							"response": []
 						},
@@ -189,7 +234,12 @@
 										"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"before\": \"\",\n  \"last\": 0,\n  \"filters\": {\n    \"user\": \"\"\n  }\n}"
 									}
 								},
-								"url": "{{url_production}}"
+								"url": {
+									"raw": "{{url_production}}",
+									"host": [
+										"{{url_production}}"
+									]
+								}
 							},
 							"response": []
 						}
