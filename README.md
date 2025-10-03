@@ -73,7 +73,7 @@ To run the project locally, follow these steps:
 
 ### Prerequisites
 
-- **Node.js** (version 18 or higher)
+- **Node.js** (version 22 recommended, minimum 18)
   ```sh
   https://nodejs.org/en/download/
   ```
