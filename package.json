@@ -4,6 +4,7 @@
 	"scripts": {
 		"build": "turbo run build",
 		"start": "turbo run start --parallel --filter=@challanger-bank/server --filter=@challanger-bank/web",
+		"stop:production": "pm2 stop ecosystem.config.js",
 		"start:production": "pm2 start ecosystem.config.js",
     "restart:production": "pm2 restart ecosystem.config.js",
     "config:local": "turbo run config:local",
