@@ -50,7 +50,7 @@ jobs:
           SOURCE: '.'
           REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
           REMOTE_USER: ${{ secrets.PRODUCTION_SUDO_USERNAME }}
-          EXCLUDE: '/.docker/, /k6/, docker-compose.yml, /apps/server/.turbo/, /apps/server/docs/, /apps/server/jest.config.js, /apps/server/mongodb-binaries/, /apps/server/scripts/, /apps/server/babelBarrel.js, /apps/server/.env.example, /apps/server/README.md, /apps/server/tsconfig.json, /apps/web/.turbo/, /apps/web/.next/cache/, /apps/web/.swc/, /apps/web/coverage/, /apps/web/data/, /apps/web/.env.example, /apps/web/.eslintrc.js, /apps/web/jest.*, /apps/web/relay.config.js, /apps/web/tsconfig.tsbuildinfo, /apps/web/next-env.d.ts'
+          EXCLUDE: '/.docker/, /k6/, docker-compose.yml, /apps/server/.turbo/, /apps/server/docs/, /apps/server/jest.config.js, /apps/server/mongodb-binaries/, /apps/server/scripts/, /apps/server/babelBarrel.js, /apps/server/.env.example, /apps/server/README.md, /apps/server/tsconfig.json, /apps/web/.turbo/, /apps/web/.next/cache/, /apps/web/.swc/, /apps/web/coverage/, /apps/web/data/, /apps/web/.env.example, /apps/web/.eslintrc.js, /apps/web/jest.*, /apps/web/tsconfig.tsbuildinfo, /apps/web/next-env.d.ts'
           TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
 
   deploy:

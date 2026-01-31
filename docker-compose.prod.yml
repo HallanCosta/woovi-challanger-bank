@@ -1,11 +1,11 @@
 services:
   mongodb:
     image: mongo
-    container_name: mongodb
+    container_name: bank-mongodb
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_DATABASE=woovi-playground
+      - MONGO_INITDB_DATABASE=bank
     volumes:
       - ./.docker/mongodb:/data/db
     restart: always
@@ -13,7 +13,7 @@ services:
 
   redis:
     image: redis
-    container_name: redis
+    container_name: bank-redis
     ports:
       - "6379:6379"
     volumes:
