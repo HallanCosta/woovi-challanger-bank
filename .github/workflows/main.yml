@@ -1,4 +1,4 @@
-name: 🚀 Deploy to Production 
+name: 🚀 Deploy to Production
 
 on:
   workflow_dispatch:
@@ -7,8 +7,8 @@ on:
    #  - main
 
 jobs:
-  deploy:
-    name: 🚀 Deployment to Production
+  build:
+    name: 🏗️ Build & Deploy
     runs-on: ubuntu-latest
 
     if: github.ref == 'refs/heads/main'
@@ -17,28 +17,32 @@ jobs:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
-      - name: 🕒 Generate timestamp to update version project
+      - name: 🕒 Generate timestamp
         run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
 
-      - name: 🔨 Creating .env file (WEB)
+      - name: 🔨 Creating .env files
         run: |
           echo -n "${{ secrets.PRODUCTION_DEPLOY_ENV_WEB }}" | tr -d '\r' > ./apps/web/.env
           echo -e "\nAPP_VERSION=${{ env.timestamp }}" >> ./apps/web/.env
 
-      - name: 🔨 Creating .env file (SERVER)
-        run: |
           echo -n "${{ secrets.PRODUCTION_DEPLOY_ENV_SERVER }}" | tr -d '\r' > ./apps/server/.env
           echo -e "\nAPP_VERSION=${{ env.timestamp }}" >> ./apps/server/.env
 
-      - name: 👷 Building
+      - name: 📦 Setup pnpm
+        run: npm install -g pnpm@10.0.0
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 🔧 Type generation & validation
         run: |
-          npm install -g pnpm@10.0.0 &&
-          pnpm install &&
           pnpm schema &&
           pnpm relay &&
-          pnpm build
 
-      - name: 🚀 Deploy to Production server
+      - name: 👷 Build project
+        run: pnpm build
+
+      - name: 🚢 Deploy to Production server
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
@@ -46,16 +50,32 @@ jobs:
           SOURCE: '.'
           REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
           REMOTE_USER: ${{ secrets.PRODUCTION_SUDO_USERNAME }}
-          EXCLUDE: '/.docker/, /k6/, docker-compose.yml'
+          EXCLUDE: '/.docker/, /k6/, docker-compose.yml, /apps/server/.turbo/, /apps/server/docs/, /apps/server/jest.config.js, /apps/server/mongodb-binaries/, /apps/server/scripts/, /apps/server/babelBarrel.js, /apps/server/.env.example, /apps/server/README.md, /apps/server/tsconfig.json, /apps/web/.turbo/, /apps/web/.next/cache/, /apps/web/.swc/, /apps/web/coverage/, /apps/web/data/, /apps/web/.env.example, /apps/web/.eslintrc.js, /apps/web/jest.*, /apps/web/relay.config.js, /apps/web/tsconfig.tsbuildinfo, /apps/web/next-env.d.ts'
           TARGET: ${{ secrets.PRODUCTION_PROJECT_DIR }}
-          SCRIPT_AFTER: |
-            cd ${{ secrets.PRODUCTION_PROJECT_DIR }}
-            export PATH=$HOME/.nvm/versions/node/v22.20.0/bin:$PATH
-            echo "Starting containers with PNPM..."
-            pnpm compose:up:production
-            sleep 10
-            echo "Starting MongoDB replica with PNPM..."
-            pnpm mongo:replica
-            sleep 5
-            echo "Restarting production server with PNPM..."
-            pnpm restart:production
+
+  deploy:
+      name: 🚀 Restart Services
+      runs-on: ubuntu-latest
+      needs: build
+
+      steps:
+        - name: 🏁 Reload Production Services
+          uses: appleboy/ssh-action@v1.0.3
+          with:
+            host: ${{ secrets.PRODUCTION_HOST }}
+            username: ${{ secrets.PRODUCTION_SUDO_USERNAME }}
+            key: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
+            script: |
+              cd ${{ secrets.PRODUCTION_PROJECT_DIR }}
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              nvm use 24
+              echo "Starting containers..."
+              pnpm compose:up:production
+              sleep 10
+              echo "Starting MongoDB replica with PNPM..."
+              pnpm mongo:replica
+              echo "Stopping production servers..."
+              pnpm stop:production
+              echo "Starting production servers..."
+              pnpm start:production
