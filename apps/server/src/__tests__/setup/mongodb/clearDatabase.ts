@@ -1,6 +1,6 @@
 import type mongoose from 'mongoose'
 
-async function waitForDrop(db) {
+async function waitForDrop(db: mongoose.mongo.Db) {
   while (true) {
     const collections = await db.listCollections().toArray()
     if (collections.length === 0) break

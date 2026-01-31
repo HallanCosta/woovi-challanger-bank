@@ -6,7 +6,7 @@ import { GraphQLInputObjectType, GraphQLString } from 'graphql';
 export const accountField = (key: string) => ({
 	[key]: {
 		type: AccountType,
-		resolve: async (obj: Record<string, unknown>, _, context) =>
+		resolve: async (obj: Record<string, unknown>, _: any, context: any) =>
 			AccountLoader.load(context, obj.account as string),
 	},
 });
@@ -29,7 +29,7 @@ export const accountConnectionField = (key: string) => ({
         type: AccountFilters,
       }
 		},
-		resolve: async (_, args, context) => {
+		resolve: async (_: any, args: any, context: any) => {
 			return await AccountLoader.loadAll(context, args);
 		},
 	},

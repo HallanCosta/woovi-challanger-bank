@@ -7,7 +7,7 @@ import { LedgerEntry } from './LedgerEntryModel';
 export const ledgerEntryField = (key: string) => ({
 	[key]: {
 		type: LedgerEntryType,
-		resolve: async (obj: Record<string, unknown>, _, context) =>
+		resolve: async (obj: Record<string, unknown>, _: any, context: any) =>
 			LedgerEntryLoader.load(context, obj.account as string),
 	},
 });
@@ -29,7 +29,7 @@ export const ledgerEntryConnectionField = (key: string) => ({
         type: LedgerEntryFilters,
       }
 		},
-		resolve: async (_, args, context) => {
+		resolve: async (_: any, args: any, context: any) => {
 			const { filters } = args;
 			const query: any = {};
 			

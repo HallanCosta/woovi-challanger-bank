@@ -8,7 +8,7 @@ import { PixTransaction } from './PixTransactionModel';
 export const pixTransactionField = (key: string) => ({
 	[key]: {
 		type: PixTransactionType,
-		resolve: async (obj: Record<string, unknown>, _, context) => PixTransactionLoader.load(context, obj.id as string),
+		resolve: async (obj: Record<string, unknown>, _: any, context: any) => PixTransactionLoader.load(context, obj.id as string),
 	},
 });
 
@@ -29,7 +29,7 @@ export const pixTransactionConnectionField = (key: string) => ({
         type: PixTransactionFilters,
       }
 		},
-		resolve: async (_, args, context) => {
+		resolve: async (_: any, args: any, context: any) => {
 			return await PixTransactionLoader.loadAll(context, args);
 		},
 	},
