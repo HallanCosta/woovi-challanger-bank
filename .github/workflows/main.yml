@@ -37,7 +37,7 @@ jobs:
       - name: 🔧 Type generation & validation
         run: |
           pnpm schema &&
-          pnpm relay &&
+          pnpm relay
 
       - name: 👷 Build project
         run: pnpm build
