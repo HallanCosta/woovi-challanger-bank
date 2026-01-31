@@ -25,6 +25,10 @@ app.use(createWebsocketMiddleware());
 
 const routes = new Router();
 
+routes.get('/', async (ctx) => {
+	ctx.body = { message: 'Bank server is running...' };
+});
+
 // routes.all('/graphql/ws', wsServer);
 
 routes.all(
