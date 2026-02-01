@@ -2,7 +2,7 @@ import * as esbuild from 'esbuild';
 
 await esbuild.build({
   entryPoints: ['src/index.ts'],
-  outfile: './dist/main.js',
+  outfile: './dist/main.cjs',
   platform: 'node',
   target: 'es2022',
   format: 'cjs',
