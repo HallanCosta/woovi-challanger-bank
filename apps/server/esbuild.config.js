@@ -5,11 +5,10 @@ await esbuild.build({
   outfile: './dist/main.js',
   platform: 'node',
   target: 'es2022',
-  format: 'esm',
+  format: 'cjs',
   bundle: true,
   minify: true,
   external: [
-    'tigerbeetle-node',
     'ws',
     'koa',
     '@koa/cors',
