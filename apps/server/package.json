@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"build": "node esbuild.config.js",
-    "start": "node dist/main.cjs",
+    "start": "node dist/main.js",
 		"dev": "tsx watch src/index.ts",
 		"schema": "tsx scripts/updateSchema.ts && cp schema/schema.graphql ../web/data",
 		"seeds:accounts": "tsx scripts/accountsSeed.ts",
