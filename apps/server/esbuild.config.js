@@ -10,6 +10,7 @@ await esbuild.build({
   minify: true,
   external: [
     'tigerbeetle-node',
+    'ws',
     'koa',
     '@koa/cors',
     '@koa/router',
