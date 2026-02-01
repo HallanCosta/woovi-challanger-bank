@@ -8,6 +8,7 @@ const root = path.join.bind(cwd);
 
 dotenvSafe.config({
 	path: root('.env'),
+	sample: root('.env.example'),
 });
 
 const ENV = process.env;
