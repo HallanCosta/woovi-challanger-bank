@@ -1,9 +1,8 @@
 import { execute, subscribe, validate, parse } from 'graphql';
 import { useServer } from 'graphql-ws/lib/use/ws';
-import WebSocket from 'ws';
 
 import { schema } from '../schema/schema';
-import { getContext, GraphQLContext } from './getContext';
+import { getContext } from './getContext';
 
 export type ConnectionParams = { Authorization: string };
 
@@ -15,7 +14,7 @@ type WsContext = {
 	connectionParams: ConnectionParams;
 };
 
-export const ws = async (ctx: any) => {
+export const ws = async (ctx) => {
 	if (ctx.wss) {
 		// handle upgrade
 		const client = await ctx.ws();

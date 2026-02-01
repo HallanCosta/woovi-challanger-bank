@@ -5,19 +5,14 @@ import WebSocket, { WebSocketServer as WSWebSocketServer } from 'ws';
 // work with commonjs and esm
 const WebSocketServer = WSWebSocketServer;
 
-interface WsOptions {
-  wsOptions?: any;
-  server?: http.Server;
-}
-
 export const createWebsocketMiddleware = (
 	propertyName = 'ws',
-	options: WsOptions | http.Server = {}
+	options = {}
 ) => {
 	if (options instanceof http.Server) options = { server: options };
 
 	// const wsServers = new WeakMap();
-	const wsServers: Record<string, any> = {};
+	const wsServers = {};
 
 	const getOrCreateWebsocketServer = (url: string) => {
 		// const server = wsServers.get(url);
@@ -40,10 +35,10 @@ export const createWebsocketMiddleware = (
 		return newServer;
 	};
 
-	const websocketMiddleware = async (ctx: any, next: any) => {
+	const websocketMiddleware = async (ctx, next) => {
 		const upgradeHeader = (ctx.request.headers.upgrade || '')
 			.split(',')
-			.map((s: string) => s.trim());
+			.map((s) => s.trim());
 
 		if (~upgradeHeader.indexOf('websocket')) {
 			const wss = getOrCreateWebsocketServer(ctx.url);
@@ -54,7 +49,7 @@ export const createWebsocketMiddleware = (
 						ctx.req,
 						ctx.request.socket,
 						Buffer.alloc(0),
-						(ws: WebSocket) => {
+						(ws) => {
 							wss.emit('connection', ws, ctx.req);
 							resolve(ws);
 						}

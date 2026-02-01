@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
-		"build": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js --format=cjs --minify --external:ws --external:graphql --external:@entria/graphql-mongo-helpers",
+		"build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
 		"config:local": "cp .env.example .env",
 		"dev": "tsx watch src/index.ts",
@@ -55,7 +55,6 @@
 		"@types/uuid": "^11.0.0",
 		"@types/ws": "^8.18.1",
 		"babel-jest": "^30.1.2",
-		"esbuild": "^0.25.0",
 		"tsx": "^3.12.6"
 	}
 }
