@@ -6,6 +6,7 @@ module.exports = {
 	compiler: {
 		relay: require('./relay.config'),
 	},
+	turbopack: {},
 	webpack: (config) => {
 		config.resolve.alias['@'] = path.join(__dirname, 'src');
 		return config;
