@@ -5,6 +5,7 @@
 	"scripts": {
 		"build": "node esbuild.config.js",
     "start": "node dist/main.js",
+		"config:local": "cp .env.example .env",
 		"dev": "tsx watch src/index.ts",
 		"schema": "tsx scripts/updateSchema.ts && cp schema/schema.graphql ../web/data",
 		"seeds:accounts": "tsx scripts/accountsSeed.ts",
