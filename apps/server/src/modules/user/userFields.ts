@@ -7,7 +7,7 @@ import { users } from './users';
 export const userField = (key: string) => ({
 	[key]: {
 		type: UserType,
-		resolve: async (obj: Record<string, unknown>, _: any, context: any) => {
+		resolve: async (obj: Record<string, unknown>, _, context) => {
       return users.find(user => user.email === obj.email) || null;
     },
 	},
@@ -30,7 +30,7 @@ export const userConnectionField = (key: string) => ({
         type: UserFilters
       } 
 		},
-		resolve: async (_: any, args: any, context: any) => {
+		resolve: async (_, args, context) => {
       const getFilteredUsers = (filters: any = {}) => {
         if (!filters.email) return users;
 

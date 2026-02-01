@@ -59,22 +59,6 @@ jobs:
       needs: build
 
       steps:
-        - name: 🏁 Build on Production Server
-          uses: appleboy/ssh-action@v1.0.3
-          with:
-            host: ${{ secrets.PRODUCTION_HOST }}
-            username: ${{ secrets.PRODUCTION_SUDO_USERNAME }}
-            key: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
-            script: |
-              cd ${{ secrets.PRODUCTION_PROJECT_DIR }}
-              export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-              nvm use 24
-              echo "Installing dependencies..."
-              pnpm install --frozen-lockfile
-              echo "Building project..."
-              pnpm build
-
         - name: 🏁 Reload Production Services
           uses: appleboy/ssh-action@v1.0.3
           with:
