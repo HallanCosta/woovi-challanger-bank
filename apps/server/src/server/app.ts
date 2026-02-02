@@ -35,6 +35,13 @@ routes.get('/', async (ctx) => {
 // Admin endpoints for accounts management
 routes.post('/admin/accounts/seed', async (ctx) => {
 	try {
+		const accounts = await Account.find();
+
+		if (accounts.length === users.length) {
+			ctx.body = { message: 'Accounts already seeded' };
+			return;
+		}
+
 		await Account.deleteMany({});
 
 		await new Account({
