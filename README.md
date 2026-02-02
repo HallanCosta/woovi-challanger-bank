@@ -18,7 +18,7 @@ A modern banking application built with cutting-edge technologies, offering comp
 
 ### Access URLs (Production)
 - **Frontend**: https://bank.hallancosta.com
-- **Backend GraphQL**: https://server-bank.hallancosta.com/graphql
+- **Backend GraphQL**: https://bank-server.hallancosta.com/graphql
 
 #### Test Users (Production)
 
@@ -190,7 +190,7 @@ User 2:
 
 #### Production Environment  
 1. Import the collection in Postman using the button above or the JSON file
-2. Configure an environment variable `url_production` with value `https://server-bank.hallancosta.com/graphql`
+2. Configure an environment variable `url_production` with value `https://bank-server.hallancosta.com/graphql`
 3. Execute the collection requests
 
 ## 🤝 Contributing
