@@ -130,10 +130,20 @@ To run the project locally, follow these steps:
    ```sh
    pnpm seeds:accounts
    ```
+   
+   **Or via HTTP:**
+   ```sh
+   curl -X POST http://localhost:4000/admin/accounts/seed
+   ```
 
 9. **Reset account balances (Optional) - Both accounts will be reset to R$ 10 million**
    ```sh
    pnpm reset:accounts
+   ```
+   
+   **Or via HTTP:**
+   ```sh
+   curl -X POST http://localhost:4000/admin/accounts/reset
    ```
 
 10. **Start the project**
