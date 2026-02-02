@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "🔄 Inicializando replica set..."
-docker exec -it mongodb mongosh --eval "
+docker exec -it bank-mongodb mongosh --eval "
 rs.initiate({
   _id: 'rs0',
   members: [
